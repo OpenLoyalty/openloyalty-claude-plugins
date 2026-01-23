@@ -1,0 +1,138 @@
+---
+description: Generate compound learning document from completed branch
+globs:
+  - engineering/compound-learnings/**/*
+alwaysApply: false
+---
+
+# Compound Learning Workflow
+
+When asked to "document what we learned", "create compound learning", "capture lessons", or generate a compound learning document:
+
+## Step 1: Gather Context
+
+Run these commands to understand the branch:
+
+```bash
+# Get current branch
+git rev-parse --abbrev-ref HEAD
+
+# Get commit history (compared to main)
+git log main..HEAD --pretty=format:"%h %s" --reverse
+
+# Get changed files overview
+git diff main...HEAD --stat
+```
+
+Extract ticket ID from branch name (pattern: `OLOY-\d+`).
+
+## Step 2: Analyze Code Changes
+
+Read the most significantly changed files to understand:
+- What was the code doing before?
+- What does it do now?
+- Why was this change needed?
+
+Focus on the **why**, not just the **what**.
+
+## Step 3: Extract Information
+
+Identify and document:
+
+1. **Problem Statement**: What triggered this work? Be specific about symptoms.
+   - Good: "Rewards earned between 11 PM and midnight were dated wrong"
+   - Bad: "Timezone bug"
+
+2. **Investigation Steps**: What was tried, including dead ends?
+   - Good: "Added logging to RewardDateCalculator.calculate()"
+   - Bad: "Checked the code"
+
+3. **Findings**: What was discovered? Distinguish symptoms from root causes.
+
+4. **Conclusion**: Root cause (for bugs) or solution summary (for features).
+
+5. **Lessons Learned**: The most valuable part!
+   - For Future Investigations: Process improvements
+   - For the Codebase: Technical insights
+   - Pattern Recognition: Symptoms that indicate this type of issue
+
+## Step 4: Generate Document
+
+Use this template:
+
+```markdown
+# {TICKET}: {Title}
+
+**Date:** {YYYY-MM-DD}
+**Author:** {author}
+**Branch:** {branch_name}
+**Ticket:** https://openloyalty.atlassian.net/browse/{TICKET}
+**Type:** {Bug Fix | Feature | Spike | Refactor}
+
+---
+
+## Problem Statement
+
+{What triggered this work - specific symptoms}
+
+## Hypothesis / Approach
+
+{Initial assumption or planned approach}
+
+## Investigation Steps
+
+1. {Step 1}
+2. {Step 2}
+
+## Findings
+
+| Finding | Details |
+|---------|---------|
+| {finding} | {details} |
+
+## Conclusion
+
+**{Summary}**
+
+{Detailed explanation}
+
+**Confidence level:** {High | Medium | Low}
+
+---
+
+## Lessons Learned
+
+### For Future Investigations
+
+1. {Process lesson}
+
+### For the Codebase
+
+1. {Technical insight}
+
+### Pattern Recognition
+
+**Symptoms that indicate this type of issue:**
+- {Symptom}
+
+**Quick diagnostic steps:**
+1. {Check this first}
+
+---
+
+*Generated following the Compound Engineering methodology.*
+```
+
+## Step 5: Save Document
+
+Save to: `engineering/compound-learnings/{TICKET}-{slug}.md`
+
+- `{TICKET}`: Jira ticket (e.g., OLOY-123) or "NO-TICKET"
+- `{slug}`: kebab-case summary (e.g., timezone-offset-fix)
+
+## Step 6: Report
+
+After creating the document:
+1. Confirm file location
+2. Summarize key lessons (2-3 bullets)
+3. Suggest linking in Engineering Strategy if significant

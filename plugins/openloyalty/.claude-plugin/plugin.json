@@ -1,0 +1,20 @@
+{
+  "name": "openloyalty",
+  "version": "1.0.0",
+  "description": "Engineering workflows for compound learning, code review, and technical spikes following Open Loyalty conventions.",
+  "author": {
+    "name": "Open Loyalty",
+    "url": "https://github.com/OpenLoyalty"
+  },
+  "homepage": "https://github.com/OpenLoyalty/openloyalty-claude-skills",
+  "repository": "https://github.com/OpenLoyalty/openloyalty-claude-skills",
+  "license": "UNLICENSED",
+  "keywords": [
+    "compound-learning",
+    "code-review",
+    "spike",
+    "workflow",
+    "open-loyalty",
+    "internal"
+  ]
+}

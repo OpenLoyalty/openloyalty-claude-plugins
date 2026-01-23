@@ -1,0 +1,125 @@
+---
+description: Code review following Open Loyalty conventions
+globs:
+  - "**/*.php"
+  - "**/*.ts"
+  - "**/*.tsx"
+alwaysApply: false
+---
+
+# Open Loyalty Code Review
+
+When asked to "review this code", "check against OL standards", or review changes:
+
+## Step 1: Identify Changes
+
+```bash
+# List changed files
+git diff main...HEAD --name-only
+
+# Get diff statistics
+git diff main...HEAD --stat
+```
+
+## Step 2: Load Conventions
+
+Read `AGENTS.md` in the repository root for:
+- Critical rules that must not be violated
+- Coding conventions for this codebase
+- Common anti-patterns to avoid
+
+## Step 3: Review by File Type
+
+### PHP/Backend Files
+
+Check these critical rules from AGENTS.md:
+- **DEV020**: CQRS patterns followed correctly
+- **DEV022**: Event handling conventions
+- **DEV027**: Value objects used appropriately
+- **DEV034**: Dependency injection patterns
+
+Look for:
+- Missing type hints
+- Missing return types
+- Improper exception handling
+- SQL injection vulnerabilities
+- Missing validation
+
+### TypeScript/Frontend Files
+
+Check these critical rules from AGENTS.md:
+- **TS001**: Prefer `const` over `let`
+- **TS002**: Explicit types (no implicit `any`)
+- **TS004**: Proper error handling
+- **COMP002**: Component structure follows conventions
+- **FORM001**: Form handling patterns
+
+Look for:
+- Missing TypeScript types
+- Improper React hooks usage
+- Missing error boundaries
+- XSS vulnerabilities
+
+## Step 4: Categorize Findings
+
+**Critical (Must Fix):**
+- Security vulnerabilities
+- Data integrity issues
+- AGENTS.md critical rule violations
+- Breaking changes
+
+**Important (Should Fix):**
+- Convention violations
+- Missing tests
+- Performance concerns
+- Error handling gaps
+
+**Suggestions:**
+- Style improvements
+- Refactoring opportunities
+- Documentation needs
+
+## Step 5: Format Review
+
+```markdown
+# Code Review: {branch_name}
+
+**Date:** {YYYY-MM-DD}
+**Files Changed:** {count}
+
+## Summary
+
+{1-2 sentence assessment}
+
+## Critical Issues
+
+{List or "None found"}
+
+### {Issue title}
+- **File:** `{path}:{line}`
+- **Rule:** {AGENTS.md reference}
+- **Problem:** {description}
+- **Fix:** {suggestion}
+
+## Important Issues
+
+{List issues}
+
+## Suggestions
+
+{List minor items}
+
+## Checklist
+
+- [ ] AGENTS.md rules followed
+- [ ] Tests added for new code
+- [ ] No security vulnerabilities
+- [ ] Error handling appropriate
+```
+
+## Step 6: Offer Next Steps
+
+Ask if the engineer wants:
+1. More detail on specific issues
+2. Code suggestions for fixes
+3. To proceed (if no critical issues)

@@ -1,0 +1,25 @@
+{
+  "name": "openloyalty-marketplace",
+  "owner": {
+    "name": "Open Loyalty",
+    "url": "https://github.com/OpenLoyalty"
+  },
+  "metadata": {
+    "description": "Claude Code plugins for Open Loyalty engineering team",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "openloyalty",
+      "description": "Engineering workflows for compound learning, code review, and technical spikes following OL conventions.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Open Loyalty",
+        "url": "https://github.com/OpenLoyalty"
+      },
+      "homepage": "https://github.com/OpenLoyalty/openloyalty-claude-skills",
+      "tags": ["compound-learning", "code-review", "workflow", "internal"],
+      "source": "./plugins/openloyalty"
+    }
+  ]
+}
