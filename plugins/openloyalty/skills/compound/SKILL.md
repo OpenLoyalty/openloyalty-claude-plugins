@@ -1,6 +1,19 @@
-# Compound Learning Workflow
+---
+name: compound
+description: Generate compound learning documentation from a completed branch. Captures lessons learned, investigation steps, and patterns for future reference.
+argument-hint: "[branch] [--slack <url>]"
+---
+
+# Compound Learning Generator
 
 Generate a compound learning document from a completed branch.
+
+## Arguments
+
+| Argument | Description | Example |
+|----------|-------------|---------|
+| `[branch]` | Branch to analyze (default: current) | `feature/OLOY-123-fix` |
+| `--slack <url>` | Include Slack thread context | `--slack https://slack.com/...` |
 
 ## Phase 1: Gather Context (Parallel Agents)
 
@@ -50,15 +63,17 @@ Prompt: |
   Attempt to fetch Jira ticket context for: {ticket_id}
 
   Steps:
-  1. Try: mcp__mcp-atlassian__jira_get_issue with issue_key={ticket_id}
-  2. If successful:
+  1. First check if Atlassian MCP tools are available
+  2. If not available: return { "status": "mcp_not_configured" }
+  3. If available, try: mcp__mcp-atlassian__jira_get_issue with issue_key={ticket_id}
+  4. If successful:
      - Extract: summary, description, acceptance criteria
      - Look for Slack thread URLs in comments
      - Note any linked issues
-  3. If MCP unavailable or fails:
+  5. If call fails:
      - Return: { "status": "unavailable", "reason": "..." }
-     - This is fine - the skill works without Jira
 
+  This is optional - the skill works without Jira.
   Return structured context or unavailability notice.
 ```
 
@@ -120,7 +135,84 @@ Extract three categories:
 
 ## Phase 4: Generate Document
 
-Use template from `templates/compound-learning.md`
+Use this template:
+
+```markdown
+# {TICKET}: {Title}
+
+**Date:** {date}
+**Author:** {author}
+**Branch:** {branch_name}
+**Ticket:** {jira_url}
+**Type:** {Bug Fix | Feature | Spike | Refactor}
+
+---
+
+## Problem Statement
+
+{What triggered this work - the symptom or requirement that started this investigation}
+
+## Hypothesis / Approach
+
+{Initial assumption about the cause or planned approach to implement the feature}
+
+## Investigation Steps
+
+1. {Step 1 - what was done first}
+2. {Step 2 - what was tried next}
+3. {Step 3 - and so on...}
+
+## Findings
+
+| Finding | Details |
+|---------|---------|
+| {finding_1} | {details_1} |
+| {finding_2} | {details_2} |
+
+## Conclusion
+
+**{Root cause summary for bugs OR Solution summary for features}**
+
+{Detailed explanation of why this was the root cause or how the solution works}
+
+**Confidence level:** {High | Medium | Low}
+
+---
+
+## Lessons Learned
+
+### For Future Investigations
+
+1. {Process lesson - what would you do differently next time?}
+2. {Diagnostic lesson - what's a faster way to find this?}
+
+### For the Codebase
+
+1. {Technical insight about the code}
+2. {Documentation or architecture improvement identified}
+
+### Pattern Recognition
+
+**Symptoms that indicate this type of issue:**
+- {Symptom 1 - observable behavior}
+- {Symptom 2 - log patterns, error messages}
+
+**Quick diagnostic steps:**
+1. {First thing to check}
+2. {Second thing to verify}
+
+---
+
+## Related Documents
+
+- {Link to related compound learnings}
+- {Link to relevant documentation}
+
+## Related Discussions
+
+- {Slack thread URL if available}
+- {Other discussion links}
+```
 
 **Output location:** `engineering/compound-learnings/{ticket}-{slug}.md`
 

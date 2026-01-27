@@ -1,6 +1,22 @@
-# Code Review Workflow
+---
+name: review
+description: Code review with OL conventions, Jira ticket verification, test quality analysis, N+1 detection, and 1-10 scoring.
+argument-hint: "[--base <branch>] [--strict] [--ticket <ID>] [--skip-jira]"
+---
+
+# Code Review
 
 Review code changes against Open Loyalty conventions, Jira ticket requirements, and senior engineer best practices.
+
+## Arguments
+
+| Argument | Description | Example |
+|----------|-------------|---------|
+| `--base <branch>` | Compare against specific branch (default: main) | `--base develop` |
+| `--files <pattern>` | Only review matching files | `--files "src/**/*.ts"` |
+| `--strict` | Treat important issues as critical | `--strict` |
+| `--ticket <ID>` | Override ticket ID detection | `--ticket OLOY-123` |
+| `--skip-jira` | Skip Jira context fetching | `--skip-jira` |
 
 ## Phase 1: Gather Context (Parallel Agents)
 
@@ -515,17 +531,3 @@ After generating the report:
 5. **If no AGENTS.md was found:**
    - Note that review was done against general best practices
    - Suggest creating an AGENTS.md for team-specific conventions
-
-## Arguments
-
-The review command accepts optional arguments:
-
-| Argument | Description | Example |
-|----------|-------------|---------|
-| `--base <branch>` | Compare against specific branch | `--base develop` |
-| `--files <pattern>` | Only review matching files | `--files "src/**/*.ts"` |
-| `--strict` | Treat important issues as critical | `--strict` |
-| `--ticket <ID>` | Override ticket ID detection | `--ticket OLOY-123` |
-| `--skip-jira` | Skip Jira context fetching | `--skip-jira` |
-
-Default: Compare current branch against `main`, auto-detect ticket from branch name.

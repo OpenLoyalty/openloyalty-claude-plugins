@@ -4,13 +4,13 @@ This plugin provides engineering workflows for the Open Loyalty development team
 
 ## Available Commands
 
-| Command | Purpose | Triggers |
-|---------|---------|----------|
-| `/openloyalty:compound` | Generate compound learning from branch | "document what we learned", "capture lessons" |
-| `/openloyalty:spike` | Structure technical spike investigation | "start spike", "investigate issue" |
-| `/openloyalty:review` | Code review with OL conventions | "review this PR", "check against OL standards" |
-| `/openloyalty:rca` | Root Cause Analysis document | "write RCA", "post-mortem" |
-| `/openloyalty:onboard` | Context summary for module | "onboard context", "explain module" |
+| Command | Purpose |
+|---------|---------|
+| `/openloyalty:compound` | Generate compound learning from branch |
+| `/openloyalty:review` | Code review with OL conventions, Jira verification, 1-10 scoring |
+| `/openloyalty:spike` | Structure technical spike investigation *(coming soon)* |
+| `/openloyalty:rca` | Root Cause Analysis document *(coming soon)* |
+| `/openloyalty:onboard` | Context summary for module *(coming soon)* |
 
 ## Integration with AGENTS.md
 
