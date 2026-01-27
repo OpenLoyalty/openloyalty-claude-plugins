@@ -6,7 +6,7 @@ Engineering workflows for the Open Loyalty development team. Auto-updating Claud
 
 | Tool | Installation |
 |------|--------------|
-| **Claude Code** | `/install-plugin OpenLoyalty/openloyalty-claude-skills` |
+| **Claude Code** | `/plugin marketplace add OpenLoyalty/openloyalty-claude-skills` then `/plugin install openloyalty` |
 | **OpenCode** | Copy `portable/opencode/` to your OL repo |
 | **Cursor** | Copy `portable/cursor/rules/` to `.cursor/rules/` |
 | **GitHub Copilot** | Merge `portable/copilot/` into `.github/copilot-instructions.md` |
@@ -18,27 +18,34 @@ Engineering workflows for the Open Loyalty development team. Auto-updating Claud
 
 ### Installation
 
+**Step 1: Add the marketplace**
 ```bash
-/install-plugin OpenLoyalty/openloyalty-claude-skills
+/plugin marketplace add OpenLoyalty/openloyalty-claude-skills
 ```
 
 For private repo (use same auth method as your normal git):
 ```bash
 # SSH
-/install-plugin git@github.com:OpenLoyalty/openloyalty-claude-skills.git
+/plugin marketplace add git@github.com:OpenLoyalty/openloyalty-claude-skills.git
 
 # HTTPS
-/install-plugin https://github.com/OpenLoyalty/openloyalty-claude-skills.git
+/plugin marketplace add https://github.com/OpenLoyalty/openloyalty-claude-skills.git
+```
+
+**Step 2: Install the plugin**
+```bash
+/plugin install openloyalty@openloyalty-claude-skills
 ```
 
 **Auto-updates:** Plugin updates automatically when you start Claude Code after a new version is pushed.
 
-### Enable Plugin
+### Manage Plugins
 
-After installation:
 ```bash
-/plugins
-# Enable "openloyalty" from the list
+/plugin                    # Open plugin manager UI
+/plugin marketplace list   # List configured marketplaces
+/plugin disable openloyalty@openloyalty-claude-skills   # Disable temporarily
+/plugin enable openloyalty@openloyalty-claude-skills    # Re-enable
 ```
 
 ### Available Commands
