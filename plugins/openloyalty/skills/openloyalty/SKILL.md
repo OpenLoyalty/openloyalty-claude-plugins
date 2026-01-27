@@ -24,13 +24,13 @@ Parse the user's command or trigger phrase and route to the appropriate workflow
 |---------|----------|
 | `/openloyalty:compound` or "compound", "learning doc", "document what we learned" | `workflows/compound.md` |
 | `/openloyalty:spike` or "start spike", "investigate issue" | Coming soon |
-| `/openloyalty:review` or "review PR", "OL standards" | Coming soon |
+| `/openloyalty:review` or "review PR", "OL standards" | `workflows/review.md` |
 | `/openloyalty:rca` or "write RCA", "post-mortem" | Coming soon |
 | `/openloyalty:onboard` or "onboard context", "explain module" | Coming soon |
 
 ## Argument Parsing
 
-For `/openloyalty:compound [branch] [--slack <url>]`:
+### For `/openloyalty:compound [branch] [--slack <url>]`:
 
 1. **Branch detection:**
    - If branch name provided: use it
@@ -44,8 +44,24 @@ For `/openloyalty:compound [branch] [--slack <url>]`:
    - Parse branch name for ticket pattern: `OLOY-\d+`
    - Examples: `feature/OLOY-123-fix-bug` -> `OLOY-123`
 
+### For `/openloyalty:review [--base <branch>] [--files <pattern>] [--strict]`:
+
+1. **Base branch:**
+   - Default: `main`
+   - If `--base <branch>` provided: compare against that branch
+   - Examples: `--base develop`, `--base release/1.0`
+
+2. **File filter:**
+   - If `--files <pattern>` provided: only review matching files
+   - Examples: `--files "src/**/*.ts"`, `--files "*.php"`
+
+3. **Strict mode:**
+   - If `--strict` flag present: treat Important issues as Critical
+   - Use for pre-release or sensitive code reviews
+
 ## Execution
 
-After parsing, load and execute the appropriate workflow file.
+After parsing, load and execute the appropriate workflow file:
 
-For `/openloyalty:compound`, proceed to `workflows/compound.md`.
+- `/openloyalty:compound` -> `workflows/compound.md`
+- `/openloyalty:review` -> `workflows/review.md`

@@ -61,7 +61,19 @@ Group findings by severity:
 - Refactoring opportunities
 - Documentation improvements
 
-### Step 5: Generate Review Report
+### Step 5: Calculate PR Score (1-10)
+
+| Score | Meaning | Criteria |
+|-------|---------|----------|
+| **10** | Exceptional | No issues. Exemplary code. |
+| **8-9** | Excellent | No critical/important issues. Minor suggestions only. |
+| **6-7** | Good | No critical issues. Some important issues. |
+| **4-5** | Needs Work | Critical issues or many important issues. |
+| **1-3** | Poor | Multiple critical issues. Do not merge. |
+
+Adjustments: +1 for excellent tests, -1 for missing tests, -1 per critical rule violation.
+
+### Step 6: Generate Review Report
 
 Format:
 
@@ -72,6 +84,14 @@ Format:
 **Date:** {YYYY-MM-DD}
 **Commits Reviewed:** {count}
 **Files Changed:** {count}
+
+---
+
+## Score: {N}/10
+
+{Visual: "████████░░" for 8/10, etc.}
+
+**Verdict:** {APPROVED / CHANGES_REQUESTED / NEEDS_DISCUSSION}
 
 ---
 
@@ -117,7 +137,7 @@ Format:
 | {path} | +{added}/-{removed} | {OK/Issues} |
 ```
 
-### Step 6: Provide Actionable Feedback
+### Step 7: Provide Actionable Feedback
 
 For each issue:
 - Be specific about the location
@@ -146,3 +166,4 @@ Provide the review report, then ask if the engineer wants:
 1. More detail on any specific issue
 2. Code suggestions for fixes
 3. To proceed with committing (if no critical issues)
+4. Tips to improve the score
