@@ -1,3 +1,9 @@
+---
+name: openloyalty:help
+description: Show available Open Loyalty engineering commands and plugin documentation
+argument-hint: ""
+---
+
 # Open Loyalty Engineering Plugin
 
 This plugin provides engineering workflows for the Open Loyalty development team.
