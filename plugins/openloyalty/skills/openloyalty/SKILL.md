@@ -44,7 +44,7 @@ Parse the user's command or trigger phrase and route to the appropriate workflow
    - Parse branch name for ticket pattern: `OLOY-\d+`
    - Examples: `feature/OLOY-123-fix-bug` -> `OLOY-123`
 
-### For `/openloyalty:review [--base <branch>] [--files <pattern>] [--strict]`:
+### For `/openloyalty:review [--base <branch>] [--files <pattern>] [--strict] [--ticket <ID>] [--skip-jira]`:
 
 1. **Base branch:**
    - Default: `main`
@@ -58,6 +58,15 @@ Parse the user's command or trigger phrase and route to the appropriate workflow
 3. **Strict mode:**
    - If `--strict` flag present: treat Important issues as Critical
    - Use for pre-release or sensitive code reviews
+
+4. **Ticket override:**
+   - Auto-detects ticket from branch name (pattern: `OLOY-\d+`)
+   - If `--ticket <ID>` provided: use specified ticket instead
+   - Fetches ticket description from Jira via MCP for requirements verification
+
+5. **Skip Jira:**
+   - If `--skip-jira` flag present: skip Jira context fetching
+   - Useful when Jira is unavailable or not needed
 
 ## Execution
 
