@@ -412,24 +412,29 @@ Create the review report with this structure:
 
 ---
 
-## Critical Issues
+## Issues
 
-{List each critical issue or "None found"}
+{List all issues grouped by severity, or "No issues found"}
 
-### Issue: {title}
-- **File:** `{path}:{line_number}`
-- **Rule:** {AGENTS.md rule ID if applicable}
-- **Problem:** {clear description}
-- **Suggestion:**
-  ```{language}
-  {code suggestion if applicable}
-  ```
+### Critical
 
----
+| File | Rule | Issue | Suggestion |
+|------|------|-------|------------|
+| `{path}:{line}` | {DEV020} | {description} | {brief fix} |
 
-## Important Issues
+### Important
 
-{List each important issue with same format}
+| File | Rule | Issue | Suggestion |
+|------|------|-------|------------|
+| `{path}:{line}` | {TS001} | {description} | {brief fix} |
+
+### Suggestions
+
+| File | Rule | Issue | Suggestion |
+|------|------|-------|------------|
+| `{path}:{line}` | — | {description} | {brief fix} |
+
+**Expand any issue for details:** "Tell me more about the {rule} violation in {file}"
 
 ---
 
@@ -460,29 +465,12 @@ Create the review report with this structure:
 
 ---
 
-## Suggestions
-
-{List minor suggestions briefly}
-
----
-
 ## Exploratory Testing Recommendations
 
 Before merging, consider manually testing:
 1. {specific test scenario}
 2. {edge case to try}
 3. {API comparison: "Compare response of GET /api/xxx between main and this branch"}
-
----
-
-## AGENTS.md Compliance
-
-| Rule | Status | Notes |
-|------|--------|-------|
-| DEV020 (CQRS) | {OK/N/A/Violation} | {brief note} |
-| DEV022 (Events) | {OK/N/A/Violation} | {brief note} |
-| TS001 (const) | {OK/N/A/Violation} | {brief note} |
-{...relevant rules...}
 
 ---
 
