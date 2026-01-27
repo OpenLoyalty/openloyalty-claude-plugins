@@ -1,5 +1,5 @@
 ---
-name: review
+name: openloyalty:review
 description: Code review with OL conventions, Jira ticket verification, test quality analysis, N+1 detection, and 1-10 scoring.
 argument-hint: "[--base <branch>] [--strict] [--ticket <ID>] [--skip-jira]"
 ---

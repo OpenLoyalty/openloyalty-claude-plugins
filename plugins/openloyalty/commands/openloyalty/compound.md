@@ -1,5 +1,5 @@
 ---
-name: compound
+name: openloyalty:compound
 description: Generate compound learning documentation from a completed branch. Captures lessons learned, investigation steps, and patterns for future reference.
 argument-hint: "[branch] [--slack <url>]"
 ---
