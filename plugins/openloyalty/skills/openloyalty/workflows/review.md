@@ -73,24 +73,35 @@ Prompt: |
 
 ### Agent 4: Jira Ticket Context (Optional - Graceful Degradation)
 
+**Skip this agent entirely if:**
+- No ticket_id was found in branch name
+- User passed `--skip-jira` flag
+
 ```
 Task: general-purpose
 Prompt: |
   Attempt to fetch Jira ticket context for: {ticket_id}
 
+  IMPORTANT: This is optional. The review works fine without Jira.
+
   Steps:
-  1. Try: mcp__mcp-atlassian__jira_get_issue with issue_key={ticket_id}
-  2. If successful, extract:
+  1. First, check if Atlassian MCP is available by looking for
+     mcp__mcp-atlassian__* tools in your available tools
+  2. If MCP not available:
+     - Return immediately: { "status": "mcp_not_configured" }
+     - Do NOT treat this as an error
+  3. If MCP available, try: mcp__mcp-atlassian__jira_get_issue with issue_key={ticket_id}
+  4. If successful, extract:
      - Summary (ticket title)
      - Description (full requirements)
      - Acceptance criteria (look in description or custom fields)
      - Expected behavior changes
      - Any linked issues or epic context
-  3. If MCP unavailable or fails:
+  5. If call fails (network, permissions, ticket not found):
      - Return: { "status": "unavailable", "reason": "..." }
-     - This is fine - the review proceeds without Jira context
 
-  Return structured ticket context or unavailability notice.
+  Return structured ticket context or status indicating why it's unavailable.
+  All statuses are valid - the review proceeds regardless.
 ```
 
 ## Phase 2: Read Changed Files
@@ -228,6 +239,14 @@ If migrations are present:
 
 ## Phase 4: Ticket Compliance Check
 
+**Skip this phase if:**
+- No ticket ID in branch name AND no `--ticket` flag provided
+- Jira MCP not configured (status: "mcp_not_configured")
+- Jira fetch failed (status: "unavailable")
+- User passed `--skip-jira`
+
+**If skipped, simply note in report:** "Ticket compliance not checked - {reason}"
+
 **If Jira ticket context was retrieved:**
 
 Compare the code changes against ticket requirements:
@@ -314,12 +333,14 @@ Rate the PR quality based on these criteria:
 **Scoring adjustments:**
 - **+1** for excellent test coverage with good assertions
 - **+1** for clear commit messages and PR description
-- **+1** for full ticket requirement compliance
+- **+1** for full ticket requirement compliance *(only if Jira context available)*
 - **-1** for missing tests on new code paths
 - **-1** for each critical AGENTS.md rule violation
 - **-1** for N+1 queries introduced
-- **-1** for code that doesn't match ticket requirements
+- **-1** for code that doesn't match ticket requirements *(only if Jira context available)*
 - **-2** for tests that only check specific values (not full responses)
+
+**Note:** Ticket compliance adjustments only apply when Jira context was successfully retrieved. Missing Jira integration does not affect the score.
 
 ## Phase 7: Generate Review Report
 
@@ -353,7 +374,9 @@ Create the review report with this structure:
 
 ## Ticket Compliance
 
-{If Jira context available}
+{Choose the appropriate message based on status:}
+
+**If Jira context available:**
 
 **Ticket:** {OLOY-XXX} - {summary}
 
@@ -363,7 +386,13 @@ Create the review report with this structure:
 | {req 2} | ⚠️ Partial | {what's missing} |
 | {req 3} | ❌ Missing | |
 
-{If no Jira context: "Ticket context unavailable - review based on code only"}
+**If no ticket ID in branch:** "No ticket ID found in branch name. Skipping ticket compliance check."
+
+**If Jira MCP not configured:** "Jira integration not configured. To enable ticket compliance checking, set up the Atlassian MCP."
+
+**If Jira fetch failed:** "Could not fetch ticket {OLOY-XXX}: {reason}. Review based on code only."
+
+**If --skip-jira used:** "Ticket compliance check skipped (--skip-jira flag)."
 
 ---
 

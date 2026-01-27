@@ -27,10 +27,12 @@ git diff main...HEAD --stat
 
 **AGENTS.md:** Read for conventions and rules to check.
 
-**Jira Ticket (if ticket ID found):**
-- Fetch ticket via Jira MCP: `mcp__mcp-atlassian__jira_get_issue`
-- Extract: summary, description, acceptance criteria
-- This defines what the code SHOULD do
+**Jira Ticket (optional - graceful degradation):**
+- Only if ticket ID found in branch name (OLOY-XXX pattern)
+- Only if Atlassian MCP is configured
+- Try to fetch via: `mcp__mcp-atlassian__jira_get_issue`
+- If MCP not available or fetch fails: skip ticket compliance check entirely
+- This is fine - the review works without Jira integration
 
 ### Step 3: Review Each Changed File
 
@@ -71,6 +73,13 @@ Look specifically for:
 
 ### Step 7: Ticket Compliance Check
 
+**Skip this step if:**
+- No ticket ID in branch name
+- Jira MCP not configured
+- Jira fetch failed
+
+**If skipped:** Note reason in report and continue. This does not affect the score.
+
 **If Jira ticket available:**
 
 Compare code against ticket requirements:
@@ -109,9 +118,11 @@ Compare code against ticket requirements:
 | **1-3** | Poor | Multiple critical issues. Do not merge. |
 
 **Adjustments:**
-- +1 excellent tests, +1 full ticket compliance
-- -1 missing tests, -1 N+1 queries, -1 ticket mismatch
+- +1 excellent tests, +1 full ticket compliance *(only if Jira available)*
+- -1 missing tests, -1 N+1 queries, -1 ticket mismatch *(only if Jira available)*
 - -2 tests only check specific values (not full responses)
+
+Note: Missing Jira integration does not affect the score.
 
 ### Step 10: Generate Review Report
 
@@ -136,9 +147,14 @@ Compare code against ticket requirements:
 
 ## Ticket Compliance
 
+{If Jira available:}
 | Requirement | Status | Notes |
 |-------------|--------|-------|
 | {req} | ✅/⚠️/❌ | {details} |
+
+{If no ticket ID: "No ticket ID in branch name - skipping compliance check"}
+{If MCP not configured: "Jira integration not configured"}
+{If fetch failed: "Could not fetch ticket - review based on code only"}
 
 ---
 
