@@ -12,7 +12,7 @@ Review code changes against Open Loyalty conventions, Jira ticket requirements, 
 
 | Argument | Description | Example |
 |----------|-------------|---------|
-| `--base <branch>` | Compare against specific branch (default: main) | `--base develop` |
+| `--base <branch>` | Compare against specific branch (auto-detected if not provided) | `--base 5.144` |
 | `--files <pattern>` | Only review matching files | `--files "src/**/*.ts"` |
 | `--strict` | Treat important issues as critical | `--strict` |
 | `--ticket <ID>` | Override ticket ID detection | `--ticket OLOY-123` |
@@ -27,15 +27,45 @@ Run these four agents **IN PARALLEL** using the Task tool:
 ```
 Task: Explore
 Prompt: |
-  Analyze the git diff for the current branch compared to main.
+  Analyze the git diff for the current branch.
 
-  Run these commands:
-  1. git rev-parse --abbrev-ref HEAD  (get branch name)
-  2. git log main..HEAD --oneline     (list commits being reviewed)
-  3. git diff main...HEAD --stat      (files changed with stats)
-  4. git diff main...HEAD --name-only (just file paths)
+  STEP 1: Determine the base branch (in order of priority):
+
+  a) If --base flag was provided by user, use that value
+
+  b) Try to get base from GitHub PR:
+     gh pr view --json baseRefName -q '.baseRefName' 2>/dev/null
+     If this returns a branch name, use it.
+
+  c) Try to get the upstream tracking branch:
+     git rev-parse --abbrev-ref @{upstream} 2>/dev/null
+     If this returns something like "origin/5.144", extract "5.144" or "origin/5.144"
+
+  d) Find the merge-base with likely version branches:
+     git branch -r | grep -E 'origin/[0-9]+\.[0-9]+' | while read branch; do
+       commits=$(git rev-list --count $branch..HEAD 2>/dev/null)
+       echo "$commits $branch"
+     done | sort -n | head -1
+     Use the branch with fewest commits difference (closest ancestor).
+
+  e) If all else fails, ask user: "Could not detect base branch. Please run with --base <branch>"
+
+  STEP 2: Once base branch is determined, run these commands:
+
+  1. git rev-parse --abbrev-ref HEAD  (get current branch name)
+  2. git log {base}..HEAD --oneline   (list commits being reviewed)
+  3. git diff {base}...HEAD --stat    (files changed with stats)
+  4. git diff {base}...HEAD --name-only (just file paths)
+
+  IMPORTANT: Replace {base} with the detected base branch in all commands.
+
+  If the commit count is unexpectedly large (>50), STOP and report:
+  "Found {N} commits. This seems too many for a feature branch.
+   Detected base: {base}
+   Please verify or specify --base <correct-branch>"
 
   Return structured data:
+  - base_branch: the base branch being compared against
   - branch_name: the current branch
   - ticket_id: extract OLOY-\d+ pattern from branch name if present
   - commit_count: number of commits
@@ -135,8 +165,9 @@ For each file from the diff analysis:
 
 3. **Get detailed diffs for these files:**
    ```bash
-   git diff main...HEAD -- {file_path}
+   git diff {base_branch}...HEAD -- {file_path}
    ```
+   Use the `base_branch` value from Phase 1 Git Diff Analyzer results.
 
 4. **For API endpoints, also check:**
    - Response structure changes (new/removed fields)
@@ -250,7 +281,7 @@ If migrations are present:
    - Could it lock tables for too long?
 
 3. **Recommend local verification:**
-   - "Consider running this migration locally against a copy of main branch database"
+   - "Consider running this migration locally against a copy of {base_branch} database"
    - Flag any complex migrations that need manual testing
 
 ## Phase 4: Ticket Compliance Check
@@ -326,7 +357,7 @@ Based on the changes, suggest specific exploratory tests:
 1. {specific scenario based on code changes}
 2. {edge case that tests might not cover}
 3. {data combination that could break the logic}
-4. Compare API response from this branch vs main for: {endpoints changed}"
+4. Compare API response from this branch vs {base_branch} for: {endpoints changed}"
 ```
 
 ## Phase 6: Calculate PR Score (1-10)
@@ -367,6 +398,7 @@ Create the review report with this structure:
 
 **Reviewer:** AI Code Review Agent
 **Date:** {YYYY-MM-DD}
+**Base Branch:** {base_branch}
 **Ticket:** {OLOY-XXX} - {ticket summary if available}
 **Commits Reviewed:** {count}
 **Files Changed:** {count}
@@ -470,7 +502,7 @@ Create the review report with this structure:
 Before merging, consider manually testing:
 1. {specific test scenario}
 2. {edge case to try}
-3. {API comparison: "Compare response of GET /api/xxx between main and this branch"}
+3. {API comparison: "Compare response of GET /api/xxx between {base_branch} and this branch"}
 
 ---
 
