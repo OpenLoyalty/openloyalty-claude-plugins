@@ -14,9 +14,7 @@ This plugin provides engineering workflows for the Open Loyalty development team
 |---------|---------|
 | `/openloyalty:compound` | Generate compound learning from branch |
 | `/openloyalty:review` | Code review with OL conventions, Jira verification, 1-10 scoring |
-| `/openloyalty:spike` | Structure technical spike investigation *(coming soon)* |
-| `/openloyalty:rca` | Root Cause Analysis document *(coming soon)* |
-| `/openloyalty:onboard` | Context summary for module *(coming soon)* |
+| `/openloyalty:help` | Show this help |
 
 ## Integration with AGENTS.md
 
@@ -40,5 +38,4 @@ Without Jira MCP, the plugin gracefully degrades to git + code analysis only.
 | Document Type | Path |
 |---------------|------|
 | Compound Learnings | `engineering/compound-learnings/{TICKET}-{slug}.md` |
-| Spikes | `engineering/spikes/{date}-{slug}.md` |
-| RCAs | `engineering/rcas/{date}-{slug}.md` |
+| Code Reviews | Chat output (not saved) |

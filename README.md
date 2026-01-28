@@ -1,22 +1,17 @@
-# Open Loyalty AI Skills
+# Open Loyalty Claude Code Skills
 
-Engineering workflows for the Open Loyalty development team. Auto-updating Claude Code plugin with portable configs for other AI tools.
+Engineering workflows for the Open Loyalty development team. Auto-updating Claude Code plugin.
 
 ## Quick Start
 
-| Tool | Installation |
-|------|--------------|
-| **Claude Code** | `/plugin marketplace add OpenLoyalty/openloyalty-claude-skills` then `/plugin install openloyalty` |
-| **OpenCode** | Copy `portable/opencode/` to your OL repo |
-| **Cursor** | Copy `portable/cursor/rules/` to `.cursor/rules/` |
-| **GitHub Copilot** | Merge `portable/copilot/` into `.github/copilot-instructions.md` |
-| **JetBrains AI** | Follow `portable/jetbrains/README.md` |
+```bash
+/plugin marketplace add OpenLoyalty/openloyalty-claude-skills
+/plugin install openloyalty@openloyalty-claude-skills
+```
 
 ---
 
-## Claude Code (Full Experience, Auto-Updates)
-
-### Installation
+## Installation
 
 **Step 1: Add the marketplace**
 ```bash
@@ -53,10 +48,8 @@ For private repo (use same auth method as your normal git):
 | Command | Purpose |
 |---------|---------|
 | `/openloyalty:compound` | Generate compound learning from branch |
-| `/openloyalty:spike` | Structure technical spike investigation |
-| `/openloyalty:review` | Code review with OL conventions |
-| `/openloyalty:rca` | Root Cause Analysis document *(coming soon)* |
-| `/openloyalty:onboard` | Context summary for module *(coming soon)* |
+| `/openloyalty:review` | Code review with OL conventions, Jira verification, 1-10 scoring |
+| `/openloyalty:help` | Show available commands and plugin documentation |
 
 ### Usage
 
@@ -75,80 +68,9 @@ For private repo (use same auth method as your normal git):
 
 ### Features
 
-- Multi-agent parallel execution (git, code, Jira analysis)
 - Jira integration via Atlassian MCP (graceful degradation without it)
 - Slack context via Slack MCP
 - Reads AGENTS.md from your repo for conventions
-
----
-
-## OpenCode
-
-OpenCode provides a similar agentic experience to Claude Code.
-
-### Installation
-
-```bash
-# Clone this repo (or just copy the files)
-git clone git@github.com:OpenLoyalty/openloyalty-claude-skills.git /tmp/ol-skills
-
-# Copy to your OL repo
-cp /tmp/ol-skills/portable/opencode/opencode.json ~/projects/openloyalty/core-admin/
-mkdir -p ~/projects/openloyalty/core-admin/.opencode/prompts
-cp /tmp/ol-skills/portable/opencode/prompts/* ~/projects/openloyalty/core-admin/.opencode/prompts/
-```
-
-### Usage
-
-```bash
-opencode
-
-# Use agents:
-@compound   # Generate compound learning
-@reviewer   # Code review with OL conventions
-@spike      # Technical spike investigation
-```
-
----
-
-## Cursor
-
-### Installation
-
-```bash
-mkdir -p ~/projects/openloyalty/core-admin/.cursor/rules
-cp portable/cursor/rules/*.mdc ~/projects/openloyalty/core-admin/.cursor/rules/
-```
-
-### Usage
-
-Rules activate when you ask "document what we learned" or "review this code".
-
----
-
-## GitHub Copilot
-
-Merge `portable/copilot/workflow-instructions.md` into your repo's `.github/copilot-instructions.md`.
-
----
-
-## JetBrains AI
-
-JetBrains AI does NOT support file-based config. See `portable/jetbrains/README.md` for manual setup.
-
-**Recommendation:** Use OpenCode in terminal alongside PHPStorm.
-
----
-
-## Capability Comparison
-
-| Capability | Claude Code | OpenCode | Cursor | Copilot | JetBrains |
-|------------|:-----------:|:--------:|:------:|:-------:|:---------:|
-| Auto-updates | Yes | - | - | - | - |
-| Multi-agent parallel | Yes | Yes | - | - | - |
-| Named agents/commands | Yes | Yes | - | - | - |
-| MCP integrations | Yes | Partial | Yes | - | - |
-| Jira context | Yes | Manual | Manual | PR-only | - |
 
 ---
 
@@ -164,18 +86,11 @@ openloyalty-claude-skills/
 │   └── openloyalty/
 │       ├── .claude-plugin/
 │       │   └── plugin.json       # Plugin version (bump to trigger updates)
-│       ├── CLAUDE.md             # Plugin context
-│       └── skills/
-│           └── openloyalty/      # Skill files
-│               ├── SKILL.md
-│               ├── workflows/
-│               ├── templates/
-│               └── shared/
-├── portable/                     # Configs for other AI tools
-│   ├── opencode/
-│   ├── cursor/
-│   ├── copilot/
-│   └── jetbrains/
+│       └── commands/
+│           └── openloyalty/      # Command files
+│               ├── compound.md
+│               ├── review.md
+│               └── help.md
 └── README.md
 ```
 
@@ -191,12 +106,9 @@ To push an update:
 
 ## Output Locations
 
-All tools generate files to the same locations:
-
 | Document Type | Path |
 |---------------|------|
 | Compound Learnings | `engineering/compound-learnings/{TICKET}-{slug}.md` |
-| Spikes | `engineering/spikes/{date}-{slug}.md` |
 | Code Reviews | Chat output (not saved) |
 
 ---
