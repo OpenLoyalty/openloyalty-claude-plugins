@@ -1,7 +1,7 @@
 {
   "name": "openloyalty",
-  "version": "1.4.0",
-  "description": "Engineering workflows for compound learning, code review, and technical spikes following Open Loyalty conventions.",
+  "version": "1.5.0",
+  "description": "Engineering workflows for compound learning and code review following Open Loyalty conventions.",
   "author": {
     "name": "Open Loyalty",
     "url": "https://github.com/OpenLoyalty"
@@ -12,7 +12,6 @@
   "keywords": [
     "compound-learning",
     "code-review",
-    "spike",
     "workflow",
     "open-loyalty",
     "internal"
