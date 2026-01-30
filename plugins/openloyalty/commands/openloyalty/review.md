@@ -1,7 +1,7 @@
 ---
 name: openloyalty:review
 description: Code review with OL conventions, Jira ticket verification, test quality analysis, N+1 detection, and 1-10 scoring.
-argument-hint: "[--base <branch>] [--strict] [--ticket <ID>] [--skip-jira]"
+argument-hint: "[--base <branch>] [--all | --last <N>] [--strict] [--ticket <ID>] [--skip-jira]"
 ---
 
 # Code Review
@@ -13,65 +13,72 @@ Review code changes against Open Loyalty conventions, Jira ticket requirements, 
 | Argument | Description | Example |
 |----------|-------------|---------|
 | `--base <branch>` | Compare against specific branch (auto-detected if not provided) | `--base 5.144` |
+| `--all` | Review all commits since base branch (not just last commit) | `--all` |
+| `--last <N>` | Review the last N commits | `--last 3` |
 | `--files <pattern>` | Only review matching files | `--files "src/**/*.ts"` |
 | `--strict` | Treat important issues as critical | `--strict` |
 | `--ticket <ID>` | Override ticket ID detection | `--ticket OLOY-123` |
 | `--skip-jira` | Skip Jira context fetching | `--skip-jira` |
 
+**Note:** By default, only the last commit is reviewed. Use `--all` to review all commits since base branch, or `--last N` to review a specific number of recent commits.
+
+## Efficiency Guidelines
+
+To minimize tool calls while maintaining review quality:
+
+1. **Batch bash commands** with `&&` and section markers (`echo "=== SECTION ==="`)
+2. **Use git diff -U15** to get context instead of reading full files
+3. **Only spawn agents** for complex multi-step tasks requiring exploration
+4. **Combine related operations** in single tool calls where possible
+
+Target: Complete review in 8-12 tool calls (not 17+)
+
 ## Phase 1: Gather Context (Parallel Agents)
 
-Run these four agents **IN PARALLEL** using the Task tool:
+Run these agents **IN PARALLEL** using the Task tool:
 
-### Agent 1: Git Diff Analyzer
+### Agent 1: Git & PR Context Analyzer
+
+**Single batched command** to gather all git and PR context efficiently:
 
 ```
-Task: Explore
+Task: Bash
 Prompt: |
-  Analyze the git diff for the current branch.
+  Run a single batched command to gather all git context:
 
-  STEP 1: Determine the base branch (in order of priority):
+  echo "=== BRANCH ===" && git rev-parse --abbrev-ref HEAD && \
+  echo "=== PR ===" && (gh pr view --json title,body,number,baseRefName 2>/dev/null || echo "NO_PR") && \
+  echo "=== BASE_DETECT ===" && (git rev-parse --abbrev-ref @{upstream} 2>/dev/null | sed 's|origin/||' || echo "DETECT_NEEDED") && \
+  echo "=== LOG ===" && git log {range} --oneline 2>/dev/null && \
+  echo "=== STAT ===" && git diff {range} --stat 2>/dev/null && \
+  echo "=== FILES ===" && git diff {range} --name-only 2>/dev/null
 
-  a) If --base flag was provided by user, use that value
+  **Determine {range} BEFORE running:**
 
-  b) Try to get base from GitHub PR:
-     gh pr view --json baseRefName -q '.baseRefName' 2>/dev/null
-     If this returns a branch name, use it.
+  - DEFAULT (no flags): range = "HEAD~1..HEAD" (last commit only)
+  - If --all flag: range = "{base}..HEAD" (all since base)
+  - If --last N flag: range = "HEAD~{N}..HEAD" (last N commits)
 
-  c) Try to get the upstream tracking branch:
-     git rev-parse --abbrev-ref @{upstream} 2>/dev/null
-     If this returns something like "origin/5.144", extract "5.144" or "origin/5.144"
+  **Base branch detection order:**
+  a) If --base flag provided by user, use that value
+  b) Extract from PR JSON (baseRefName field) if PR exists
+  c) Use upstream tracking branch from BASE_DETECT section
+  d) If still needed and --all mode, ask user: "Could not detect base branch. Please run with --base <branch>"
 
-  d) Find the merge-base with likely version branches:
-     git branch -r | grep -E 'origin/[0-9]+\.[0-9]+' | while read branch; do
-       commits=$(git rev-list --count $branch..HEAD 2>/dev/null)
-       echo "$commits $branch"
-     done | sort -n | head -1
-     Use the branch with fewest commits difference (closest ancestor).
+  **Handle edge cases:**
+  - For DEFAULT mode, if HEAD~1 fails (only 1 commit on branch), detect merge-base
+  - If using --all and commit count >50, STOP and ask user to verify base branch
 
-  e) If all else fails, ask user: "Could not detect base branch. Please run with --base <branch>"
-
-  STEP 2: Once base branch is determined, run these commands:
-
-  1. git rev-parse --abbrev-ref HEAD  (get current branch name)
-  2. git log {base}..HEAD --oneline   (list commits being reviewed)
-  3. git diff {base}...HEAD --stat    (files changed with stats)
-  4. git diff {base}...HEAD --name-only (just file paths)
-
-  IMPORTANT: Replace {base} with the detected base branch in all commands.
-
-  If the commit count is unexpectedly large (>50), STOP and report:
-  "Found {N} commits. This seems too many for a feature branch.
-   Detected base: {base}
-   Please verify or specify --base <correct-branch>"
-
-  Return structured data:
-  - base_branch: the base branch being compared against
-  - branch_name: the current branch
+  **Parse the output sections and return structured data:**
+  - review_mode: "last_commit" | "all_since_base" | "last_N_commits"
+  - commit_range: the actual range used
+  - base_branch: the base branch (for context)
+  - branch_name: current branch from BRANCH section
   - ticket_id: extract OLOY-\d+ pattern from branch name if present
-  - commit_count: number of commits
-  - files_changed: list of file paths with change stats
-  - total_additions: sum of lines added
-  - total_deletions: sum of lines removed
+  - commit_count: count commits from LOG section
+  - files_changed: list from FILES section with stats from STAT section
+  - total_additions/deletions: sum from STAT section
+  - pr_context: { title, body, number } if PR exists, else { status: "no_pr" }
 ```
 
 ### Agent 2: Conventions Loader
@@ -92,36 +99,20 @@ Prompt: |
 
   If no AGENTS.md exists, return: { "status": "not_found" }
 
-  Format as structured data for matching against code changes.
+  **Return a structured summary (not the raw file):**
+  - critical_rules: [list of rule IDs that must not be violated]
+  - backend_rules: {rule_id: brief_description}
+  - frontend_rules: {rule_id: brief_description}
+  - anti_patterns: [list of common mistakes to flag]
 ```
 
-### Agent 3: PR Context (Optional)
-
-```
-Task: general-purpose
-Prompt: |
-  Attempt to gather PR context:
-
-  1. Check if there's a GitHub PR for this branch:
-     gh pr view --json title,body,number 2>/dev/null
-
-  2. If PR exists:
-     - Extract title and description
-     - Note any linked issues
-     - Get review comments if any
-
-  3. If no PR or gh unavailable:
-     - Return: { "status": "no_pr" }
-     - This is fine - review proceeds without PR context
-
-  Return PR context or unavailability notice.
-```
-
-### Agent 4: Jira Ticket Context (Optional - Graceful Degradation)
+### Agent 3: Jira Ticket Context (Optional - Graceful Degradation)
 
 **Skip this agent entirely if:**
 - No ticket_id was found in branch name
 - User passed `--skip-jira` flag
+
+**Note:** This is the only sub-agent that should be spawned separately - use direct tool calls for git/file operations.
 
 ```
 Task: general-purpose
@@ -150,28 +141,42 @@ Prompt: |
   All statuses are valid - the review proceeds regardless.
 ```
 
-## Phase 2: Read Changed Files
+## Phase 2: Read Changed Files (Batched Operations)
 
-For each file from the diff analysis:
+### Step 1: Get Full Diff with Context (ONE command)
 
-1. **Prioritize files by risk:**
-   - **Critical**: Migrations, security-related, authentication, payment handling
-   - **High**: Business logic, API endpoints, data transformations
-   - **Medium**: Services, repositories, event handlers
-   - **Low**: Configuration, documentation
-   - **Review Separately**: Tests (see Phase 3b)
+```bash
+git diff {commit_range} -U15
+```
 
-2. **Read the full content of critical/high/medium priority files**
+This provides ALL changes with 15 lines of surrounding context - usually sufficient for review without reading full files.
 
-3. **Get detailed diffs for these files:**
-   ```bash
-   git diff {base_branch}...HEAD -- {file_path}
-   ```
-   Use the `base_branch` value from Phase 1 Git Diff Analyzer results.
+### Step 2: Prioritize Files by Risk
 
-4. **For API endpoints, also check:**
-   - Response structure changes (new/removed fields)
-   - Breaking changes to existing contracts
+From the diff output, categorize files:
+- **Critical**: Migrations, security-related, authentication, payment handling
+- **High**: Business logic, API endpoints, data transformations
+- **Medium**: Services, repositories, event handlers
+- **Low**: Configuration, documentation
+- **Review Separately**: Tests (see Phase 3b)
+
+### Step 3: Read Full Files ONLY If Necessary
+
+Only read full files when:
+- Migrations (need complete context for safety review)
+- Security-sensitive files (auth, payment, encryption)
+- Diff context is insufficient to understand the change
+
+**When reading multiple files, batch them:**
+```bash
+for f in file1.php file2.ts file3.php; do echo "=== $f ===" && cat "$f" 2>/dev/null; done
+```
+
+### Step 4: For API Endpoints
+
+Check in the diff context:
+- Response structure changes (new/removed fields)
+- Breaking changes to existing contracts
 
 ## Phase 3a: Review Against Conventions
 
@@ -399,6 +404,7 @@ Create the review report with this structure:
 **Reviewer:** AI Code Review Agent
 **Date:** {YYYY-MM-DD}
 **Base Branch:** {base_branch}
+**Review Mode:** {review_mode} ({commit_range})
 **Ticket:** {OLOY-XXX} - {ticket summary if available}
 **Commits Reviewed:** {count}
 **Files Changed:** {count}
