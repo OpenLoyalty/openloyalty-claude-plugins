@@ -9,38 +9,24 @@ Engineering workflows and MCP tools for the Open Loyalty development team. Auto-
 /plugin marketplace add OpenLoyalty/openloyalty-claude-plugins
 ```
 
-**Install the skills plugin (engineering workflows):**
+**Install the plugin:**
 ```bash
 /plugin install openloyalty@openloyalty-claude-plugins
 ```
 
-**Install the MCP plugin (loyalty API tools):**
-```bash
-/plugin install openloyalty-mcp@openloyalty-claude-plugins
-```
+This installs both engineering workflows (slash commands) and the MCP server (60+ loyalty API tools).
 
 ---
 
-## Skills Plugin: `openloyalty`
+## What's Included
 
-Engineering workflows for compound learning, code review, and technical spikes following OL conventions.
+### Engineering Workflows
 
-### Installation
+Slash commands for compound learning, code review, and technical spikes following OL conventions.
 
-```bash
-/plugin install openloyalty@openloyalty-claude-plugins
-```
+### MCP Server
 
-For private repo (use same auth method as your normal git):
-```bash
-# SSH
-/plugin marketplace add git@github.com:OpenLoyalty/openloyalty-claude-plugins.git
-
-# HTTPS
-/plugin marketplace add https://github.com/OpenLoyalty/openloyalty-claude-plugins.git
-```
-
-**Auto-updates:** Plugin updates automatically when you start Claude Code after a new version is pushed.
+Open Loyalty MCP server providing 60+ tools for loyalty program management directly in Claude Code. The MCP server starts automatically when the plugin is enabled.
 
 ### Available Commands
 
@@ -48,6 +34,7 @@ For private repo (use same auth method as your normal git):
 |---------|---------|
 | `/openloyalty:compound` | Generate compound learning from branch |
 | `/openloyalty:review` | Code review with OL conventions, Jira verification, 1-10 scoring |
+| `/openloyalty:setup` | Interactive setup for MCP server environment variables |
 | `/openloyalty:help` | Show available commands and plugin documentation |
 
 ### Usage
@@ -73,19 +60,9 @@ For private repo (use same auth method as your normal git):
 
 ---
 
-## MCP Plugin: `openloyalty-mcp`
+## MCP Server Setup
 
-Open Loyalty MCP server providing 60+ tools for loyalty program management directly in Claude Code.
-
-### Installation
-
-```bash
-/plugin install openloyalty-mcp@openloyalty-claude-plugins
-```
-
-### Required Environment Variables
-
-Set these in your shell profile before launching Claude Code:
+The MCP server requires environment variables to connect to your Open Loyalty instance. Run `/openloyalty:setup` for interactive configuration, or set them manually:
 
 ```bash
 # ~/.zshrc or ~/.bashrc
@@ -99,8 +76,6 @@ export OPENLOYALTY_DEFAULT_STORE_CODE="default"  # optional, defaults to "defaul
 | `OPENLOYALTY_API_URL` | Your OL instance API endpoint | Instance URL with `/api` suffix |
 | `OPENLOYALTY_API_TOKEN` | API authentication token | Admin Panel > Settings > API Keys |
 | `OPENLOYALTY_DEFAULT_STORE_CODE` | Store identifier (defaults to `"default"`) | Admin Panel > Stores |
-
-Run `/openloyalty-mcp:setup` to check your configuration and get guided setup instructions.
 
 ### Tool Domains
 
@@ -116,11 +91,21 @@ The MCP server provides tools across these domains:
 - **Achievements & Badges** -- create, track progress, list member achievements
 - **Admin & Config** -- API keys, roles, stores, webhooks, imports/exports, analytics
 
-### Available Commands
+---
 
-| Command | Purpose |
-|---------|---------|
-| `/openloyalty-mcp:setup` | Check and configure environment variables |
+## Installation (Private Repo)
+
+For private repo access, use the same auth method as your normal git:
+
+```bash
+# SSH
+/plugin marketplace add git@github.com:OpenLoyalty/openloyalty-claude-plugins.git
+
+# HTTPS
+/plugin marketplace add https://github.com/OpenLoyalty/openloyalty-claude-plugins.git
+```
+
+**Auto-updates:** Plugin updates automatically when you start Claude Code after a new version is pushed.
 
 ---
 
@@ -130,12 +115,24 @@ The Open Loyalty MCP server is also available for Claude Desktop via the `.mcpb`
 
 ---
 
-## Migration from Manual Config
+## Migration
+
+### From separate `openloyalty-mcp` plugin
+
+If you previously installed `openloyalty-mcp` as a separate plugin:
+
+1. **Uninstall** the old MCP plugin: `/plugin uninstall openloyalty-mcp@openloyalty-claude-plugins`
+2. **Update** the main plugin (happens automatically on next launch)
+3. **Restart** Claude Code
+
+The MCP server is now bundled in the `openloyalty` plugin.
+
+### From manual MCP config
 
 If you previously configured the Open Loyalty MCP server manually in `~/.claude/settings.json` or your project `.mcp.json`:
 
 1. **Remove** the manual `"openloyalty"` entry from your MCP config file
-2. **Install** the plugin: `/plugin install openloyalty-mcp@openloyalty-claude-plugins`
+2. **Install** the plugin: `/plugin install openloyalty@openloyalty-claude-plugins`
 3. **Restart** Claude Code
 
 The plugin manages the MCP server configuration automatically and will stay up to date.
@@ -147,10 +144,8 @@ The plugin manages the MCP server configuration automatically and will stay up t
 ```bash
 /plugin                    # Open plugin manager UI
 /plugin marketplace list   # List configured marketplaces
-/plugin disable openloyalty@openloyalty-claude-plugins       # Disable skills plugin
-/plugin enable openloyalty@openloyalty-claude-plugins        # Re-enable skills plugin
-/plugin disable openloyalty-mcp@openloyalty-claude-plugins   # Disable MCP plugin
-/plugin enable openloyalty-mcp@openloyalty-claude-plugins    # Re-enable MCP plugin
+/plugin disable openloyalty@openloyalty-claude-plugins   # Disable plugin
+/plugin enable openloyalty@openloyalty-claude-plugins     # Re-enable plugin
 ```
 
 ---
@@ -162,31 +157,26 @@ The plugin manages the MCP server configuration automatically and will stay up t
 ```
 openloyalty-claude-plugins/
 ├── .claude-plugin/
-│   └── marketplace.json              # Marketplace definition (both plugins)
+│   └── marketplace.json              # Marketplace definition
 ├── plugins/
-│   ├── openloyalty/                   # Skills plugin
-│   │   ├── .claude-plugin/
-│   │   │   └── plugin.json           # Plugin version
-│   │   └── commands/
-│   │       └── openloyalty/
-│   │           ├── compound.md       # Compound learning command
-│   │           ├── review.md         # Code review command
-│   │           └── help.md           # Help command
-│   └── openloyalty-mcp/              # MCP plugin
+│   └── openloyalty/                   # Plugin (skills + MCP)
 │       ├── .claude-plugin/
 │       │   └── plugin.json           # Plugin version
 │       ├── .mcp.json                 # MCP server configuration
 │       └── commands/
-│           └── openloyalty-mcp/
-│               └── setup.md          # Setup command
+│           └── openloyalty/
+│               ├── compound.md       # Compound learning command
+│               ├── review.md         # Code review command
+│               ├── setup.md          # MCP setup command
+│               └── help.md           # Help command
 └── README.md
 ```
 
 ### Versioning
 
 To push an update:
-1. Make changes to the relevant `plugins/` directory
-2. Bump version in the plugin's `.claude-plugin/plugin.json`
+1. Make changes to the `plugins/openloyalty/` directory
+2. Bump version in `plugins/openloyalty/.claude-plugin/plugin.json`
 3. Push to GitHub
 4. Team members get update on next Claude Code startup
 
@@ -204,15 +194,15 @@ To push an update:
 ## Requirements
 
 - Git access to this repo (SSH or HTTPS)
-- `AGENTS.md` in your OL repo (for conventions -- skills plugin)
+- `AGENTS.md` in your OL repo (for conventions)
 
-**For MCP plugin:**
+**For MCP server:**
 - `OPENLOYALTY_API_URL`, `OPENLOYALTY_API_TOKEN` environment variables
 - Node.js / npx available in PATH
 
 **Optional:**
-- Atlassian MCP for Jira integration (skills plugin)
-- Slack MCP for conversation context (skills plugin)
+- Atlassian MCP for Jira integration
+- Slack MCP for conversation context
 
 ---
 

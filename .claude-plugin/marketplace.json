@@ -11,21 +11,12 @@
   "plugins": [
     {
       "name": "openloyalty",
-      "description": "Engineering workflows for compound learning, code review, and technical spikes following OL conventions.",
-      "version": "1.7.0",
+      "description": "Engineering workflows and MCP server tools for Open Loyalty — compound learning, code review, and 60+ loyalty API tools.",
+      "version": "1.8.0",
       "author": { "name": "Open Loyalty", "url": "https://github.com/OpenLoyalty" },
       "homepage": "https://github.com/OpenLoyalty/openloyalty-claude-plugins",
-      "tags": ["compound-learning", "code-review", "workflow", "internal"],
+      "tags": ["compound-learning", "code-review", "workflow", "mcp", "loyalty", "internal"],
       "source": "./plugins/openloyalty"
-    },
-    {
-      "name": "openloyalty-mcp",
-      "description": "Open Loyalty MCP server: 60+ tools for loyalty program management (members, points, rewards, campaigns, tiers, transactions).",
-      "version": "1.0.0",
-      "author": { "name": "Open Loyalty", "url": "https://github.com/OpenLoyalty" },
-      "homepage": "https://github.com/OpenLoyalty/openloyalty-claude-plugins",
-      "tags": ["mcp", "loyalty", "api"],
-      "source": "./plugins/openloyalty-mcp"
     }
   ]
 }
