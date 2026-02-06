@@ -1,25 +1,31 @@
 {
-  "name": "openloyalty-marketplace",
+  "name": "openloyalty-claude-plugins",
   "owner": {
     "name": "Open Loyalty",
     "url": "https://github.com/OpenLoyalty"
   },
   "metadata": {
-    "description": "Claude Code plugins for Open Loyalty engineering team",
-    "version": "1.0.0"
+    "description": "Claude Code plugins for Open Loyalty — engineering skills and MCP tools",
+    "version": "2.0.0"
   },
   "plugins": [
     {
       "name": "openloyalty",
       "description": "Engineering workflows for compound learning, code review, and technical spikes following OL conventions.",
-      "version": "1.0.0",
-      "author": {
-        "name": "Open Loyalty",
-        "url": "https://github.com/OpenLoyalty"
-      },
-      "homepage": "https://github.com/OpenLoyalty/openloyalty-claude-skills",
+      "version": "1.7.0",
+      "author": { "name": "Open Loyalty", "url": "https://github.com/OpenLoyalty" },
+      "homepage": "https://github.com/OpenLoyalty/openloyalty-claude-plugins",
       "tags": ["compound-learning", "code-review", "workflow", "internal"],
       "source": "./plugins/openloyalty"
+    },
+    {
+      "name": "openloyalty-mcp",
+      "description": "Open Loyalty MCP server: 60+ tools for loyalty program management (members, points, rewards, campaigns, tiers, transactions).",
+      "version": "1.0.0",
+      "author": { "name": "Open Loyalty", "url": "https://github.com/OpenLoyalty" },
+      "homepage": "https://github.com/OpenLoyalty/openloyalty-claude-plugins",
+      "tags": ["mcp", "loyalty", "api"],
+      "source": "./plugins/openloyalty-mcp"
     }
   ]
 }

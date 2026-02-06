@@ -1,0 +1,11 @@
+{
+  "openloyalty": {
+    "command": "npx",
+    "args": ["-y", "@open-loyalty/mcp-server@latest"],
+    "env": {
+      "OPENLOYALTY_API_URL": "${OPENLOYALTY_API_URL}",
+      "OPENLOYALTY_API_TOKEN": "${OPENLOYALTY_API_TOKEN}",
+      "OPENLOYALTY_DEFAULT_STORE_CODE": "${OPENLOYALTY_DEFAULT_STORE_CODE:-default}"
+    }
+  }
+}

@@ -6,8 +6,8 @@
     "name": "Open Loyalty",
     "url": "https://github.com/OpenLoyalty"
   },
-  "homepage": "https://github.com/OpenLoyalty/openloyalty-claude-skills",
-  "repository": "https://github.com/OpenLoyalty/openloyalty-claude-skills",
+  "homepage": "https://github.com/OpenLoyalty/openloyalty-claude-plugins",
+  "repository": "https://github.com/OpenLoyalty/openloyalty-claude-plugins",
   "license": "UNLICENSED",
   "keywords": [
     "compound-learning",
