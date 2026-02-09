@@ -64,9 +64,34 @@ See [compound-docs skill README](plugins/openloyalty/skills/compound-docs/README
 
 ---
 
-## MCP Server Setup
+## Jira MCP Server Setup
 
-The MCP server requires environment variables to connect to your Open Loyalty instance. Run `/openloyalty:setup` for interactive configuration, or set them manually:
+The Atlassian (Jira/Confluence) MCP server is required for `/openloyalty:review-pr`, `/openloyalty:backend-pr-create`, and `/openloyalty:jira-ticket-create`. Run `/openloyalty:setup` for interactive configuration, or set the variables manually:
+
+```bash
+# ~/.zshrc or ~/.bashrc
+export JIRA_URL="https://openloyalty.atlassian.net"
+export JIRA_USERNAME="your-email@openloyalty.io"
+export JIRA_API_TOKEN="your-jira-api-token"
+export CONFLUENCE_URL="https://openloyalty.atlassian.net/wiki"
+export CONFLUENCE_USERNAME="your-email@openloyalty.io"       # usually same as JIRA_USERNAME
+export CONFLUENCE_API_TOKEN="your-jira-api-token"            # usually same as JIRA_API_TOKEN
+```
+
+| Variable | Description | How to get it |
+|----------|-------------|---------------|
+| `JIRA_URL` | Always `https://openloyalty.atlassian.net` | Hardcoded |
+| `JIRA_USERNAME` | Your Atlassian email | Your login email |
+| `JIRA_API_TOKEN` | API authentication token | [Manage API tokens](https://id.atlassian.com/manage-profile/security/api-tokens) |
+| `CONFLUENCE_URL` | Always `https://openloyalty.atlassian.net/wiki` | Hardcoded |
+| `CONFLUENCE_USERNAME` | Your Atlassian email | Usually same as `JIRA_USERNAME` |
+| `CONFLUENCE_API_TOKEN` | API authentication token | Usually same as `JIRA_API_TOKEN` |
+
+---
+
+## Open Loyalty MCP Server Setup (Optional)
+
+The OL MCP server provides 60+ loyalty API tools. It's optional — skip it if you don't need direct loyalty API access. Run `/openloyalty:setup` for interactive configuration, or set the variables manually:
 
 ```bash
 # ~/.zshrc or ~/.bashrc
