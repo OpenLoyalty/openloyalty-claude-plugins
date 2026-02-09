@@ -2,15 +2,6 @@
 
 Engineering workflows and MCP tools for the Open Loyalty development team. Auto-updating Claude Code plugins with compound learning documentation system.
 
-## Prerequisites
-
-This plugin requires the **compound-engineering** plugin. Install it first:
-
-```bash
-/plugin marketplace add https://github.com/EveryInc/compound-engineering-plugin
-/plugin install compound-engineering
-```
-
 ## Quick Start
 
 **Add the marketplace (once):**
@@ -24,6 +15,19 @@ This plugin requires the **compound-engineering** plugin. Install it first:
 ```
 
 This installs both engineering workflows (slash commands) and the MCP server (60+ loyalty API tools).
+
+**Run setup:**
+```bash
+/openloyalty:setup
+```
+
+The setup command handles the full onboarding process:
+
+1. **Installs the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin** — automatically adds the marketplace and installs the plugin. This dependency provides review workflows, specialized agent types (architecture strategist, performance oracle, security sentinel, etc.), and engineering best practices used by `/openloyalty:review` and other commands.
+2. **Configures Open Loyalty MCP environment variables** — prompts for `OPENLOYALTY_API_URL` and `OPENLOYALTY_API_TOKEN` so the 60+ loyalty API tools can connect to your instance.
+3. **Configures Atlassian (Jira/Confluence) environment variables** — prompts for `JIRA_URL`, `JIRA_USERNAME`, and `JIRA_API_TOKEN` needed by the bundled mcp-atlassian server and `/openloyalty:jira-ticket-create`.
+4. **Writes variables to your shell profile** (`~/.zshrc` or `~/.bashrc`) so they persist across sessions.
+5. **Checks for conflicts** with any manually configured MCP server entries.
 
 ---
 
@@ -47,100 +51,16 @@ Open Loyalty MCP server providing 60+ tools for loyalty program management direc
 | `/openloyalty:review` | Code review with OL conventions, Jira verification, 1-10 scoring |
 | `/openloyalty:backend-pr-create` | Create backend PR with OL conventions and Jira linking |
 | `/openloyalty:jira-ticket-create` | Create Jira tickets from brainstorming/planning sessions |
-| `/openloyalty:setup` | Interactive setup for dependencies and environment variables |
+| `/openloyalty:setup` | Full onboarding: auto-installs compound-engineering plugin, configures MCP env vars |
 | `/openloyalty:help` | Show available commands and plugin documentation |
 
 ---
 
 ## Compound Learning System
 
-The `/openloyalty:compound` command creates a compounding knowledge repository. Each documented solution makes the team smarter.
+The `/openloyalty:compound` command creates a compounding knowledge repository with parallel subagents, YAML schema validation, and auto-categorized output. Each documented solution makes the team smarter.
 
-### Features
-
-| Feature | Description |
-|---------|-------------|
-| **Parallel Subagents** | 6 agents gather context simultaneously |
-| **YAML Schema Validation** | Enum-validated frontmatter ensures consistency |
-| **Category-Based Organization** | Auto-categorized by problem type |
-| **Critical Pattern Promotion** | Elevate issues to "Required Reading" |
-| **Cross-Referencing** | Automatic linking of related issues |
-| **Graceful Degradation** | Works without Jira/Slack MCPs |
-
-### Usage
-
-```bash
-# Document from current context
-/openloyalty:compound
-
-# Analyze specific branch
-/openloyalty:compound feature/OLOY-123-fix-timezone
-
-# Include Jira ticket context
-/openloyalty:compound --ticket OLOY-1234
-
-# Include Slack thread
-/openloyalty:compound --slack https://slack.com/archives/C123/p456
-```
-
-### Auto-Invoke Triggers
-
-The skill can auto-invoke after phrases like:
-- "that worked"
-- "it's fixed"
-- "working now"
-- "problem solved"
-
-### Output Categories
-
-Documents are auto-sorted by `problem_type`:
-
-```
-engineering/compound-learnings/
-├── build-errors/
-├── test-failures/
-├── runtime-errors/
-├── performance-issues/
-├── database-issues/
-├── security-issues/
-├── api-issues/
-├── integration-issues/
-├── logic-errors/
-├── developer-experience/
-├── configuration-issues/
-├── documentation-gaps/
-├── data-issues/
-└── patterns/
-    ├── common-solutions.md
-    └── ol-critical-patterns.md
-```
-
-### YAML Schema
-
-All documentation uses validated YAML frontmatter with OL-specific enums:
-
-```yaml
----
-module: Points System                    # OL module name
-date: 2026-01-28                        # YYYY-MM-DD
-problem_type: performance_issue          # Enum (determines category)
-component: points_system                 # Enum
-symptoms:
-  - "N+1 query when loading transactions"
-root_cause: missing_include              # Enum
-resolution_type: code_fix                # Enum
-severity: high                           # Enum
-tags: [n-plus-one, performance]
----
-```
-
-### Post-Documentation Options
-
-After capture, choose:
-1. **Continue workflow** - Return to work
-2. **Add to Required Reading** - Promote to critical patterns
-3. **Link related issues** - Connect similar problems
-4. **View documentation** - Review what was captured
+See [compound-docs skill README](plugins/openloyalty/skills/compound-docs/README.md) for full documentation — usage, auto-invoke triggers, output categories, and YAML schema reference.
 
 ---
 
@@ -197,85 +117,6 @@ For private repo access, use the same auth method as your normal git:
 
 The Open Loyalty MCP server is also available for Claude Desktop via the `.mcpb` extension from the MCP server repository. See the [@open-loyalty/mcp-server](https://github.com/OpenLoyalty/mcp-server) repo for Claude Desktop setup instructions.
 
----
-
-## Migration
-
-### From separate `openloyalty-mcp` plugin
-
-If you previously installed `openloyalty-mcp` as a separate plugin:
-
-1. **Uninstall** the old MCP plugin: `/plugin uninstall openloyalty-mcp@openloyalty-claude-plugins`
-2. **Update** the main plugin (happens automatically on next launch)
-3. **Restart** Claude Code
-
-The MCP server is now bundled in the `openloyalty` plugin.
-
-### From manual MCP config
-
-If you previously configured the Open Loyalty MCP server manually in `~/.claude/settings.json` or your project `.mcp.json`:
-
-1. **Remove** the manual `"openloyalty"` entry from your MCP config file
-2. **Install** the plugin: `/plugin install openloyalty@openloyalty-claude-plugins`
-3. **Restart** Claude Code
-
-The plugin manages the MCP server configuration automatically and will stay up to date.
-
----
-
-## Manage Plugins
-
-```bash
-/plugin                    # Open plugin manager UI
-/plugin marketplace list   # List configured marketplaces
-/plugin disable openloyalty@openloyalty-claude-plugins   # Disable plugin
-/plugin enable openloyalty@openloyalty-claude-plugins     # Re-enable plugin
-```
-
----
-
-## Architecture
-
-### Plugin Structure
-
-```
-openloyalty-claude-plugins/
-├── .claude-plugin/
-│   └── marketplace.json              # Marketplace definition
-├── plugins/
-│   └── openloyalty/                   # Plugin (skills + MCP)
-│       ├── .claude-plugin/
-│       │   └── plugin.json           # Plugin version
-│       ├── .mcp.json                 # MCP server configuration
-│       ├── commands/openloyalty/     # Command files
-│       │   ├── compound.md           # Compound learning command
-│       │   ├── review.md             # Code review command
-│       │   ├── backend-pr-create.md  # Backend PR creation command
-│       │   ├── jira-ticket-create.md # Jira ticket creation from brainstorms
-│       │   ├── setup.md              # Dependencies & MCP setup command
-│       │   └── help.md               # Help command
-│       └── skills/compound-docs/     # Documentation engine
-│           ├── SKILL.md              # 7-step process skill
-│           ├── schema.yaml           # OL-specific schema
-│           ├── assets/
-│           │   ├── resolution-template.md
-│           │   └── critical-pattern-template.md
-│           └── references/
-│               └── yaml-schema.md    # Schema documentation
-├── AGENTS.md                            # Skill generation conventions
-└── README.md
-```
-
-### Versioning
-
-To push an update:
-1. Make changes to the `plugins/openloyalty/` directory
-2. Bump version in `plugins/openloyalty/.claude-plugin/plugin.json`
-3. Push to GitHub
-4. Team members get update on next Claude Code startup
-
----
-
 ## Output Locations
 
 | Document Type | Path |
@@ -306,7 +147,7 @@ Build → Test → Find Issue → Research → Improve → Document → Validate
 ## Requirements
 
 - Git access to this repo (SSH or HTTPS)
-- [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin installed
+- [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin (auto-installed by `/openloyalty:setup`)
 - `AGENTS.md` in your OL repo (for conventions)
 
 **For MCP server:**
