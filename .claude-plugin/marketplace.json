@@ -12,7 +12,7 @@
     {
       "name": "openloyalty",
       "description": "Engineering workflows and MCP server tools for Open Loyalty — compound learning, code review, and 60+ loyalty API tools.",
-      "version": "1.8.0",
+      "version": "1.9.0",
       "author": { "name": "Open Loyalty", "url": "https://github.com/OpenLoyalty" },
       "homepage": "https://github.com/OpenLoyalty/openloyalty-claude-plugins",
       "tags": ["compound-learning", "code-review", "workflow", "mcp", "loyalty", "internal"],
