@@ -4,6 +4,8 @@ description: Show available Open Loyalty engineering commands and plugin documen
 argument-hint: ""
 ---
 
+Display the following documentation to the user. IMPORTANT: Render command names EXACTLY as written — always include the full path with `engineering:` (e.g., `/openloyalty:engineering:review-pr`, NOT `/openloyalty:review-pr`). Do not shorten or omit any part of the command names.
+
 # Open Loyalty Engineering Plugin
 
 This plugin provides engineering workflows for the Open Loyalty development team.
