@@ -16,6 +16,32 @@ Turn a brainstorming or planning session into structured Jira tickets. Extracts 
 | `--type <type>` | Force issue type for all tickets: `story`, `bug`, `task` | `--type story` |
 | `--epic <ID>` | Link all tickets to an existing epic | `--epic OLOY-100` |
 
+## Precondition: Atlassian MCP Required
+
+**BLOCKING:** This command requires the `mcp-atlassian` MCP server to be running.
+
+Before proceeding, verify the Atlassian MCP is available by checking for `mcp__mcp-atlassian__jira_get_issue` in the available tools.
+
+**If not available, STOP and display:**
+
+```
+Atlassian MCP server is not configured.
+
+This command requires mcp-atlassian to create Jira tickets.
+Install: https://github.com/sooperset/mcp-atlassian
+
+Required environment variables:
+  JIRA_URL          — Your Jira instance URL (e.g., https://openloyalty.atlassian.net)
+  JIRA_USERNAME     — Your Atlassian email
+  JIRA_API_TOKEN    — API token from https://id.atlassian.com/manage-profile/security/api-tokens
+
+Run /openloyalty:setup to configure.
+```
+
+**Do NOT proceed without a working Atlassian MCP connection.**
+
+---
+
 ## Phase 1: Extract Tickets from Conversation
 
 Analyze the full conversation history to identify distinct actionable items.
@@ -36,25 +62,21 @@ Review the entire conversation and extract:
 - Split items that are too large into logical sub-tickets
 - Preserve the user's intent — don't invent work items not discussed
 
-### Step 2: Jira Project Metadata (Optional)
+### Step 2: Fetch Jira Project Metadata
 
 ```
 Task: general-purpose
 Prompt: |
-  Attempt to fetch Jira project metadata for: {project_key}
+  Fetch Jira project metadata for: {project_key}
 
   Steps:
-  1. Check if Atlassian MCP tools are available
-  2. If not available: return { "status": "mcp_not_configured" }
-  3. If available, try: mcp__mcp-atlassian__jira_get_project_issues with project_key={project_key} to understand recent issue patterns
-  4. Also try: mcp__mcp-atlassian__jira_search_fields to discover available custom fields
-  5. If successful, extract:
+  1. Use mcp__mcp-atlassian__jira_get_project_issues with project_key={project_key} to understand recent issue patterns
+  2. Use mcp__mcp-atlassian__jira_search_fields to discover available custom fields
+  3. Extract:
      - Available issue types
      - Available priorities
      - Custom fields relevant to OL (story points, team, sprint, etc.)
-  6. If call fails: return { "status": "unavailable", "reason": "..." }
-
-  This is optional. Ticket creation works with sensible defaults.
+  4. Return structured metadata
 ```
 
 ## Phase 2: Build Ticket List
@@ -169,24 +191,6 @@ For each ticket in the list:
     - description: {description}
     - priority: {priority}
     - epic_key: {epic_id} (if provided)
-```
-
-**If Atlassian MCP is not available:**
-
-```
-Jira MCP is not configured. Here are the tickets for manual creation:
-
----
-Ticket 1: [{type}] {title}
-Priority: {priority}
-
-{full description}
-
----
-Ticket 2: [{type}] {title}
-...
-
-Create these at: https://openloyalty.atlassian.net/
 ```
 
 ### Step 3: Post-Creation Summary

@@ -15,7 +15,7 @@ This plugin provides engineering workflows for the Open Loyalty development team
 | `/openloyalty:compound` | Document solved problems with validated YAML schema |
 | `/openloyalty:review` | Code review with OL conventions, Jira verification, 1-10 scoring |
 | `/openloyalty:backend-pr-create` | Create backend PR with OL conventions and Jira linking |
-| `/openloyalty:jira-ticket-create` | Create a Jira ticket from current context with OL conventions |
+| `/openloyalty:jira-ticket-create` | Create Jira tickets from brainstorming/planning sessions (requires Atlassian MCP) |
 | `/openloyalty:help` | Show this help |
 
 ## Compound Learning System
@@ -76,13 +76,15 @@ The code review workflow reads AGENTS.md from your repo to check against OL conv
 
 ## Jira Integration
 
-If Atlassian MCP is configured, the plugin will:
-- Fetch ticket details from branch name patterns (e.g., `OLOY-123`)
-- Extract context from ticket description and comments
-- Link compound learnings to tickets
-- Include related tickets in documentation
+This plugin bundles the [mcp-atlassian](https://github.com/sooperset/mcp-atlassian) MCP server as a dependency. When configured, it enables:
+- Creating Jira tickets from brainstorming sessions (`/openloyalty:jira-ticket-create`)
+- Fetching ticket details from branch name patterns (e.g., `OLOY-123`)
+- Extracting context from ticket description and comments
+- Linking compound learnings to tickets
 
-Without Jira MCP, the plugin gracefully degrades to git + code analysis only.
+Run `/openloyalty:setup` to configure your Atlassian credentials.
+
+Some commands (like `/openloyalty:compound` and `/openloyalty:review`) work without Jira and gracefully degrade to git + code analysis only. The `/openloyalty:jira-ticket-create` command **requires** Atlassian MCP.
 
 ## Output Locations
 

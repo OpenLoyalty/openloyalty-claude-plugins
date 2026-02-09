@@ -1,6 +1,6 @@
-# Open Loyalty MCP Server — Interactive Setup
+# Open Loyalty Plugin — Interactive Setup
 
-Guide the user through configuring the Open Loyalty MCP server environment variables.
+Guide the user through configuring the MCP server environment variables for both Open Loyalty and Atlassian (Jira/Confluence).
 
 ## Steps
 
@@ -9,22 +9,47 @@ Guide the user through configuring the Open Loyalty MCP server environment varia
 Run this command to check which variables are already set:
 
 ```bash
+echo "=== Open Loyalty MCP ==="
 echo "OPENLOYALTY_API_URL=${OPENLOYALTY_API_URL:-__MISSING__}"
 echo "OPENLOYALTY_API_TOKEN=${OPENLOYALTY_API_TOKEN:-__MISSING__}"
 echo "OPENLOYALTY_DEFAULT_STORE_CODE=${OPENLOYALTY_DEFAULT_STORE_CODE:-__MISSING__}"
+echo ""
+echo "=== Atlassian MCP ==="
+echo "JIRA_URL=${JIRA_URL:-__MISSING__}"
+echo "JIRA_USERNAME=${JIRA_USERNAME:-__MISSING__}"
+echo "JIRA_API_TOKEN=${JIRA_API_TOKEN:-__MISSING__}"
+echo "CONFLUENCE_URL=${CONFLUENCE_URL:-__MISSING__}"
+echo "CONFLUENCE_USERNAME=${CONFLUENCE_USERNAME:-__MISSING__}"
+echo "CONFLUENCE_API_TOKEN=${CONFLUENCE_API_TOKEN:-__MISSING__}"
 ```
 
-If **all three** are set (none show `__MISSING__`), tell the user their configuration looks good and the MCP server should be active. Skip to step 5 (conflict check).
+If all variables are set (none show `__MISSING__`), tell the user their configuration looks good and both MCP servers should be active. Skip to step 5 (conflict check).
 
 ### 2. Collect missing values
 
-For each variable that shows `__MISSING__`, ask the user to provide a value. Ask one at a time.
+For each variable that shows `__MISSING__`, ask the user to provide a value. Ask one at a time. Group by MCP server.
+
+**Open Loyalty MCP:**
 
 - **`OPENLOYALTY_API_URL`** — The base URL of your Open Loyalty instance with `/api` suffix, e.g. `https://your-instance.openloyalty.io/api`. Ask: "What is your Open Loyalty API URL?"
 
 - **`OPENLOYALTY_API_TOKEN`** — API authentication token. Tell the user to get it from: Admin Panel > Settings > API Keys > Generate new key. Ask: "Paste your API token."
 
 - **`OPENLOYALTY_DEFAULT_STORE_CODE`** — Store identifier. Defaults to `"default"`. Ask: "What is your store code? (press Enter for `default`)" — if the user presses Enter or says default, use `"default"`.
+
+**Atlassian MCP (required for `/openloyalty:jira-ticket-create`):**
+
+- **`JIRA_URL`** — Your Jira instance URL, e.g. `https://openloyalty.atlassian.net`. Ask: "What is your Jira URL?"
+
+- **`JIRA_USERNAME`** — Your Atlassian email address. Ask: "What is your Atlassian email?"
+
+- **`JIRA_API_TOKEN`** — API token from https://id.atlassian.com/manage-profile/security/api-tokens. Ask: "Paste your Jira API token."
+
+- **`CONFLUENCE_URL`** — Your Confluence instance URL (often same domain as Jira). Ask: "What is your Confluence URL? (press Enter to use same as Jira URL)"
+
+- **`CONFLUENCE_USERNAME`** — Usually same as Jira username. Ask: "What is your Confluence email? (press Enter to use same as Jira)"
+
+- **`CONFLUENCE_API_TOKEN`** — Usually same as Jira token. Ask: "Paste your Confluence API token. (press Enter to use same as Jira)"
 
 ### 3. Write to shell profile
 
