@@ -15,6 +15,7 @@ This plugin provides engineering workflows for the Open Loyalty development team
 | `/openloyalty:compound` | Document solved problems with validated YAML schema |
 | `/openloyalty:review` | Code review with OL conventions, Jira verification, 1-10 scoring |
 | `/openloyalty:backend-pr-create` | Create backend PR with OL conventions and Jira linking |
+| `/openloyalty:jira-ticket-create` | Create a Jira ticket from current context with OL conventions |
 | `/openloyalty:help` | Show this help |
 
 ## Compound Learning System
