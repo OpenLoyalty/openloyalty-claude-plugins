@@ -1,5 +1,5 @@
 ---
-name: engineering:compound
+name: openloyalty:engineering:compound
 description: Document a recently solved problem to compound your team's knowledge
 argument-hint: "[branch] [--slack <url>] [--ticket <OLOY-XXX>]"
 ---

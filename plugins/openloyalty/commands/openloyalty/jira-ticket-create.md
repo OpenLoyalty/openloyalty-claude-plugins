@@ -1,5 +1,5 @@
 ---
-name: engineering:jira-ticket-create
+name: openloyalty:engineering:jira-ticket-create
 description: Create Jira tickets from a brainstorming or planning session with OL conventions.
 argument-hint: "[--project <OLOY>] [--type <story|bug|task>] [--epic <OLOY-XXX>]"
 ---

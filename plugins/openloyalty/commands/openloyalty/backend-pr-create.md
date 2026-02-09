@@ -1,5 +1,5 @@
 ---
-name: engineering:backend-pr-create
+name: openloyalty:engineering:backend-pr-create
 description: Create a backend pull request with OL conventions, Jira linking, and structured description.
 argument-hint: "[--ticket <OLOY-XXX>] [--base <branch>] [--draft]"
 ---

@@ -1,5 +1,5 @@
 ---
-name: help
+name: openloyalty:help
 description: Show available Open Loyalty engineering commands and plugin documentation
 argument-hint: ""
 ---

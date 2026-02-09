@@ -1,5 +1,5 @@
 ---
-name: setup
+name: openloyalty:setup
 description: Install dependencies and configure MCP server environment variables for Open Loyalty plugin
 argument-hint: ""
 ---
