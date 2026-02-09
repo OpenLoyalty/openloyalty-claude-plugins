@@ -4,22 +4,13 @@ description: Show available Open Loyalty engineering commands and plugin documen
 argument-hint: ""
 ---
 
-Display the following documentation to the user. IMPORTANT: Render command names EXACTLY as written — always include the full path with `engineering:` (e.g., `/openloyalty:engineering:review-pr`, NOT `/openloyalty:review-pr`). Do not shorten or omit any part of the command names.
-
 # Open Loyalty Engineering Plugin
 
 This plugin provides engineering workflows for the Open Loyalty development team.
 
 ## Available Commands
 
-| Command | Purpose |
-|---------|---------|
-| `/openloyalty:setup` | Full onboarding: installs compound-engineering plugin, configures MCP servers in user scope |
-| `/openloyalty:engineering:review-pr` | Code review with OL conventions, Jira verification, 1-10 scoring |
-| `/openloyalty:engineering:backend-pr-create` | Create backend PR with OL conventions and Jira linking |
-| `/openloyalty:engineering:jira-ticket-create` | Create Jira tickets from brainstorming/planning sessions |
-| `/openloyalty:engineering:compound` | **[WIP]** Document solved problems with YAML schema validation |
-| `/openloyalty:help` | Show available commands and plugin documentation |
+Read all `.md` files in the plugin commands directory and build the command table dynamically from their YAML frontmatter. For each file, use the `name` field as the command name (prefixed with `/`) and the `description` field as the purpose. Display the table sorted in this order: setup first, then engineering commands alphabetically, then help last.
 
 ## Compound Learning System
 
