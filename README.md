@@ -36,6 +36,7 @@ Open Loyalty MCP server providing 60+ tools for loyalty program management direc
 |---------|---------|
 | `/openloyalty:compound` | Document solved problems with YAML schema validation |
 | `/openloyalty:review` | Code review with OL conventions, Jira verification, 1-10 scoring |
+| `/openloyalty:backend-pr-create` | Create backend PR with OL conventions and Jira linking |
 | `/openloyalty:setup` | Interactive setup for MCP server environment variables |
 | `/openloyalty:help` | Show available commands and plugin documentation |
 
@@ -239,6 +240,7 @@ openloyalty-claude-plugins/
 │       ├── commands/openloyalty/     # Command files
 │       │   ├── compound.md           # Compound learning command
 │       │   ├── review.md             # Code review command
+│       │   ├── backend-pr-create.md  # Backend PR creation command
 │       │   ├── setup.md              # MCP setup command
 │       │   └── help.md               # Help command
 │       └── skills/compound-docs/     # Documentation engine
@@ -249,6 +251,7 @@ openloyalty-claude-plugins/
 │           │   └── critical-pattern-template.md
 │           └── references/
 │               └── yaml-schema.md    # Schema documentation
+├── AGENTS.md                            # Skill generation conventions
 └── README.md
 ```
 
