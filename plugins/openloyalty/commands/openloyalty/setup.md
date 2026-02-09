@@ -61,9 +61,13 @@ If all variables are set (none show `__MISSING__`), tell the user their configur
 
 ### 2. Collect missing values
 
-For each variable that shows `__MISSING__`, ask the user to provide a value. Ask one at a time. Group by MCP server.
+Present each MCP group with missing variables. Before collecting values for a group, ask the user if they want to configure it. If they skip, move to the next group.
 
-**Open Loyalty MCP:**
+**Open Loyalty MCP (optional):**
+
+If any OL variables are missing, ask: "Do you want to configure the Open Loyalty MCP server? (needed for loyalty API tools — you can skip this and configure later)" — if the user says no/skip, skip this group entirely.
+
+If yes, collect:
 
 - **`OPENLOYALTY_API_URL`** — The base URL of your Open Loyalty instance with `/api` suffix, e.g. `https://your-instance.openloyalty.io/api`. Ask: "What is your Open Loyalty API URL?"
 
@@ -71,15 +75,19 @@ For each variable that shows `__MISSING__`, ask the user to provide a value. Ask
 
 - **`OPENLOYALTY_DEFAULT_STORE_CODE`** — Store identifier. Defaults to `"default"`. Ask: "What is your store code? (press Enter for `default`)" — if the user presses Enter or says default, use `"default"`.
 
-**Atlassian MCP (required for `/openloyalty:jira-ticket-create`):**
+**Atlassian MCP (required):**
 
-- **`JIRA_URL`** — Your Jira instance URL, e.g. `https://openloyalty.atlassian.net`. Ask: "What is your Jira URL?"
+If any Atlassian variables are missing, collect them. This is required for Jira integration used by `/openloyalty:review-pr`, `/openloyalty:backend-pr-create`, and `/openloyalty:jira-ticket-create`.
+
+Collect:
+
+- **`JIRA_URL`** — Always `https://openloyalty.atlassian.net`. Set automatically, just inform the user: "Setting JIRA_URL to https://openloyalty.atlassian.net". Do not ask.
 
 - **`JIRA_USERNAME`** — Your Atlassian email address. Ask: "What is your Atlassian email?"
 
 - **`JIRA_API_TOKEN`** — API token from https://id.atlassian.com/manage-profile/security/api-tokens. Ask: "Paste your Jira API token."
 
-- **`CONFLUENCE_URL`** — Your Confluence instance URL (often same domain as Jira). Ask: "What is your Confluence URL? (press Enter to use same as Jira URL)"
+- **`CONFLUENCE_URL`** — Always `https://openloyalty.atlassian.net/wiki`. Set automatically, just inform the user. Do not ask.
 
 - **`CONFLUENCE_USERNAME`** — Usually same as Jira username. Ask: "What is your Confluence email? (press Enter to use same as Jira)"
 
