@@ -27,8 +27,7 @@ The setup command handles the full onboarding process:
 
 1. **Installs the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin** — automatically adds the marketplace and installs the plugin. This dependency provides review workflows, specialized agent types (architecture strategist, performance oracle, security sentinel, etc.), and engineering best practices used by `/openloyalty:engineering:review-pr` and other commands.
 2. **Installs the official [Atlassian plugin](https://github.com/anthropics/claude-plugins-official)** — installs `atlassian@claude-plugins-official` which provides Jira and Confluence tools. Authentication is handled through Claude's native Atlassian OAuth — no API tokens needed.
-3. **Configures Open Loyalty MCP server** (optional) — prompts for `OPENLOYALTY_API_URL` and `OPENLOYALTY_API_TOKEN`, writes the `openloyalty` server definition. Skippable if you don't need direct loyalty API access.
-4. **Saves to `~/.claude/.mcp.json`** — MCP servers are registered in user-scoped Claude Code settings, available across all projects without any project-level config files.
+3. **Configures Open Loyalty MCP server** (optional) — prompts for `OPENLOYALTY_API_URL` and `OPENLOYALTY_API_TOKEN`, writes the `openloyalty` server definition to `~/.claude/.mcp.json`. Skippable if you don't need direct loyalty API access.
 
 ---
 

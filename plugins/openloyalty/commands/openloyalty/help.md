@@ -12,11 +12,12 @@ This plugin provides engineering workflows for the Open Loyalty development team
 
 | Command | Purpose |
 |---------|---------|
-| `/openloyalty:engineering:compound` | Document solved problems with validated YAML schema |
+| `/openloyalty:setup` | Full onboarding: installs compound-engineering plugin, configures MCP servers in user scope |
 | `/openloyalty:engineering:review-pr` | Code review with OL conventions, Jira verification, 1-10 scoring |
 | `/openloyalty:engineering:backend-pr-create` | Create backend PR with OL conventions and Jira linking |
-| `/openloyalty:engineering:jira-ticket-create` | Create Jira tickets from brainstorming/planning sessions (requires Atlassian plugin) |
-| `/openloyalty:help` | Show this help |
+| `/openloyalty:engineering:jira-ticket-create` | Create Jira tickets from brainstorming/planning sessions |
+| `/openloyalty:engineering:compound` | **[WIP]** Document solved problems with YAML schema validation |
+| `/openloyalty:help` | Show available commands and plugin documentation |
 
 ## Compound Learning System
 
@@ -66,18 +67,14 @@ After capture, choose:
 3. **Link related issues** - Connect similar problems
 4. **View documentation** - Review what was captured
 
-## Required Plugin: compound-engineering
+## Requirements
 
-This plugin depends on the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin for review workflows, agent types, and engineering best practices.
+This plugin depends on:
 
-**Install it:**
+- **[compound-engineering](https://github.com/EveryInc/compound-engineering-plugin)** — review workflows, agent types, engineering best practices
+- **[atlassian@claude-plugins-official](https://github.com/anthropics/claude-plugins-official)** — Jira/Confluence integration via OAuth
 
-```bash
-/plugin marketplace add https://github.com/EveryInc/compound-engineering-plugin
-/plugin install compound-engineering
-```
-
-Run `/openloyalty:setup` to verify all dependencies are configured.
+Run `/openloyalty:setup` to install all dependencies automatically.
 
 ## Integration with AGENTS.md
 
@@ -87,17 +84,14 @@ This plugin works alongside your repository's `AGENTS.md` file:
 
 The code review workflow reads AGENTS.md from your repo to check against OL conventions.
 
-## Jira Integration
+## Atlassian (Jira/Confluence) Setup
 
-This plugin uses the official [Atlassian plugin](https://github.com/anthropics/claude-plugins-official) (`atlassian@claude-plugins-official`) for Jira and Confluence integration. When installed, it enables:
-- Creating Jira tickets from brainstorming sessions (`/openloyalty:engineering:jira-ticket-create`)
-- Fetching ticket details from branch name patterns (e.g., `OLOY-123`)
-- Extracting context from ticket description and comments
-- Linking compound learnings to tickets
+Jira and Confluence integration is provided by the official Atlassian plugin (`atlassian@claude-plugins-official`). It's installed automatically by `/openloyalty:setup`.
 
-Run `/openloyalty:setup` to install and configure.
+- **Required by:** `/openloyalty:engineering:jira-ticket-create`
+- **Optional for:** `/openloyalty:engineering:review-pr`, `/openloyalty:engineering:backend-pr-create`, `/openloyalty:engineering:compound` (these commands degrade gracefully without Jira)
 
-Some commands (like `/openloyalty:engineering:compound` and `/openloyalty:engineering:review-pr`) work without Jira and gracefully degrade to git + code analysis only. The `/openloyalty:engineering:jira-ticket-create` command **requires** the Atlassian plugin.
+Authentication is handled through Claude's native Atlassian OAuth — no API tokens needed.
 
 ## Output Locations
 
