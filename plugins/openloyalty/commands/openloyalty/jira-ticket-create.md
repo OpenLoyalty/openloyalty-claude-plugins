@@ -215,6 +215,6 @@ What's next?
 ## Related Commands
 
 - `/openloyalty:backend-pr-create` - Create a PR linked to a Jira ticket
-- `/openloyalty:review` - Review code changes
+- `/openloyalty:review-pr` - Review code changes
 - `/openloyalty:compound` - Document solved problems
 - `/openloyalty:help` - Plugin documentation

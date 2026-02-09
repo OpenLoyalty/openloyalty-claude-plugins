@@ -272,5 +272,5 @@ Use `/openloyalty:compound [context]` to document immediately without waiting fo
 
 ## Related Commands
 
-- `/openloyalty:review` - Code review workflow
+- `/openloyalty:review-pr` - Code review workflow
 - `/openloyalty:help` - Plugin documentation

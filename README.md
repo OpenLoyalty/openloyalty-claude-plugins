@@ -23,7 +23,7 @@ This installs both engineering workflows (slash commands) and the MCP server (60
 
 The setup command handles the full onboarding process:
 
-1. **Installs the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin** — automatically adds the marketplace and installs the plugin. This dependency provides review workflows, specialized agent types (architecture strategist, performance oracle, security sentinel, etc.), and engineering best practices used by `/openloyalty:review` and other commands.
+1. **Installs the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin** — automatically adds the marketplace and installs the plugin. This dependency provides review workflows, specialized agent types (architecture strategist, performance oracle, security sentinel, etc.), and engineering best practices used by `/openloyalty:review-pr` and other commands.
 2. **Configures Open Loyalty MCP environment variables** — prompts for `OPENLOYALTY_API_URL` and `OPENLOYALTY_API_TOKEN` so the 60+ loyalty API tools can connect to your instance.
 3. **Configures Atlassian (Jira/Confluence) environment variables** — prompts for `JIRA_URL`, `JIRA_USERNAME`, and `JIRA_API_TOKEN` needed by the bundled mcp-atlassian server and `/openloyalty:jira-ticket-create`.
 4. **Writes variables to your shell profile** (`~/.zshrc` or `~/.bashrc`) so they persist across sessions.
@@ -48,7 +48,7 @@ Open Loyalty MCP server providing 60+ tools for loyalty program management direc
 | Command | Purpose |
 |---------|---------|
 | `/openloyalty:compound` | Document solved problems with YAML schema validation |
-| `/openloyalty:review` | Code review with OL conventions, Jira verification, 1-10 scoring |
+| `/openloyalty:review-pr` | Code review with OL conventions, Jira verification, 1-10 scoring |
 | `/openloyalty:backend-pr-create` | Create backend PR with OL conventions and Jira linking |
 | `/openloyalty:jira-ticket-create` | Create Jira tickets from brainstorming/planning sessions |
 | `/openloyalty:setup` | Full onboarding: auto-installs compound-engineering plugin, configures MCP env vars |

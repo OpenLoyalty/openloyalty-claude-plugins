@@ -183,6 +183,6 @@ After PR is created:
 
 ## Related Commands
 
-- `/openloyalty:review` - Review the PR after creation
+- `/openloyalty:review-pr` - Review the PR after creation
 - `/openloyalty:compound` - Document any solved problems
 - `/openloyalty:help` - Plugin documentation

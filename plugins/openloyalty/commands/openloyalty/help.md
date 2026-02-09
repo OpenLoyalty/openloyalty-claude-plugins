@@ -13,7 +13,7 @@ This plugin provides engineering workflows for the Open Loyalty development team
 | Command | Purpose |
 |---------|---------|
 | `/openloyalty:compound` | Document solved problems with validated YAML schema |
-| `/openloyalty:review` | Code review with OL conventions, Jira verification, 1-10 scoring |
+| `/openloyalty:review-pr` | Code review with OL conventions, Jira verification, 1-10 scoring |
 | `/openloyalty:backend-pr-create` | Create backend PR with OL conventions and Jira linking |
 | `/openloyalty:jira-ticket-create` | Create Jira tickets from brainstorming/planning sessions (requires Atlassian MCP) |
 | `/openloyalty:help` | Show this help |
@@ -97,7 +97,7 @@ This plugin bundles the [mcp-atlassian](https://github.com/sooperset/mcp-atlassi
 
 Run `/openloyalty:setup` to configure your Atlassian credentials.
 
-Some commands (like `/openloyalty:compound` and `/openloyalty:review`) work without Jira and gracefully degrade to git + code analysis only. The `/openloyalty:jira-ticket-create` command **requires** Atlassian MCP.
+Some commands (like `/openloyalty:compound` and `/openloyalty:review-pr`) work without Jira and gracefully degrade to git + code analysis only. The `/openloyalty:jira-ticket-create` command **requires** Atlassian MCP.
 
 ## Output Locations
 

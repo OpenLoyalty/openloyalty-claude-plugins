@@ -17,7 +17,7 @@ openloyalty-claude-skills/
 │       ├── .mcp.json              # MCP server config (bundled, not manual)
 │       ├── commands/openloyalty/   # Slash commands (user-facing)
 │       │   ├── compound.md
-│       │   ├── review.md
+│       │   ├── review-pr.md
 │       │   ├── backend-pr-create.md
 │       │   ├── setup.md
 │       │   └── help.md
