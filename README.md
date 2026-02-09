@@ -14,7 +14,7 @@ Engineering workflows and MCP tools for the Open Loyalty development team. Auto-
 /plugin install openloyalty@openloyalty-claude-plugins
 ```
 
-This installs both engineering workflows (slash commands) and the MCP server (60+ loyalty API tools).
+This installs engineering workflows (slash commands). MCP servers are configured separately during setup.
 
 **Run setup:**
 ```bash
@@ -24,22 +24,21 @@ This installs both engineering workflows (slash commands) and the MCP server (60
 The setup command handles the full onboarding process:
 
 1. **Installs the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin** — automatically adds the marketplace and installs the plugin. This dependency provides review workflows, specialized agent types (architecture strategist, performance oracle, security sentinel, etc.), and engineering best practices used by `/openloyalty:review-pr` and other commands.
-2. **Configures Open Loyalty MCP environment variables** — prompts for `OPENLOYALTY_API_URL` and `OPENLOYALTY_API_TOKEN` so the 60+ loyalty API tools can connect to your instance.
-3. **Configures Atlassian (Jira/Confluence) environment variables** — prompts for `JIRA_URL`, `JIRA_USERNAME`, and `JIRA_API_TOKEN` needed by the bundled mcp-atlassian server and `/openloyalty:jira-ticket-create`.
-4. **Writes variables to your shell profile** (`~/.zshrc` or `~/.bashrc`) so they persist across sessions.
-5. **Checks for conflicts** with any manually configured MCP server entries.
+2. **Configures Atlassian (Jira/Confluence) MCP server** (required) — prompts for `JIRA_USERNAME` and `JIRA_API_TOKEN`, writes the full `mcp-atlassian` server definition to user-scoped settings. `JIRA_URL` and `CONFLUENCE_URL` are set automatically.
+3. **Configures Open Loyalty MCP server** (optional) — prompts for `OPENLOYALTY_API_URL` and `OPENLOYALTY_API_TOKEN`, writes the `openloyalty` server definition. Skippable if you don't need direct loyalty API access.
+4. **Saves to `~/.claude/settings.local.json`** — MCP servers are registered in user-scoped Claude Code settings, available across all projects without any project-level config files.
 
 ---
 
-## What's Included
+## How It Works
 
-### Engineering Workflows
+The plugin provides **slash commands** (code review, PR creation, Jira tickets, etc.) that are installed via the plugin system.
 
-Slash commands for compound learning, code review, and technical spikes following OL conventions.
+**MCP servers are not bundled with the plugin.** Instead, `/openloyalty:setup` writes the full server definitions (command, args, credentials) directly into `~/.claude/settings.local.json` under `mcpServers`. This means:
 
-### MCP Server
-
-Open Loyalty MCP server providing 60+ tools for loyalty program management directly in Claude Code. The MCP server starts automatically when the plugin is enabled.
+- Servers are registered in **user scope** — available across all projects, no project-level `.mcp.json` files
+- Credentials are stored once, not duplicated per project
+- No env var indirection — actual values are written directly into the server config
 
 ---
 
@@ -47,7 +46,7 @@ Open Loyalty MCP server providing 60+ tools for loyalty program management direc
 
 | Command | Purpose |
 |---------|---------|
-| `/openloyalty:setup` | Full onboarding: auto-installs compound-engineering plugin, configures MCP env vars |
+| `/openloyalty:setup` | Full onboarding: installs compound-engineering plugin, configures MCP servers in user scope |
 | `/openloyalty:review-pr` | Code review with OL conventions, Jira verification, 1-10 scoring |
 | `/openloyalty:backend-pr-create` | Create backend PR with OL conventions and Jira linking |
 | `/openloyalty:jira-ticket-create` | Create Jira tickets from brainstorming/planning sessions |
@@ -66,16 +65,25 @@ See [compound-docs skill README](plugins/openloyalty/skills/compound-docs/README
 
 ## Jira MCP Server Setup
 
-The Atlassian (Jira/Confluence) MCP server is required for `/openloyalty:review-pr`, `/openloyalty:backend-pr-create`, and `/openloyalty:jira-ticket-create`. Run `/openloyalty:setup` for interactive configuration, or set the variables manually:
+The Atlassian (Jira/Confluence) MCP server is required for `/openloyalty:review-pr`, `/openloyalty:backend-pr-create`, and `/openloyalty:jira-ticket-create`. Run `/openloyalty:setup` for interactive configuration, or add to `~/.claude/settings.local.json` manually:
 
-```bash
-# ~/.zshrc or ~/.bashrc
-export JIRA_URL="https://openloyalty.atlassian.net"
-export JIRA_USERNAME="your-email@openloyalty.io"
-export JIRA_API_TOKEN="your-jira-api-token"
-export CONFLUENCE_URL="https://openloyalty.atlassian.net/wiki"
-export CONFLUENCE_USERNAME="your-email@openloyalty.io"       # usually same as JIRA_USERNAME
-export CONFLUENCE_API_TOKEN="your-jira-api-token"            # usually same as JIRA_API_TOKEN
+```json
+{
+  "mcpServers": {
+    "mcp-atlassian": {
+      "command": "uvx",
+      "args": ["mcp-atlassian"],
+      "env": {
+        "JIRA_URL": "https://openloyalty.atlassian.net",
+        "JIRA_USERNAME": "your-email@openloyalty.io",
+        "JIRA_API_TOKEN": "your-jira-api-token",
+        "CONFLUENCE_URL": "https://openloyalty.atlassian.net/wiki",
+        "CONFLUENCE_USERNAME": "your-email@openloyalty.io",
+        "CONFLUENCE_API_TOKEN": "your-jira-api-token"
+      }
+    }
+  }
+}
 ```
 
 | Variable | Description | How to get it |
@@ -91,13 +99,22 @@ export CONFLUENCE_API_TOKEN="your-jira-api-token"            # usually same as J
 
 ## Open Loyalty MCP Server Setup (Optional)
 
-The OL MCP server provides 60+ loyalty API tools. It's optional — skip it if you don't need direct loyalty API access. Run `/openloyalty:setup` for interactive configuration, or set the variables manually:
+The OL MCP server provides 60+ loyalty API tools. It's optional — skip it if you don't need direct loyalty API access. Run `/openloyalty:setup` for interactive configuration, or add to `~/.claude/settings.local.json` manually:
 
-```bash
-# ~/.zshrc or ~/.bashrc
-export OPENLOYALTY_API_URL="https://your-instance.openloyalty.io/api"
-export OPENLOYALTY_API_TOKEN="your-api-token-here"
-export OPENLOYALTY_DEFAULT_STORE_CODE="default"  # optional, defaults to "default"
+```json
+{
+  "mcpServers": {
+    "openloyalty": {
+      "command": "npx",
+      "args": ["-y", "@open-loyalty/mcp-server@latest"],
+      "env": {
+        "OPENLOYALTY_API_URL": "https://your-instance.openloyalty.io/api",
+        "OPENLOYALTY_API_TOKEN": "your-api-token-here",
+        "OPENLOYALTY_DEFAULT_STORE_CODE": "default"
+      }
+    }
+  }
+}
 ```
 
 | Variable | Description | How to get it |
@@ -175,16 +192,15 @@ Build → Test → Find Issue → Research → Improve → Document → Validate
 - [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin (auto-installed by `/openloyalty:setup`)
 - `AGENTS.md` in your OL repo (for conventions)
 
-**For MCP server:**
-- `OPENLOYALTY_API_URL`, `OPENLOYALTY_API_TOKEN` environment variables
-- Node.js / npx available in PATH
-
-**For Jira integration (bundled, required for `/openloyalty:jira-ticket-create`):**
-- `JIRA_URL`, `JIRA_USERNAME`, `JIRA_API_TOKEN` environment variables
+**For Jira integration (required):**
+- `mcp-atlassian` server in `~/.claude/settings.local.json` (configured by `/openloyalty:setup`)
 - Python / uvx available in PATH
 
+**For OL MCP server (optional):**
+- `openloyalty` server in `~/.claude/settings.local.json` (configured by `/openloyalty:setup`)
+- Node.js / npx available in PATH
+
 **Optional:**
-- Confluence credentials for Confluence integration
 - Slack MCP for conversation context
 
 ---

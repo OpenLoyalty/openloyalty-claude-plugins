@@ -38,26 +38,14 @@ Then restart Claude Code and run /openloyalty:setup again.
 
 ---
 
-### 1. Check current environment
+### 1. Check current configuration
 
-Run this command to check which variables are already set:
+Read `~/.claude/settings.local.json` and check if `mcpServers` already contains the `mcp-atlassian` and/or `openloyalty` server entries.
 
-```bash
-echo "=== Open Loyalty MCP ==="
-echo "OPENLOYALTY_API_URL=${OPENLOYALTY_API_URL:-__MISSING__}"
-echo "OPENLOYALTY_API_TOKEN=${OPENLOYALTY_API_TOKEN:-__MISSING__}"
-echo "OPENLOYALTY_DEFAULT_STORE_CODE=${OPENLOYALTY_DEFAULT_STORE_CODE:-__MISSING__}"
-echo ""
-echo "=== Atlassian MCP ==="
-echo "JIRA_URL=${JIRA_URL:-__MISSING__}"
-echo "JIRA_USERNAME=${JIRA_USERNAME:-__MISSING__}"
-echo "JIRA_API_TOKEN=${JIRA_API_TOKEN:-__MISSING__}"
-echo "CONFLUENCE_URL=${CONFLUENCE_URL:-__MISSING__}"
-echo "CONFLUENCE_USERNAME=${CONFLUENCE_USERNAME:-__MISSING__}"
-echo "CONFLUENCE_API_TOKEN=${CONFLUENCE_API_TOKEN:-__MISSING__}"
-```
+- If `mcp-atlassian` is present with non-empty env values, Atlassian is configured.
+- If `openloyalty` is present with non-empty env values, OL MCP is configured.
 
-If all variables are set (none show `__MISSING__`), tell the user their configuration looks good and both MCP servers should be active. Skip to step 5 (conflict check).
+If both are present, tell the user their configuration looks good. Skip to step 4.
 
 ### 2. Collect missing values
 
@@ -85,7 +73,7 @@ Collect:
 
 - **`JIRA_USERNAME`** — Your Atlassian email address. Ask: "What is your Atlassian email?"
 
-- **`JIRA_API_TOKEN`** — API token from https://id.atlassian.com/manage-profile/security/api-tokens. Ask: "Paste your Jira API token."
+- **`JIRA_API_TOKEN`** — Tell the user: "Generate an API token at https://id.atlassian.com/manage-profile/security/api-tokens — click 'Create API token', give it a name (e.g. 'Claude Code'), and copy the token." Then ask: "Paste your Jira API token."
 
 - **`CONFLUENCE_URL`** — Always `https://openloyalty.atlassian.net/wiki`. Set automatically, just inform the user. Do not ask.
 
@@ -93,46 +81,53 @@ Collect:
 
 - **`CONFLUENCE_API_TOKEN`** — Usually same as Jira token. Ask: "Paste your Confluence API token. (press Enter to use same as Jira)"
 
-### 3. Write to shell profile
+### 3. Write to user-scoped settings
 
-Detect the user's shell:
+Read `~/.claude/settings.local.json` (create if it doesn't exist). Merge the collected MCP server definitions into the `"mcpServers"` object. Each server entry includes the full command, args, and env with the actual user values — no `${VAR}` references.
 
-```bash
-echo "$SHELL"
+**Atlassian server entry:**
+
+```json
+{
+  "mcpServers": {
+    "mcp-atlassian": {
+      "command": "uvx",
+      "args": ["mcp-atlassian"],
+      "env": {
+        "JIRA_URL": "https://openloyalty.atlassian.net",
+        "JIRA_USERNAME": "<collected value>",
+        "JIRA_API_TOKEN": "<collected value>",
+        "CONFLUENCE_URL": "https://openloyalty.atlassian.net/wiki",
+        "CONFLUENCE_USERNAME": "<collected value>",
+        "CONFLUENCE_API_TOKEN": "<collected value>"
+      }
+    }
+  }
+}
 ```
 
-- If the shell is `zsh`, write to `~/.zshrc`
-- If the shell is `bash`, write to `~/.bashrc`
+**Open Loyalty server entry (if configured):**
 
-For each missing variable, append an `export` line to the profile file. For example:
-
-```bash
-echo 'export OPENLOYALTY_API_URL="<value>"' >> ~/.zshrc
-echo 'export OPENLOYALTY_API_TOKEN="<value>"' >> ~/.zshrc
-echo 'export OPENLOYALTY_DEFAULT_STORE_CODE="<value>"' >> ~/.zshrc
+```json
+{
+  "mcpServers": {
+    "openloyalty": {
+      "command": "npx",
+      "args": ["-y", "@open-loyalty/mcp-server@latest"],
+      "env": {
+        "OPENLOYALTY_API_URL": "<collected value>",
+        "OPENLOYALTY_API_TOKEN": "<collected value>",
+        "OPENLOYALTY_DEFAULT_STORE_CODE": "<collected value>"
+      }
+    }
+  }
+}
 ```
 
-Then source the profile to load the variables into the current shell:
-
-```bash
-source ~/.zshrc
-```
+**Important:** Preserve any existing keys in the file — only add or update the server entries being configured. Use the Read and Edit tools to merge, not overwrite.
 
 ### 4. Instruct to restart
 
 Tell the user:
 
-> Variables saved. Restart Claude Code (`/exit` and relaunch) for the MCP server to pick up the new environment variables.
-
-### 5. Check for conflicts
-
-Check if the user has a manual `openloyalty` MCP server entry in `~/.claude/settings.json` or in any project `.mcp.json` in the current working directory. Run:
-
-```bash
-cat ~/.claude/settings.json 2>/dev/null | grep -l openloyalty || true
-cat .mcp.json 2>/dev/null | grep -l openloyalty || true
-```
-
-If a manual `"openloyalty"` MCP entry is found, warn:
-
-> You have a manual `openloyalty` MCP server entry in your config. Remove it to avoid conflicts with the plugin-managed server.
+> Settings saved to `~/.claude/settings.local.json`. Restart Claude Code (`/exit` and relaunch) for the MCP servers to start.

@@ -14,7 +14,6 @@ openloyalty-claude-skills/
 │   └── openloyalty/               # The plugin
 │       ├── .claude-plugin/
 │       │   └── plugin.json        # Plugin metadata (bump version on changes)
-│       ├── .mcp.json              # MCP server config (bundled, not manual)
 │       ├── commands/openloyalty/   # Slash commands (user-facing)
 │       │   ├── compound.md
 │       │   ├── review-pr.md
