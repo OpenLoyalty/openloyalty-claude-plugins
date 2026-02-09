@@ -14,14 +14,25 @@ Guide the user through installing required plugin dependencies and configuring M
 
 The Open Loyalty plugin requires the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin for review workflows, agent types, and engineering best practices.
 
-Check if it's already installed by looking for compound-engineering skills in the available tools (e.g., any `compound-engineering:*` slash commands).
+**IMPORTANT:** Do NOT check for this plugin by looking at available tools/skills in the session — tools loaded at session start persist even after a plugin is removed. Always use the CLI command to verify actual installation state.
+
+Run `claude plugin list` and check if the output contains `compound-engineering`.
 
 **If already installed**, tell the user and continue to step 1.
 
-**If not installed**, install it automatically:
+**If not installed**, install it in two steps:
+
+**Step A — Add the Every marketplace:**
 
 ```bash
 claude plugin marketplace add https://github.com/EveryInc/compound-engineering-plugin
+```
+
+If it reports "already exists", that's fine — continue to step B. If it fails with a network or clone error, show the error and tell the user to install manually (see fallback below).
+
+**Step B — Install the plugin from the marketplace:**
+
+```bash
 claude plugin install compound-engineering
 ```
 
@@ -29,7 +40,7 @@ If the install succeeds, tell the user:
 
 > Installed compound-engineering plugin. It will be available after restart.
 
-If the install fails (e.g., network error, marketplace already exists), show the error and tell the user to install manually:
+If either step fails, show the error and tell the user to install manually:
 
 ```
 Could not auto-install compound-engineering. Install it manually:
@@ -48,11 +59,23 @@ Then restart Claude Code and run /openloyalty:setup again.
 
 The Open Loyalty plugin requires the official [Atlassian](https://github.com/anthropics/claude-plugins-official) plugin for Jira and Confluence integration. This is used by `/openloyalty:engineering:review-pr`, `/openloyalty:engineering:backend-pr-create`, and `/openloyalty:engineering:jira-ticket-create`.
 
-Check if it's already installed by looking for `mcp__claude_ai_Atlassian__*` tools in the available tools (e.g., `mcp__claude_ai_Atlassian__getJiraIssue`).
+**IMPORTANT:** Do NOT check for this plugin by looking at available `mcp__claude_ai_Atlassian__*` tools in the session — tools loaded at session start persist even after a plugin is removed. Always use the CLI command to verify actual installation state.
+
+Run `claude plugin list` and check if the output contains `atlassian`.
 
 **If already installed**, tell the user and continue to step 2.
 
-**If not installed**, install it:
+**If not installed**, install it in two steps:
+
+**Step A — Add the Anthropic official plugins marketplace:**
+
+```bash
+claude plugin marketplace add https://github.com/anthropics/claude-plugins-official
+```
+
+If it reports "already exists", that's fine — continue to step B. If it fails with a network or clone error, show the error and tell the user to install manually (see fallback below).
+
+**Step B — Install the plugin from the marketplace:**
 
 ```bash
 claude plugin install atlassian@claude-plugins-official
@@ -67,6 +90,7 @@ If the install fails, show the error and tell the user to install manually:
 ```
 Could not auto-install the Atlassian plugin. Install it manually:
 
+  /plugin marketplace add https://github.com/anthropics/claude-plugins-official
   /plugin install atlassian@claude-plugins-official
 
 Then restart Claude Code and run /openloyalty:setup again.
