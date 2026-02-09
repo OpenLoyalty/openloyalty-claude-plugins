@@ -4,21 +4,29 @@ Guide the user through installing required plugin dependencies and configuring M
 
 ## Steps
 
-### 0. Check required plugin: compound-engineering
+### 0. Install required plugin: compound-engineering
 
-**BLOCKING:** The Open Loyalty plugin requires the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin.
+The Open Loyalty plugin requires the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin for review workflows, agent types, and engineering best practices.
 
-Check if it's installed by looking for compound-engineering skills in the available tools (e.g., any `compound-engineering:*` slash commands).
+Check if it's already installed by looking for compound-engineering skills in the available tools (e.g., any `compound-engineering:*` slash commands).
 
-**If not installed, display:**
+**If already installed**, tell the user and continue to step 1.
+
+**If not installed**, install it automatically:
+
+```bash
+claude plugin marketplace add https://github.com/EveryInc/compound-engineering-plugin
+claude plugin install compound-engineering
+```
+
+If the install succeeds, tell the user:
+
+> Installed compound-engineering plugin. It will be available after restart.
+
+If the install fails (e.g., network error, marketplace already exists), show the error and tell the user to install manually:
 
 ```
-Required plugin missing: compound-engineering
-
-The Open Loyalty plugin depends on the Compound Engineering plugin for
-review workflows, agent types, and engineering best practices.
-
-Install it now:
+Could not auto-install compound-engineering. Install it manually:
 
   /plugin marketplace add https://github.com/EveryInc/compound-engineering-plugin
   /plugin install compound-engineering
@@ -26,7 +34,7 @@ Install it now:
 Then restart Claude Code and run /openloyalty:setup again.
 ```
 
-**STOP here if compound-engineering is not installed.** Do not proceed to environment setup.
+**STOP here if compound-engineering could not be installed.** Do not proceed to environment setup.
 
 ---
 
