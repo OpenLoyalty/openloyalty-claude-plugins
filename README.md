@@ -1,6 +1,6 @@
 # Open Loyalty Claude Plugins
 
-Engineering workflows and MCP tools for the Open Loyalty development team. Auto-updating Claude Code plugins.
+Engineering workflows and MCP tools for the Open Loyalty development team. Auto-updating Claude Code plugins with compound learning documentation system.
 
 ## Quick Start
 
@@ -28,35 +28,108 @@ Slash commands for compound learning, code review, and technical spikes followin
 
 Open Loyalty MCP server providing 60+ tools for loyalty program management directly in Claude Code. The MCP server starts automatically when the plugin is enabled.
 
-### Available Commands
+---
+
+## Available Commands
 
 | Command | Purpose |
 |---------|---------|
-| `/openloyalty:compound` | Generate compound learning from branch |
+| `/openloyalty:compound` | Document solved problems with YAML schema validation |
 | `/openloyalty:review` | Code review with OL conventions, Jira verification, 1-10 scoring |
 | `/openloyalty:setup` | Interactive setup for MCP server environment variables |
 | `/openloyalty:help` | Show available commands and plugin documentation |
 
-### Usage
+---
 
-```bash
-# Generate compound learning from current branch
-/openloyalty:compound
+## Compound Learning System
 
-# Specify branch explicitly
-/openloyalty:compound feature/OLOY-123-fix-timezone
-
-# With Slack context (optional)
-/openloyalty:compound --slack https://openloyalty.slack.com/archives/C123/p456
-```
-
-**Trigger phrases:** "document what we learned", "create compound learning", "capture lessons"
+The `/openloyalty:compound` command creates a compounding knowledge repository. Each documented solution makes the team smarter.
 
 ### Features
 
-- Jira integration via Atlassian MCP (graceful degradation without it)
-- Slack context via Slack MCP
-- Reads AGENTS.md from your repo for conventions
+| Feature | Description |
+|---------|-------------|
+| **Parallel Subagents** | 6 agents gather context simultaneously |
+| **YAML Schema Validation** | Enum-validated frontmatter ensures consistency |
+| **Category-Based Organization** | Auto-categorized by problem type |
+| **Critical Pattern Promotion** | Elevate issues to "Required Reading" |
+| **Cross-Referencing** | Automatic linking of related issues |
+| **Graceful Degradation** | Works without Jira/Slack MCPs |
+
+### Usage
+
+```bash
+# Document from current context
+/openloyalty:compound
+
+# Analyze specific branch
+/openloyalty:compound feature/OLOY-123-fix-timezone
+
+# Include Jira ticket context
+/openloyalty:compound --ticket OLOY-1234
+
+# Include Slack thread
+/openloyalty:compound --slack https://slack.com/archives/C123/p456
+```
+
+### Auto-Invoke Triggers
+
+The skill can auto-invoke after phrases like:
+- "that worked"
+- "it's fixed"
+- "working now"
+- "problem solved"
+
+### Output Categories
+
+Documents are auto-sorted by `problem_type`:
+
+```
+engineering/compound-learnings/
+├── build-errors/
+├── test-failures/
+├── runtime-errors/
+├── performance-issues/
+├── database-issues/
+├── security-issues/
+├── api-issues/
+├── integration-issues/
+├── logic-errors/
+├── developer-experience/
+├── configuration-issues/
+├── documentation-gaps/
+├── data-issues/
+└── patterns/
+    ├── common-solutions.md
+    └── ol-critical-patterns.md
+```
+
+### YAML Schema
+
+All documentation uses validated YAML frontmatter with OL-specific enums:
+
+```yaml
+---
+module: Points System                    # OL module name
+date: 2026-01-28                        # YYYY-MM-DD
+problem_type: performance_issue          # Enum (determines category)
+component: points_system                 # Enum
+symptoms:
+  - "N+1 query when loading transactions"
+root_cause: missing_include              # Enum
+resolution_type: code_fix                # Enum
+severity: high                           # Enum
+tags: [n-plus-one, performance]
+---
+```
+
+### Post-Documentation Options
+
+After capture, choose:
+1. **Continue workflow** - Return to work
+2. **Add to Required Reading** - Promote to critical patterns
+3. **Link related issues** - Connect similar problems
+4. **View documentation** - Review what was captured
 
 ---
 
@@ -163,12 +236,19 @@ openloyalty-claude-plugins/
 │       ├── .claude-plugin/
 │       │   └── plugin.json           # Plugin version
 │       ├── .mcp.json                 # MCP server configuration
-│       └── commands/
-│           └── openloyalty/
-│               ├── compound.md       # Compound learning command
-│               ├── review.md         # Code review command
-│               ├── setup.md          # MCP setup command
-│               └── help.md           # Help command
+│       ├── commands/openloyalty/     # Command files
+│       │   ├── compound.md           # Compound learning command
+│       │   ├── review.md             # Code review command
+│       │   ├── setup.md              # MCP setup command
+│       │   └── help.md               # Help command
+│       └── skills/compound-docs/     # Documentation engine
+│           ├── SKILL.md              # 7-step process skill
+│           ├── schema.yaml           # OL-specific schema
+│           ├── assets/
+│           │   ├── resolution-template.md
+│           │   └── critical-pattern-template.md
+│           └── references/
+│               └── yaml-schema.md    # Schema documentation
 └── README.md
 ```
 
@@ -186,8 +266,26 @@ To push an update:
 
 | Document Type | Path |
 |---------------|------|
-| Compound Learnings | `engineering/compound-learnings/{TICKET}-{slug}.md` |
+| Compound Learnings | `engineering/compound-learnings/{category}/{filename}.md` |
+| Critical Patterns | `engineering/compound-learnings/patterns/ol-critical-patterns.md` |
 | Code Reviews | Chat output (not saved) |
+
+---
+
+## The Compounding Philosophy
+
+> Each documented solution compounds your team's knowledge.
+> The first time you solve a problem takes research.
+> Document it, and the next occurrence takes minutes.
+> Knowledge compounds.
+
+```
+Build → Test → Find Issue → Research → Improve → Document → Validate → Deploy
+    ↑                                                                      ↓
+    └──────────────────────────────────────────────────────────────────────┘
+```
+
+**Each unit of engineering work should make subsequent units of work easier—not harder.**
 
 ---
 

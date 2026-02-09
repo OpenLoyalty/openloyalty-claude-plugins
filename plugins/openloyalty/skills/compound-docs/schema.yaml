@@ -1,0 +1,207 @@
+# Open Loyalty Documentation Schema
+# This schema MUST be validated before writing any documentation file
+
+required_fields:
+  module:
+    type: string
+    description: "Open Loyalty module/service area"
+    examples:
+      - "Loyalty Engine"
+      - "Campaign Manager"
+      - "Points System"
+      - "Customer Portal"
+      - "API Gateway"
+      - "Webhook Processor"
+      - "Analytics Service"
+      - "Authentication"
+      - "Rewards Catalog"
+      - "Segments"
+      - "Levels"
+      - "Transactions"
+      - "Earning Rules"
+      - "Spending Rules"
+
+  date:
+    type: string
+    pattern: '^\d{4}-\d{2}-\d{2}$'
+    description: "Date when this problem was solved (YYYY-MM-DD)"
+
+  problem_type:
+    type: enum
+    values:
+      - build_error          # Build, compilation, bundle errors
+      - test_failure         # Test failures, flaky tests
+      - runtime_error        # Exceptions, crashes during execution
+      - performance_issue    # Slow queries, memory issues, N+1 queries
+      - database_issue       # Migration, query, schema problems
+      - security_issue       # Authentication, authorization, injection
+      - api_issue            # REST/GraphQL API problems, response errors
+      - integration_issue    # External service, webhook, third-party integration
+      - logic_error          # Business logic bugs, calculation errors
+      - developer_experience # DX issues: workflow, tooling, seed data, dev setup
+      - configuration_issue  # Config, environment, feature flags
+      - documentation_gap    # Missing or inadequate documentation
+      - data_issue           # Data corruption, migration, sync problems
+    description: "Primary category of the problem"
+
+  component:
+    type: enum
+    values:
+      - loyalty_engine       # Core loyalty logic, point calculations
+      - campaign_manager     # Campaign configuration, rules engine
+      - points_system        # Points earning, spending, transfers
+      - rewards_catalog      # Reward definitions, redemption
+      - customer_portal      # Frontend/UI components
+      - api_gateway          # REST/GraphQL API layer
+      - webhook_processor    # Event processing, notifications
+      - analytics_service    # Reporting, dashboards, metrics
+      - authentication       # Auth, SSO, permissions
+      - segments             # Customer segmentation
+      - levels               # Tier/level management
+      - transactions         # Transaction processing
+      - earning_rules        # Point earning configuration
+      - spending_rules       # Point spending configuration
+      - database             # PostgreSQL, migrations, schema
+      - background_jobs      # Async processing, queues
+      - cache                # Redis, caching layer
+      - testing_framework    # Tests, fixtures, factories
+      - development_workflow # Dev tooling, scripts
+      - documentation        # Docs, guides, API specs
+    description: "Open Loyalty component involved"
+
+  symptoms:
+    type: array[string]
+    min_items: 1
+    max_items: 5
+    description: "Observable symptoms (error messages, visual issues, unexpected behavior)"
+    examples:
+      - "Points not crediting after transaction"
+      - "Campaign rules not evaluating correctly"
+      - "API returning 500 error on reward redemption"
+      - "Webhook delivery failing silently"
+
+  root_cause:
+    type: enum
+    values:
+      - missing_association  # Incorrect ORM relationships
+      - missing_include      # Missing eager loading (N+1)
+      - missing_index        # Database performance issue
+      - wrong_api_usage      # Using deprecated/incorrect API
+      - scope_issue          # Incorrect query scope or filtering
+      - race_condition       # Concurrent modification issues
+      - async_timing         # Async/background job timing
+      - memory_leak          # Memory leak or excessive allocation
+      - config_error         # Configuration or environment issue
+      - logic_error          # Algorithm/business logic bug
+      - test_isolation       # Test isolation or fixture issue
+      - missing_validation   # Missing model validation
+      - missing_permission   # Authorization check missing
+      - cache_invalidation   # Stale cache data
+      - serialization_error  # JSON/data serialization issues
+      - incomplete_setup     # Missing seed data, fixtures, or config
+      - external_dependency  # Third-party service issue
+    description: "Fundamental cause of the problem"
+
+  resolution_type:
+    type: enum
+    values:
+      - code_fix             # Fixed by changing source code
+      - migration            # Fixed by database migration
+      - config_change        # Fixed by changing configuration
+      - test_fix             # Fixed by correcting tests
+      - dependency_update    # Fixed by updating dependency
+      - environment_setup    # Fixed by environment configuration
+      - workflow_improvement # Improved development workflow
+      - documentation_update # Added or updated documentation
+      - tooling_addition     # Added helper script or automation
+      - data_fix             # Fixed by correcting data
+      - cache_clear          # Fixed by clearing/rebuilding cache
+    description: "Type of fix applied"
+
+  severity:
+    type: enum
+    values:
+      - critical             # Blocks production or development
+      - high                 # Impairs core functionality
+      - medium               # Affects specific feature
+      - low                  # Minor issue or edge case
+    description: "Impact severity"
+
+optional_fields:
+  ol_version:
+    type: string
+    description: "Open Loyalty version where this was encountered"
+
+  related_tickets:
+    type: array[string]
+    description: "Related Jira tickets (OLOY-XXX format)"
+    examples:
+      - "OLOY-1234"
+      - "OLOY-5678"
+
+  related_components:
+    type: array[string]
+    description: "Other components that interact with this issue"
+
+  tags:
+    type: array[string]
+    max_items: 8
+    description: "Searchable keywords (lowercase, hyphen-separated)"
+    examples:
+      - "points-calculation"
+      - "campaign-rules"
+      - "webhook-delivery"
+      - "n-plus-one"
+
+  environment:
+    type: enum
+    values:
+      - development
+      - staging
+      - production
+      - all
+    description: "Environment where issue occurred"
+
+validation_rules:
+  - "module must be a valid Open Loyalty module name"
+  - "date must be in YYYY-MM-DD format"
+  - "problem_type must match one of the enum values exactly"
+  - "component must match one of the enum values exactly"
+  - "symptoms must be specific and observable (not vague)"
+  - "root_cause must be the ACTUAL cause, not a symptom"
+  - "resolution_type must match one of the enum values exactly"
+  - "severity must match one of the enum values exactly"
+  - "tags should be lowercase, hyphen-separated"
+
+# Category mapping from problem_type to directory
+category_mapping:
+  build_error: "build-errors"
+  test_failure: "test-failures"
+  runtime_error: "runtime-errors"
+  performance_issue: "performance-issues"
+  database_issue: "database-issues"
+  security_issue: "security-issues"
+  api_issue: "api-issues"
+  integration_issue: "integration-issues"
+  logic_error: "logic-errors"
+  developer_experience: "developer-experience"
+  configuration_issue: "configuration-issues"
+  documentation_gap: "documentation-gaps"
+  data_issue: "data-issues"
+
+# Example valid frontmatter:
+# ---
+# module: Points System
+# date: 2026-01-28
+# problem_type: performance_issue
+# component: points_system
+# symptoms:
+#   - "Points calculation taking >5 seconds"
+#   - "N+1 query when loading customer transactions"
+# root_cause: missing_include
+# ol_version: "4.2.0"
+# resolution_type: code_fix
+# severity: high
+# tags: [n-plus-one, eager-loading, performance]
+# related_tickets: [OLOY-1234]
+# ---
