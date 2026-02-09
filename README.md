@@ -16,15 +16,17 @@ Engineering workflows and MCP tools for the Open Loyalty development team. Auto-
 
 This installs engineering workflows (slash commands). MCP servers are configured separately during setup.
 
-**Run setup:**
+**Run setup (required after first install):**
 ```bash
 /openloyalty:setup
 ```
 
+> **Note:** Claude Code's plugin manifest (`plugin.json`) does not support declaring plugin dependencies. The `/openloyalty:setup` command handles installing all required plugins automatically. Always run it after installing.
+
 The setup command handles the full onboarding process:
 
 1. **Installs the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin** — automatically adds the marketplace and installs the plugin. This dependency provides review workflows, specialized agent types (architecture strategist, performance oracle, security sentinel, etc.), and engineering best practices used by `/openloyalty:engineering:review-pr` and other commands.
-2. **Installs the official [Atlassian plugin](https://github.com/anthropics/claude-plugins-official)** (required) — installs `atlassian@claude-plugins-official` which provides Jira and Confluence tools. Authentication is handled through Claude's native Atlassian OAuth — no API tokens needed.
+2. **Installs the official [Atlassian plugin](https://github.com/anthropics/claude-plugins-official)** — installs `atlassian@claude-plugins-official` which provides Jira and Confluence tools. Authentication is handled through Claude's native Atlassian OAuth — no API tokens needed.
 3. **Configures Open Loyalty MCP server** (optional) — prompts for `OPENLOYALTY_API_URL` and `OPENLOYALTY_API_TOKEN`, writes the `openloyalty` server definition. Skippable if you don't need direct loyalty API access.
 4. **Saves to `~/.claude/settings.local.json`** — MCP servers are registered in user-scoped Claude Code settings, available across all projects without any project-level config files.
 
@@ -65,16 +67,17 @@ See [compound-docs skill README](plugins/openloyalty/skills/compound-docs/README
 
 ## Atlassian (Jira/Confluence) Setup
 
-Jira and Confluence integration is provided by the official Atlassian plugin (`atlassian@claude-plugins-official`). It's required for `/openloyalty:engineering:review-pr`, `/openloyalty:engineering:backend-pr-create`, and `/openloyalty:engineering:jira-ticket-create`.
+Jira and Confluence integration is provided by the official Atlassian plugin (`atlassian@claude-plugins-official`). It's installed automatically by `/openloyalty:setup`.
 
-**Install:**
+- **Required by:** `/openloyalty:engineering:jira-ticket-create`
+- **Optional for:** `/openloyalty:engineering:review-pr`, `/openloyalty:engineering:backend-pr-create`, `/openloyalty:engineering:compound` (these commands degrade gracefully without Jira)
+
+**Manual install (if not using setup):**
 ```bash
 /plugin install atlassian@claude-plugins-official
 ```
 
 Authentication is handled through Claude's native Atlassian OAuth — no API tokens or environment variables needed. You'll be prompted to connect your Atlassian account on first use.
-
-Run `/openloyalty:setup` for guided installation.
 
 ---
 
@@ -170,11 +173,13 @@ Build → Test → Find Issue → Research → Improve → Document → Validate
 ## Requirements
 
 - Git access to this repo (SSH or HTTPS)
-- [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin (auto-installed by `/openloyalty:setup`)
 - `AGENTS.md` in your OL repo (for conventions)
 
-**For Jira integration (required):**
-- `atlassian@claude-plugins-official` plugin (installed by `/openloyalty:setup`)
+**Plugin dependencies (installed by `/openloyalty:setup`):**
+- [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) — review workflows, agent types, engineering best practices
+- [atlassian@claude-plugins-official](https://github.com/anthropics/claude-plugins-official) — Jira/Confluence integration via OAuth
+
+> These cannot be declared in `plugin.json` (Claude Code doesn't support plugin dependencies). Run `/openloyalty:setup` after installing to ensure all dependencies are present.
 
 **For OL MCP server (optional):**
 - `openloyalty` server in `~/.claude/settings.local.json` (configured by `/openloyalty:setup`)
