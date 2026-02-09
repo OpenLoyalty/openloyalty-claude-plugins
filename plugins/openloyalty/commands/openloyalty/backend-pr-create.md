@@ -1,5 +1,5 @@
 ---
-name: openloyalty:backend-pr-create
+name: engineering:backend-pr-create
 description: Create a backend pull request with OL conventions, Jira linking, and structured description.
 argument-hint: "[--ticket <OLOY-XXX>] [--base <branch>] [--draft]"
 ---
@@ -183,6 +183,6 @@ After PR is created:
 
 ## Related Commands
 
-- `/openloyalty:review-pr` - Review the PR after creation
-- `/openloyalty:compound` - Document any solved problems
+- `/openloyalty:engineering:review-pr` - Review the PR after creation
+- `/openloyalty:engineering:compound` - Document any solved problems
 - `/openloyalty:help` - Plugin documentation

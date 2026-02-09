@@ -1,5 +1,5 @@
 ---
-name: openloyalty:help
+name: help
 description: Show available Open Loyalty engineering commands and plugin documentation
 argument-hint: ""
 ---
@@ -12,15 +12,15 @@ This plugin provides engineering workflows for the Open Loyalty development team
 
 | Command | Purpose |
 |---------|---------|
-| `/openloyalty:compound` | Document solved problems with validated YAML schema |
-| `/openloyalty:review-pr` | Code review with OL conventions, Jira verification, 1-10 scoring |
-| `/openloyalty:backend-pr-create` | Create backend PR with OL conventions and Jira linking |
-| `/openloyalty:jira-ticket-create` | Create Jira tickets from brainstorming/planning sessions (requires Atlassian MCP) |
+| `/openloyalty:engineering:compound` | Document solved problems with validated YAML schema |
+| `/openloyalty:engineering:review-pr` | Code review with OL conventions, Jira verification, 1-10 scoring |
+| `/openloyalty:engineering:backend-pr-create` | Create backend PR with OL conventions and Jira linking |
+| `/openloyalty:engineering:jira-ticket-create` | Create Jira tickets from brainstorming/planning sessions (requires Atlassian MCP) |
 | `/openloyalty:help` | Show this help |
 
 ## Compound Learning System
 
-The `/openloyalty:compound` command captures solved problems to build searchable institutional knowledge.
+The `/openloyalty:engineering:compound` command captures solved problems to build searchable institutional knowledge.
 
 ### Features
 
@@ -33,10 +33,10 @@ The `/openloyalty:compound` command captures solved problems to build searchable
 ### Usage
 
 ```bash
-/openloyalty:compound                     # Document from current context
-/openloyalty:compound [branch]            # Analyze specific branch
-/openloyalty:compound --ticket OLOY-123   # Include Jira context
-/openloyalty:compound --slack <url>       # Include Slack thread
+/openloyalty:engineering:compound                     # Document from current context
+/openloyalty:engineering:compound [branch]            # Analyze specific branch
+/openloyalty:engineering:compound --ticket OLOY-123   # Include Jira context
+/openloyalty:engineering:compound --slack <url>       # Include Slack thread
 ```
 
 ### Output Categories
@@ -90,14 +90,14 @@ The code review workflow reads AGENTS.md from your repo to check against OL conv
 ## Jira Integration
 
 This plugin bundles the [mcp-atlassian](https://github.com/sooperset/mcp-atlassian) MCP server as a dependency. When configured, it enables:
-- Creating Jira tickets from brainstorming sessions (`/openloyalty:jira-ticket-create`)
+- Creating Jira tickets from brainstorming sessions (`/openloyalty:engineering:jira-ticket-create`)
 - Fetching ticket details from branch name patterns (e.g., `OLOY-123`)
 - Extracting context from ticket description and comments
 - Linking compound learnings to tickets
 
 Run `/openloyalty:setup` to configure your Atlassian credentials.
 
-Some commands (like `/openloyalty:compound` and `/openloyalty:review-pr`) work without Jira and gracefully degrade to git + code analysis only. The `/openloyalty:jira-ticket-create` command **requires** Atlassian MCP.
+Some commands (like `/openloyalty:engineering:compound` and `/openloyalty:engineering:review-pr`) work without Jira and gracefully degrade to git + code analysis only. The `/openloyalty:engineering:jira-ticket-create` command **requires** Atlassian MCP.
 
 ## Output Locations
 

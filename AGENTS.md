@@ -36,7 +36,7 @@ openloyalty-claude-skills/
 
 | Concept | Location | Purpose | Invoked by |
 |---------|----------|---------|------------|
-| **Command** | `commands/openloyalty/{name}.md` | User-facing slash command (`/openloyalty:{name}`) | User typing the command |
+| **Command** | `commands/openloyalty/{name}.md` | User-facing slash command (`/openloyalty:{namespace}:{name}`) | User typing the command |
 | **Skill** | `skills/{name}/SKILL.md` | Internal reusable workflow | Commands or other skills |
 
 **Rule:** Commands orchestrate. Skills do focused work. If a workflow is reusable across multiple commands, extract it into a skill.
@@ -59,13 +59,13 @@ Every command file starts with YAML frontmatter:
 
 ```yaml
 ---
-name: openloyalty:{command-name}
+name: engineering:{command-name}
 description: One-line description of what the command does.
 argument-hint: "[--flag1 <value>] [--flag2] [positional-arg]"
 ---
 ```
 
-- `name` — Must match `openloyalty:{filename-without-extension}`
+- `name` — Use `engineering:{command-name}` for engineering workflow commands, or just `{command-name}` for top-level commands like `help` and `setup`
 - `description` — Concise, starts with a verb (e.g., "Create", "Review", "Document")
 - `argument-hint` — Shows accepted flags/args. Use `""` if none.
 
@@ -96,7 +96,7 @@ Follow this template:
 
 ## Related Commands
 
-- `/openloyalty:{other}` - Brief description
+- `/openloyalty:engineering:{other}` - Brief description
 ```
 
 ### Conventions
@@ -119,7 +119,7 @@ Follow this template:
 After creating the command file, add it to `commands/openloyalty/help.md` in the Available Commands table:
 
 ```markdown
-| `/openloyalty:{name}` | Brief description |
+| `/openloyalty:engineering:{name}` | Brief description |
 ```
 
 Also update `README.md` if the command is significant.

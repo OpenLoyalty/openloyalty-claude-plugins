@@ -23,7 +23,7 @@ This installs engineering workflows (slash commands). MCP servers are configured
 
 The setup command handles the full onboarding process:
 
-1. **Installs the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin** — automatically adds the marketplace and installs the plugin. This dependency provides review workflows, specialized agent types (architecture strategist, performance oracle, security sentinel, etc.), and engineering best practices used by `/openloyalty:review-pr` and other commands.
+1. **Installs the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin** — automatically adds the marketplace and installs the plugin. This dependency provides review workflows, specialized agent types (architecture strategist, performance oracle, security sentinel, etc.), and engineering best practices used by `/openloyalty:engineering:review-pr` and other commands.
 2. **Configures Atlassian (Jira/Confluence) MCP server** (required) — prompts for `JIRA_USERNAME` and `JIRA_API_TOKEN`, writes the full `mcp-atlassian` server definition to user-scoped settings. `JIRA_URL` and `CONFLUENCE_URL` are set automatically.
 3. **Configures Open Loyalty MCP server** (optional) — prompts for `OPENLOYALTY_API_URL` and `OPENLOYALTY_API_TOKEN`, writes the `openloyalty` server definition. Skippable if you don't need direct loyalty API access.
 4. **Saves to `~/.claude/settings.local.json`** — MCP servers are registered in user-scoped Claude Code settings, available across all projects without any project-level config files.
@@ -47,17 +47,17 @@ The plugin provides **slash commands** (code review, PR creation, Jira tickets, 
 | Command | Purpose |
 |---------|---------|
 | `/openloyalty:setup` | Full onboarding: installs compound-engineering plugin, configures MCP servers in user scope |
-| `/openloyalty:review-pr` | Code review with OL conventions, Jira verification, 1-10 scoring |
-| `/openloyalty:backend-pr-create` | Create backend PR with OL conventions and Jira linking |
-| `/openloyalty:jira-ticket-create` | Create Jira tickets from brainstorming/planning sessions |
-| `/openloyalty:compound` | **[WIP]** Document solved problems with YAML schema validation |
+| `/openloyalty:engineering:review-pr` | Code review with OL conventions, Jira verification, 1-10 scoring |
+| `/openloyalty:engineering:backend-pr-create` | Create backend PR with OL conventions and Jira linking |
+| `/openloyalty:engineering:jira-ticket-create` | Create Jira tickets from brainstorming/planning sessions |
+| `/openloyalty:engineering:compound` | **[WIP]** Document solved problems with YAML schema validation |
 | `/openloyalty:help` | Show available commands and plugin documentation |
 
 ---
 
 ## Compound Learning System
 
-The `/openloyalty:compound` command creates a compounding knowledge repository with parallel subagents, YAML schema validation, and auto-categorized output. Each documented solution makes the team smarter.
+The `/openloyalty:engineering:compound` command creates a compounding knowledge repository with parallel subagents, YAML schema validation, and auto-categorized output. Each documented solution makes the team smarter.
 
 See [compound-docs skill README](plugins/openloyalty/skills/compound-docs/README.md) for full documentation — usage, auto-invoke triggers, output categories, and YAML schema reference.
 
@@ -65,7 +65,7 @@ See [compound-docs skill README](plugins/openloyalty/skills/compound-docs/README
 
 ## Jira MCP Server Setup
 
-The Atlassian (Jira/Confluence) MCP server is required for `/openloyalty:review-pr`, `/openloyalty:backend-pr-create`, and `/openloyalty:jira-ticket-create`. Run `/openloyalty:setup` for interactive configuration, or add to `~/.claude/settings.local.json` manually:
+The Atlassian (Jira/Confluence) MCP server is required for `/openloyalty:engineering:review-pr`, `/openloyalty:engineering:backend-pr-create`, and `/openloyalty:engineering:jira-ticket-create`. Run `/openloyalty:setup` for interactive configuration, or add to `~/.claude/settings.local.json` manually:
 
 ```json
 {

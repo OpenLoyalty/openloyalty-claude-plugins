@@ -1,6 +1,6 @@
 # Compound Learning System
 
-The `/openloyalty:compound` command creates a compounding knowledge repository. Each documented solution makes the team smarter.
+The `/openloyalty:engineering:compound` command creates a compounding knowledge repository. Each documented solution makes the team smarter.
 
 ## Features
 
@@ -17,16 +17,16 @@ The `/openloyalty:compound` command creates a compounding knowledge repository. 
 
 ```bash
 # Document from current context
-/openloyalty:compound
+/openloyalty:engineering:compound
 
 # Analyze specific branch
-/openloyalty:compound feature/OLOY-123-fix-timezone
+/openloyalty:engineering:compound feature/OLOY-123-fix-timezone
 
 # Include Jira ticket context
-/openloyalty:compound --ticket OLOY-1234
+/openloyalty:engineering:compound --ticket OLOY-1234
 
 # Include Slack thread
-/openloyalty:compound --slack https://slack.com/archives/C123/p456
+/openloyalty:engineering:compound --slack https://slack.com/archives/C123/p456
 ```
 
 ## Auto-Invoke Triggers

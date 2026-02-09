@@ -1,3 +1,9 @@
+---
+name: setup
+description: Install dependencies and configure MCP server environment variables for Open Loyalty plugin
+argument-hint: ""
+---
+
 # Open Loyalty Plugin — Interactive Setup
 
 Guide the user through installing required plugin dependencies and configuring MCP server environment variables.
@@ -65,7 +71,7 @@ If yes, collect:
 
 **Atlassian MCP (required):**
 
-If any Atlassian variables are missing, collect them. This is required for Jira integration used by `/openloyalty:review-pr`, `/openloyalty:backend-pr-create`, and `/openloyalty:jira-ticket-create`.
+If any Atlassian variables are missing, collect them. This is required for Jira integration used by `/openloyalty:engineering:review-pr`, `/openloyalty:engineering:backend-pr-create`, and `/openloyalty:engineering:jira-ticket-create`.
 
 Collect:
 
