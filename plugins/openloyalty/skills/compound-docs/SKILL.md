@@ -40,7 +40,7 @@ This skill captures problem solutions immediately after confirmation, creating s
 - "that did it"
 - "finally working"
 
-**OR manual:** `/openloyalty:engineering:compound` command
+**OR manual:** `/openloyalty:compound` command
 
 **Non-trivial problems only:**
 - Multiple investigation attempts needed
@@ -314,7 +314,7 @@ Action:
 ## Integration Points
 
 **Invoked by:**
-- `/openloyalty:engineering:compound` command (primary interface)
+- `/openloyalty:compound` command (primary interface)
 - Manual invocation in conversation after solution confirmed
 - Can be triggered by detecting confirmation phrases
 

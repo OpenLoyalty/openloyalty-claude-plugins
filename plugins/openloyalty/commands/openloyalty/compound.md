@@ -1,10 +1,10 @@
 ---
-name: openloyalty:engineering:compound
+name: openloyalty:compound
 description: Document a recently solved problem to compound your team's knowledge
 argument-hint: "[branch] [--slack <url>] [--ticket <OLOY-XXX>]"
 ---
 
-# /openloyalty:engineering:compound
+# /openloyalty:compound
 
 Coordinate multiple subagents working in parallel to document a recently solved problem.
 
@@ -17,10 +17,10 @@ Captures problem solutions while context is fresh, creating structured documenta
 ## Usage
 
 ```bash
-/openloyalty:engineering:compound                     # Document from current context
-/openloyalty:engineering:compound [branch]            # Analyze specific branch
-/openloyalty:engineering:compound --ticket OLOY-123   # Include Jira context
-/openloyalty:engineering:compound --slack <url>       # Include Slack thread context
+/openloyalty:compound                     # Document from current context
+/openloyalty:compound [branch]            # Analyze specific branch
+/openloyalty:compound --ticket OLOY-123   # Include Jira context
+/openloyalty:compound --slack <url>       # Include Slack thread context
 ```
 
 ## Arguments
@@ -262,7 +262,7 @@ Build → Test → Find Issue → Research → Improve → Document → Validate
 </trigger_phrases>
 
 <manual_override>
-Use `/openloyalty:engineering:compound [context]` to document immediately without waiting for auto-detection.
+Use `/openloyalty:compound [context]` to document immediately without waiting for auto-detection.
 </manual_override>
 </auto_invoke>
 
@@ -272,5 +272,5 @@ Use `/openloyalty:engineering:compound [context]` to document immediately withou
 
 ## Related Commands
 
-- `/openloyalty:engineering:review-pr` - Code review workflow
+- `/openloyalty:review-pr` - Code review workflow
 - `/openloyalty:help` - Plugin documentation

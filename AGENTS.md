@@ -96,7 +96,7 @@ Follow this template:
 
 ## Related Commands
 
-- `/openloyalty:engineering:{other}` - Brief description
+- `/openloyalty:{other}` - Brief description
 ```
 
 ### Conventions
@@ -119,7 +119,7 @@ Follow this template:
 After creating the command file, add it to `commands/openloyalty/help.md` in the Available Commands table:
 
 ```markdown
-| `/openloyalty:engineering:{name}` | Brief description |
+| `/openloyalty:{name}` | Brief description |
 ```
 
 Also update `README.md` if the command is significant.

@@ -25,7 +25,7 @@ This installs engineering workflows (slash commands). MCP servers are configured
 
 The setup command handles the full onboarding process:
 
-1. **Installs the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin** — automatically adds the marketplace and installs the plugin. This dependency provides review workflows, specialized agent types (architecture strategist, performance oracle, security sentinel, etc.), and engineering best practices used by `/openloyalty:engineering:review-pr` and other commands.
+1. **Installs the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin** — automatically adds the marketplace and installs the plugin. This dependency provides review workflows, specialized agent types (architecture strategist, performance oracle, security sentinel, etc.), and engineering best practices used by `/openloyalty:review-pr` and other commands.
 2. **Installs the official [Atlassian plugin](https://github.com/anthropics/claude-plugins-official)** — installs `atlassian@claude-plugins-official` which provides Jira and Confluence tools. Authentication is handled through Claude's native Atlassian OAuth — no API tokens needed.
 3. **Configures Open Loyalty MCP server** (optional) — prompts for `OPENLOYALTY_API_URL` and `OPENLOYALTY_API_TOKEN`, writes the `openloyalty` server definition to `~/.claude/.mcp.json`. Skippable if you don't need direct loyalty API access.
 
@@ -48,17 +48,17 @@ The plugin provides **slash commands** (code review, PR creation, Jira tickets, 
 | Command | Purpose |
 |---------|---------|
 | `/openloyalty:setup` | Full onboarding: installs compound-engineering plugin, configures MCP servers in user scope |
-| `/openloyalty:engineering:review-pr` | Code review with OL conventions, Jira verification, 1-10 scoring |
-| `/openloyalty:engineering:backend-pr-create` | Create backend PR with OL conventions and Jira linking |
-| `/openloyalty:engineering:jira-ticket-create` | Create Jira tickets from brainstorming/planning sessions |
-| `/openloyalty:engineering:compound` | **[WIP]** Document solved problems with YAML schema validation |
+| `/openloyalty:review-pr` | Code review with OL conventions, Jira verification, 1-10 scoring |
+| `/openloyalty:backend-pr-create` | Create backend PR with OL conventions and Jira linking |
+| `/openloyalty:jira-ticket-create` | Create Jira tickets from brainstorming/planning sessions |
+| `/openloyalty:compound` | **[WIP]** Document solved problems with YAML schema validation |
 | `/openloyalty:help` | Show available commands and plugin documentation |
 
 ---
 
 ## Compound Learning System
 
-The `/openloyalty:engineering:compound` command creates a compounding knowledge repository with parallel subagents, YAML schema validation, and auto-categorized output. Each documented solution makes the team smarter.
+The `/openloyalty:compound` command creates a compounding knowledge repository with parallel subagents, YAML schema validation, and auto-categorized output. Each documented solution makes the team smarter.
 
 See [compound-docs skill README](plugins/openloyalty/skills/compound-docs/README.md) for full documentation — usage, auto-invoke triggers, output categories, and YAML schema reference.
 
@@ -68,8 +68,8 @@ See [compound-docs skill README](plugins/openloyalty/skills/compound-docs/README
 
 Jira and Confluence integration is provided by the official Atlassian plugin (`atlassian@claude-plugins-official`). It's installed automatically by `/openloyalty:setup`.
 
-- **Required by:** `/openloyalty:engineering:jira-ticket-create`
-- **Optional for:** `/openloyalty:engineering:review-pr`, `/openloyalty:engineering:backend-pr-create`, `/openloyalty:engineering:compound` (these commands degrade gracefully without Jira)
+- **Required by:** `/openloyalty:jira-ticket-create`
+- **Optional for:** `/openloyalty:review-pr`, `/openloyalty:backend-pr-create`, `/openloyalty:compound` (these commands degrade gracefully without Jira)
 
 **Manual install (if not using setup):**
 ```bash

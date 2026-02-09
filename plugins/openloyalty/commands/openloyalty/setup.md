@@ -57,7 +57,7 @@ Then restart Claude Code and run /openloyalty:setup again.
 
 ### 1. Install required plugin: atlassian
 
-The Open Loyalty plugin requires the official [Atlassian](https://github.com/anthropics/claude-plugins-official) plugin for Jira and Confluence integration. This is used by `/openloyalty:engineering:review-pr`, `/openloyalty:engineering:backend-pr-create`, and `/openloyalty:engineering:jira-ticket-create`.
+The Open Loyalty plugin requires the official [Atlassian](https://github.com/anthropics/claude-plugins-official) plugin for Jira and Confluence integration. This is used by `/openloyalty:review-pr`, `/openloyalty:backend-pr-create`, and `/openloyalty:jira-ticket-create`.
 
 **IMPORTANT:** Do NOT check for this plugin by looking at available `mcp__claude_ai_Atlassian__*` tools in the session — tools loaded at session start persist even after a plugin is removed. Always use the CLI command to verify actual installation state.
 

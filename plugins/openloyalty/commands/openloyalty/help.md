@@ -10,11 +10,18 @@ This plugin provides engineering workflows for the Open Loyalty development team
 
 ## Available Commands
 
-Read all `.md` files in the plugin commands directory and build the command table dynamically from their YAML frontmatter. For each file, use the `name` field as the command name (prefixed with `/`) and the `description` field as the purpose. Display the table sorted in this order: setup first, then engineering commands alphabetically, then help last.
+| Command | Purpose |
+|---------|---------|
+| `/openloyalty:setup` | Full onboarding: installs compound-engineering plugin, configures MCP servers in user scope |
+| `/openloyalty:review-pr` | Code review with OL conventions, Jira verification, 1-10 scoring |
+| `/openloyalty:backend-pr-create` | Create backend PR with OL conventions and Jira linking |
+| `/openloyalty:jira-ticket-create` | Create Jira tickets from brainstorming/planning sessions |
+| `/openloyalty:compound` | **[WIP]** Document solved problems with YAML schema validation |
+| `/openloyalty:help` | Show available commands and plugin documentation |
 
 ## Compound Learning System
 
-The `/openloyalty:engineering:compound` command captures solved problems to build searchable institutional knowledge.
+The `/openloyalty:compound` command captures solved problems to build searchable institutional knowledge.
 
 ### Features
 
@@ -27,10 +34,10 @@ The `/openloyalty:engineering:compound` command captures solved problems to buil
 ### Usage
 
 ```bash
-/openloyalty:engineering:compound                     # Document from current context
-/openloyalty:engineering:compound [branch]            # Analyze specific branch
-/openloyalty:engineering:compound --ticket OLOY-123   # Include Jira context
-/openloyalty:engineering:compound --slack <url>       # Include Slack thread
+/openloyalty:compound                     # Document from current context
+/openloyalty:compound [branch]            # Analyze specific branch
+/openloyalty:compound --ticket OLOY-123   # Include Jira context
+/openloyalty:compound --slack <url>       # Include Slack thread
 ```
 
 ### Output Categories
@@ -81,8 +88,8 @@ The code review workflow reads AGENTS.md from your repo to check against OL conv
 
 Jira and Confluence integration is provided by the official Atlassian plugin (`atlassian@claude-plugins-official`). It's installed automatically by `/openloyalty:setup`.
 
-- **Required by:** `/openloyalty:engineering:jira-ticket-create`
-- **Optional for:** `/openloyalty:engineering:review-pr`, `/openloyalty:engineering:backend-pr-create`, `/openloyalty:engineering:compound` (these commands degrade gracefully without Jira)
+- **Required by:** `/openloyalty:jira-ticket-create`
+- **Optional for:** `/openloyalty:review-pr`, `/openloyalty:backend-pr-create`, `/openloyalty:compound` (these commands degrade gracefully without Jira)
 
 Authentication is handled through Claude's native Atlassian OAuth — no API tokens needed.
 
