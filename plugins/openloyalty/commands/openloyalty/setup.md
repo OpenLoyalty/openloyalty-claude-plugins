@@ -1,8 +1,34 @@
 # Open Loyalty Plugin — Interactive Setup
 
-Guide the user through configuring the MCP server environment variables for both Open Loyalty and Atlassian (Jira/Confluence).
+Guide the user through installing required plugin dependencies and configuring MCP server environment variables.
 
 ## Steps
+
+### 0. Check required plugin: compound-engineering
+
+**BLOCKING:** The Open Loyalty plugin requires the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin.
+
+Check if it's installed by looking for compound-engineering skills in the available tools (e.g., any `compound-engineering:*` slash commands).
+
+**If not installed, display:**
+
+```
+Required plugin missing: compound-engineering
+
+The Open Loyalty plugin depends on the Compound Engineering plugin for
+review workflows, agent types, and engineering best practices.
+
+Install it now:
+
+  /plugin marketplace add https://github.com/EveryInc/compound-engineering-plugin
+  /plugin install compound-engineering
+
+Then restart Claude Code and run /openloyalty:setup again.
+```
+
+**STOP here if compound-engineering is not installed.** Do not proceed to environment setup.
+
+---
 
 ### 1. Check current environment
 

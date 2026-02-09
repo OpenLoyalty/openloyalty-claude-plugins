@@ -2,6 +2,15 @@
 
 Engineering workflows and MCP tools for the Open Loyalty development team. Auto-updating Claude Code plugins with compound learning documentation system.
 
+## Prerequisites
+
+This plugin requires the **compound-engineering** plugin. Install it first:
+
+```bash
+/plugin marketplace add https://github.com/EveryInc/compound-engineering-plugin
+/plugin install compound-engineering
+```
+
 ## Quick Start
 
 **Add the marketplace (once):**
@@ -37,7 +46,8 @@ Open Loyalty MCP server providing 60+ tools for loyalty program management direc
 | `/openloyalty:compound` | Document solved problems with YAML schema validation |
 | `/openloyalty:review` | Code review with OL conventions, Jira verification, 1-10 scoring |
 | `/openloyalty:backend-pr-create` | Create backend PR with OL conventions and Jira linking |
-| `/openloyalty:setup` | Interactive setup for MCP server environment variables |
+| `/openloyalty:jira-ticket-create` | Create Jira tickets from brainstorming/planning sessions |
+| `/openloyalty:setup` | Interactive setup for dependencies and environment variables |
 | `/openloyalty:help` | Show available commands and plugin documentation |
 
 ---
@@ -241,7 +251,8 @@ openloyalty-claude-plugins/
 │       │   ├── compound.md           # Compound learning command
 │       │   ├── review.md             # Code review command
 │       │   ├── backend-pr-create.md  # Backend PR creation command
-│       │   ├── setup.md              # MCP setup command
+│       │   ├── jira-ticket-create.md # Jira ticket creation from brainstorms
+│       │   ├── setup.md              # Dependencies & MCP setup command
 │       │   └── help.md               # Help command
 │       └── skills/compound-docs/     # Documentation engine
 │           ├── SKILL.md              # 7-step process skill
@@ -295,14 +306,19 @@ Build → Test → Find Issue → Research → Improve → Document → Validate
 ## Requirements
 
 - Git access to this repo (SSH or HTTPS)
+- [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin installed
 - `AGENTS.md` in your OL repo (for conventions)
 
 **For MCP server:**
 - `OPENLOYALTY_API_URL`, `OPENLOYALTY_API_TOKEN` environment variables
 - Node.js / npx available in PATH
 
+**For Jira integration (bundled, required for `/openloyalty:jira-ticket-create`):**
+- `JIRA_URL`, `JIRA_USERNAME`, `JIRA_API_TOKEN` environment variables
+- Python / uvx available in PATH
+
 **Optional:**
-- Atlassian MCP for Jira integration
+- Confluence credentials for Confluence integration
 - Slack MCP for conversation context
 
 ---

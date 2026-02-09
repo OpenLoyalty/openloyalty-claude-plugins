@@ -66,6 +66,19 @@ After capture, choose:
 3. **Link related issues** - Connect similar problems
 4. **View documentation** - Review what was captured
 
+## Required Plugin: compound-engineering
+
+This plugin depends on the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin for review workflows, agent types, and engineering best practices.
+
+**Install it:**
+
+```bash
+/plugin marketplace add https://github.com/EveryInc/compound-engineering-plugin
+/plugin install compound-engineering
+```
+
+Run `/openloyalty:setup` to verify all dependencies are configured.
+
 ## Integration with AGENTS.md
 
 This plugin works alongside your repository's `AGENTS.md` file:
