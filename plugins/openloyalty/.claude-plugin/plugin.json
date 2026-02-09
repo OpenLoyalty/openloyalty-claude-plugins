@@ -9,6 +9,9 @@
   "homepage": "https://github.com/OpenLoyalty/openloyalty-claude-plugins",
   "repository": "https://github.com/OpenLoyalty/openloyalty-claude-plugins",
   "license": "UNLICENSED",
+  "dependencies": [
+    "atlassian@claude-plugins-official"
+  ],
   "keywords": [
     "compound-learning",
     "code-review",

@@ -55,9 +55,9 @@ Prompt: |
   Attempt to fetch Jira ticket context for: {ticket_id}
 
   Steps:
-  1. Check if Atlassian MCP tools are available
-  2. If not available: return { "status": "mcp_not_configured" }
-  3. If available, try: mcp__mcp-atlassian__jira_get_issue with issue_key={ticket_id}
+  1. Check if Atlassian plugin tools are available (mcp__claude_ai_Atlassian__*)
+  2. If not available: return { "status": "plugin_not_installed" }
+  3. If available, try: mcp__claude_ai_Atlassian__getJiraIssue with issueIdOrKey={ticket_id}
   4. If successful, extract:
      - Summary (ticket title)
      - Description

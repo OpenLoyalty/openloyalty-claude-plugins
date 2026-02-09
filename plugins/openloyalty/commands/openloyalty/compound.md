@@ -117,9 +117,9 @@ Prompt: |
   Attempt to fetch Jira ticket context for: {ticket_id}
 
   Steps:
-  1. First check if Atlassian MCP tools are available
-  2. If not available: return { "status": "mcp_not_configured" }
-  3. If available, try: mcp__mcp-atlassian__jira_get_issue
+  1. First check if Atlassian plugin tools are available (mcp__claude_ai_Atlassian__*)
+  2. If not available: return { "status": "plugin_not_installed" }
+  3. If available, try: mcp__claude_ai_Atlassian__getJiraIssue
   4. If successful:
      - Extract: summary, description, acceptance criteria
      - Look for Slack thread URLs in comments

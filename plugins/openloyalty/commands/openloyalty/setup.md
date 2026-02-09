@@ -44,22 +44,43 @@ Then restart Claude Code and run /openloyalty:setup again.
 
 ---
 
-### 1. Check current configuration
+### 1. Install required plugin: atlassian
 
-Read `~/.claude/settings.local.json` and check if `mcpServers` already contains the `mcp-atlassian` and/or `openloyalty` server entries.
+The Open Loyalty plugin requires the official [Atlassian](https://github.com/anthropics/claude-plugins-official) plugin for Jira and Confluence integration. This is used by `/openloyalty:engineering:review-pr`, `/openloyalty:engineering:backend-pr-create`, and `/openloyalty:engineering:jira-ticket-create`.
 
-- If `mcp-atlassian` is present with non-empty env values, Atlassian is configured.
-- If `openloyalty` is present with non-empty env values, OL MCP is configured.
+Check if it's already installed by looking for `mcp__claude_ai_Atlassian__*` tools in the available tools (e.g., `mcp__claude_ai_Atlassian__getJiraIssue`).
 
-If both are present, tell the user their configuration looks good. Skip to step 4.
+**If already installed**, tell the user and continue to step 2.
 
-### 2. Collect missing values
+**If not installed**, install it:
 
-Present each MCP group with missing variables. Before collecting values for a group, ask the user if they want to configure it. If they skip, move to the next group.
+```bash
+claude plugin install atlassian@claude-plugins-official
+```
 
-**Open Loyalty MCP (optional):**
+If the install succeeds, tell the user:
 
-If any OL variables are missing, ask: "Do you want to configure the Open Loyalty MCP server? (needed for loyalty API tools — you can skip this and configure later)" — if the user says no/skip, skip this group entirely.
+> Installed Atlassian plugin. It will be available after restart. You'll be prompted to connect your Atlassian account on first use.
+
+If the install fails, show the error and tell the user to install manually:
+
+```
+Could not auto-install the Atlassian plugin. Install it manually:
+
+  /plugin install atlassian@claude-plugins-official
+
+Then restart Claude Code and run /openloyalty:setup again.
+```
+
+### 2. Check Open Loyalty MCP configuration (optional)
+
+Read `~/.claude/settings.local.json` and check if `mcpServers` already contains the `openloyalty` server entry.
+
+- If `openloyalty` is present with non-empty env values, OL MCP is configured. Skip to step 4.
+
+### 3. Collect Open Loyalty MCP values (optional)
+
+Ask: "Do you want to configure the Open Loyalty MCP server? (needed for loyalty API tools — you can skip this and configure later)" — if the user says no/skip, skip to step 4.
 
 If yes, collect:
 
@@ -69,50 +90,7 @@ If yes, collect:
 
 - **`OPENLOYALTY_DEFAULT_STORE_CODE`** — Store identifier. Defaults to `"default"`. Ask: "What is your store code? (press Enter for `default`)" — if the user presses Enter or says default, use `"default"`.
 
-**Atlassian MCP (required):**
-
-If any Atlassian variables are missing, collect them. This is required for Jira integration used by `/openloyalty:engineering:review-pr`, `/openloyalty:engineering:backend-pr-create`, and `/openloyalty:engineering:jira-ticket-create`.
-
-Collect:
-
-- **`JIRA_URL`** — Always `https://openloyalty.atlassian.net`. Set automatically, just inform the user: "Setting JIRA_URL to https://openloyalty.atlassian.net". Do not ask.
-
-- **`JIRA_USERNAME`** — Your Atlassian email address. Ask: "What is your Atlassian email?"
-
-- **`JIRA_API_TOKEN`** — Tell the user: "Generate an API token at https://id.atlassian.com/manage-profile/security/api-tokens — click 'Create API token', give it a name (e.g. 'Claude Code'), and copy the token." Then ask: "Paste your Jira API token."
-
-- **`CONFLUENCE_URL`** — Always `https://openloyalty.atlassian.net/wiki`. Set automatically, just inform the user. Do not ask.
-
-- **`CONFLUENCE_USERNAME`** — Usually same as Jira username. Ask: "What is your Confluence email? (press Enter to use same as Jira)"
-
-- **`CONFLUENCE_API_TOKEN`** — Usually same as Jira token. Ask: "Paste your Confluence API token. (press Enter to use same as Jira)"
-
-### 3. Write to user-scoped settings
-
-Read `~/.claude/settings.local.json` (create if it doesn't exist). Merge the collected MCP server definitions into the `"mcpServers"` object. Each server entry includes the full command, args, and env with the actual user values — no `${VAR}` references.
-
-**Atlassian server entry:**
-
-```json
-{
-  "mcpServers": {
-    "mcp-atlassian": {
-      "command": "uvx",
-      "args": ["mcp-atlassian"],
-      "env": {
-        "JIRA_URL": "https://openloyalty.atlassian.net",
-        "JIRA_USERNAME": "<collected value>",
-        "JIRA_API_TOKEN": "<collected value>",
-        "CONFLUENCE_URL": "https://openloyalty.atlassian.net/wiki",
-        "CONFLUENCE_USERNAME": "<collected value>",
-        "CONFLUENCE_API_TOKEN": "<collected value>"
-      }
-    }
-  }
-}
-```
-
-**Open Loyalty server entry (if configured):**
+Read `~/.claude/settings.local.json` (create if it doesn't exist). Merge the collected MCP server definition into the `"mcpServers"` object:
 
 ```json
 {
@@ -130,10 +108,10 @@ Read `~/.claude/settings.local.json` (create if it doesn't exist). Merge the col
 }
 ```
 
-**Important:** Preserve any existing keys in the file — only add or update the server entries being configured. Use the Read and Edit tools to merge, not overwrite.
+**Important:** Preserve any existing keys in the file — only add or update the server entry being configured. Use the Read and Edit tools to merge, not overwrite.
 
 ### 4. Instruct to restart
 
 Tell the user:
 
-> Settings saved to `~/.claude/settings.local.json`. Restart Claude Code (`/exit` and relaunch) for the MCP servers to start.
+> Setup complete. Restart Claude Code (`/exit` and relaunch) for changes to take effect.

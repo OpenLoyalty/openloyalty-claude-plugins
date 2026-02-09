@@ -110,7 +110,7 @@ Follow this template:
      {instructions}
    ```
 4. **Valid agent types:** `Bash`, `Explore`, `general-purpose`, `compound-engineering:research:git-history-analyzer`, and other Task tool subagent types
-5. **Graceful degradation** — Optional integrations (Jira, Slack) must handle unavailability without failing. Return status objects like `{ "status": "mcp_not_configured" }` or `{ "status": "unavailable" }`
+5. **Graceful degradation** — Optional integrations (Jira, Slack) must handle unavailability without failing. Return status objects like `{ "status": "plugin_not_installed" }` or `{ "status": "unavailable" }`
 6. **User confirmation before destructive actions** — Always preview before creating PRs, pushing code, or modifying external systems
 7. **Ticket detection** — Extract `OLOY-\d+` from branch names when `--ticket` is not provided
 
@@ -213,7 +213,7 @@ Most commands use this Phase 1 pattern:
 | Agent | Type | Purpose |
 |-------|------|---------|
 | Git/Branch Context | `Bash` | Branch name, commits, diff stats, remote status |
-| Jira Ticket (optional) | `general-purpose` | Fetch ticket details via Atlassian MCP |
+| Jira Ticket (optional) | `general-purpose` | Fetch ticket details via Atlassian plugin |
 | Code/Conventions | `Explore` | Read AGENTS.md, analyze changed files |
 
 ### Jira Agent Template (Reusable)
@@ -226,9 +226,9 @@ Prompt: |
   Attempt to fetch Jira ticket context for: {ticket_id}
 
   Steps:
-  1. Check if Atlassian MCP tools are available
-  2. If not available: return { "status": "mcp_not_configured" }
-  3. If available, try: mcp__mcp-atlassian__jira_get_issue with issue_key={ticket_id}
+  1. Check if Atlassian plugin tools are available (mcp__claude_ai_Atlassian__*)
+  2. If not available: return { "status": "plugin_not_installed" }
+  3. If available, try: mcp__claude_ai_Atlassian__getJiraIssue with issueIdOrKey={ticket_id}
   4. If successful, extract: summary, description, acceptance criteria
   5. If call fails: return { "status": "unavailable", "reason": "..." }
 

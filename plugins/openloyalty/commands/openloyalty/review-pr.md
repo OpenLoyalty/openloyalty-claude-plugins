@@ -122,12 +122,12 @@ Prompt: |
   IMPORTANT: This is optional. The review works fine without Jira.
 
   Steps:
-  1. First, check if Atlassian MCP is available by looking for
-     mcp__mcp-atlassian__* tools in your available tools
-  2. If MCP not available:
-     - Return immediately: { "status": "mcp_not_configured" }
+  1. First, check if the Atlassian plugin is available by looking for
+     mcp__claude_ai_Atlassian__* tools in your available tools
+  2. If plugin not available:
+     - Return immediately: { "status": "plugin_not_installed" }
      - Do NOT treat this as an error
-  3. If MCP available, try: mcp__mcp-atlassian__jira_get_issue with issue_key={ticket_id}
+  3. If plugin available, try: mcp__claude_ai_Atlassian__getJiraIssue with issueIdOrKey={ticket_id}
   4. If successful, extract:
      - Summary (ticket title)
      - Description (full requirements)
@@ -293,7 +293,7 @@ If migrations are present:
 
 **Skip this phase if:**
 - No ticket ID in branch name AND no `--ticket` flag provided
-- Jira MCP not configured (status: "mcp_not_configured")
+- Atlassian plugin not installed (status: "plugin_not_installed")
 - Jira fetch failed (status: "unavailable")
 - User passed `--skip-jira`
 
@@ -442,7 +442,7 @@ Create the review report with this structure:
 
 **If no ticket ID in branch:** "No ticket ID found in branch name. Skipping ticket compliance check."
 
-**If Jira MCP not configured:** "Jira integration not configured. To enable ticket compliance checking, set up the Atlassian MCP."
+**If Atlassian plugin not installed:** "Atlassian plugin not installed. To enable ticket compliance checking, install it with `/plugin install atlassian@claude-plugins-official`."
 
 **If Jira fetch failed:** "Could not fetch ticket {OLOY-XXX}: {reason}. Review based on code only."
 

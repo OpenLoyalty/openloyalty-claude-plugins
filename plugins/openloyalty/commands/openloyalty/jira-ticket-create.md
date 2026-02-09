@@ -16,29 +16,26 @@ Turn a brainstorming or planning session into structured Jira tickets. Extracts 
 | `--type <type>` | Force issue type for all tickets: `story`, `bug`, `task` | `--type story` |
 | `--epic <ID>` | Link all tickets to an existing epic | `--epic OLOY-100` |
 
-## Precondition: Atlassian MCP Required
+## Precondition: Atlassian Plugin Required
 
-**BLOCKING:** This command requires the `mcp-atlassian` MCP server to be running.
+**BLOCKING:** This command requires the official Atlassian plugin (`atlassian@claude-plugins-official`).
 
-Before proceeding, verify the Atlassian MCP is available by checking for `mcp__mcp-atlassian__jira_get_issue` in the available tools.
+Before proceeding, verify the Atlassian plugin is available by checking for `mcp__claude_ai_Atlassian__getJiraIssue` in the available tools.
 
 **If not available, STOP and display:**
 
 ```
-Atlassian MCP server is not configured.
+Atlassian plugin is not installed.
 
-This command requires mcp-atlassian to create Jira tickets.
-Install: https://github.com/sooperset/mcp-atlassian
+This command requires the official Atlassian plugin to create Jira tickets.
 
-Required environment variables:
-  JIRA_URL          — Your Jira instance URL (e.g., https://openloyalty.atlassian.net)
-  JIRA_USERNAME     — Your Atlassian email
-  JIRA_API_TOKEN    — API token from https://id.atlassian.com/manage-profile/security/api-tokens
+Install it:
+  /plugin install atlassian@claude-plugins-official
 
-Run /openloyalty:setup to configure.
+Then restart Claude Code and run /openloyalty:setup to configure.
 ```
 
-**Do NOT proceed without a working Atlassian MCP connection.**
+**Do NOT proceed without a working Atlassian plugin connection.**
 
 ---
 
@@ -70,8 +67,8 @@ Prompt: |
   Fetch Jira project metadata for: {project_key}
 
   Steps:
-  1. Use mcp__mcp-atlassian__jira_get_project_issues with project_key={project_key} to understand recent issue patterns
-  2. Use mcp__mcp-atlassian__jira_search_fields to discover available custom fields
+  1. Use mcp__claude_ai_Atlassian__searchJiraIssuesUsingJql with jql="project = {project_key} ORDER BY created DESC" to understand recent issue patterns
+  2. Use mcp__claude_ai_Atlassian__getJiraIssueTypeMetaWithFields to discover available fields
   3. Extract:
      - Available issue types
      - Available priorities
@@ -184,7 +181,7 @@ After user confirms (Option 1), create tickets sequentially:
 
 ```
 For each ticket in the list:
-  Use mcp__mcp-atlassian__jira_create_issue with:
+  Use mcp__claude_ai_Atlassian__createJiraIssue with:
     - project_key: {project_key}
     - issue_type: {issue_type}
     - summary: {title}

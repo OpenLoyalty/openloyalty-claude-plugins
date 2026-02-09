@@ -15,7 +15,7 @@ This plugin provides engineering workflows for the Open Loyalty development team
 | `/openloyalty:engineering:compound` | Document solved problems with validated YAML schema |
 | `/openloyalty:engineering:review-pr` | Code review with OL conventions, Jira verification, 1-10 scoring |
 | `/openloyalty:engineering:backend-pr-create` | Create backend PR with OL conventions and Jira linking |
-| `/openloyalty:engineering:jira-ticket-create` | Create Jira tickets from brainstorming/planning sessions (requires Atlassian MCP) |
+| `/openloyalty:engineering:jira-ticket-create` | Create Jira tickets from brainstorming/planning sessions (requires Atlassian plugin) |
 | `/openloyalty:help` | Show this help |
 
 ## Compound Learning System
@@ -89,15 +89,15 @@ The code review workflow reads AGENTS.md from your repo to check against OL conv
 
 ## Jira Integration
 
-This plugin bundles the [mcp-atlassian](https://github.com/sooperset/mcp-atlassian) MCP server as a dependency. When configured, it enables:
+This plugin uses the official [Atlassian plugin](https://github.com/anthropics/claude-plugins-official) (`atlassian@claude-plugins-official`) for Jira and Confluence integration. When installed, it enables:
 - Creating Jira tickets from brainstorming sessions (`/openloyalty:engineering:jira-ticket-create`)
 - Fetching ticket details from branch name patterns (e.g., `OLOY-123`)
 - Extracting context from ticket description and comments
 - Linking compound learnings to tickets
 
-Run `/openloyalty:setup` to configure your Atlassian credentials.
+Run `/openloyalty:setup` to install and configure.
 
-Some commands (like `/openloyalty:engineering:compound` and `/openloyalty:engineering:review-pr`) work without Jira and gracefully degrade to git + code analysis only. The `/openloyalty:engineering:jira-ticket-create` command **requires** Atlassian MCP.
+Some commands (like `/openloyalty:engineering:compound` and `/openloyalty:engineering:review-pr`) work without Jira and gracefully degrade to git + code analysis only. The `/openloyalty:engineering:jira-ticket-create` command **requires** the Atlassian plugin.
 
 ## Output Locations
 
