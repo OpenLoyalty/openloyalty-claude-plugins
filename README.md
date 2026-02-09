@@ -28,7 +28,7 @@ The setup command handles the full onboarding process:
 1. **Installs the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin** — automatically adds the marketplace and installs the plugin. This dependency provides review workflows, specialized agent types (architecture strategist, performance oracle, security sentinel, etc.), and engineering best practices used by `/openloyalty:engineering:review-pr` and other commands.
 2. **Installs the official [Atlassian plugin](https://github.com/anthropics/claude-plugins-official)** — installs `atlassian@claude-plugins-official` which provides Jira and Confluence tools. Authentication is handled through Claude's native Atlassian OAuth — no API tokens needed.
 3. **Configures Open Loyalty MCP server** (optional) — prompts for `OPENLOYALTY_API_URL` and `OPENLOYALTY_API_TOKEN`, writes the `openloyalty` server definition. Skippable if you don't need direct loyalty API access.
-4. **Saves to `~/.claude/settings.local.json`** — MCP servers are registered in user-scoped Claude Code settings, available across all projects without any project-level config files.
+4. **Saves to `~/.claude/.mcp.json`** — MCP servers are registered in user-scoped Claude Code settings, available across all projects without any project-level config files.
 
 ---
 
@@ -36,7 +36,7 @@ The setup command handles the full onboarding process:
 
 The plugin provides **slash commands** (code review, PR creation, Jira tickets, etc.) that are installed via the plugin system.
 
-**MCP servers are not bundled with the plugin.** Instead, `/openloyalty:setup` writes the full server definitions (command, args, credentials) directly into `~/.claude/settings.local.json` under `mcpServers`. This means:
+**MCP servers are not bundled with the plugin.** Instead, `/openloyalty:setup` writes the full server definitions (command, args, credentials) directly into `~/.claude/.mcp.json` under `mcpServers`. This means:
 
 - Servers are registered in **user scope** — available across all projects, no project-level `.mcp.json` files
 - Credentials are stored once, not duplicated per project
@@ -83,7 +83,7 @@ Authentication is handled through Claude's native Atlassian OAuth — no API tok
 
 ## Open Loyalty MCP Server Setup (Optional)
 
-The OL MCP server provides 60+ loyalty API tools. It's optional — skip it if you don't need direct loyalty API access. Run `/openloyalty:setup` for interactive configuration, or add to `~/.claude/settings.local.json` manually:
+The OL MCP server provides 60+ loyalty API tools. It's optional — skip it if you don't need direct loyalty API access. Run `/openloyalty:setup` for interactive configuration, or add to `~/.claude/.mcp.json` manually:
 
 ```json
 {
@@ -182,7 +182,7 @@ Build → Test → Find Issue → Research → Improve → Document → Validate
 > These cannot be declared in `plugin.json` (Claude Code doesn't support plugin dependencies). Run `/openloyalty:setup` after installing to ensure all dependencies are present.
 
 **For OL MCP server (optional):**
-- `openloyalty` server in `~/.claude/settings.local.json` (configured by `/openloyalty:setup`)
+- `openloyalty` server in `~/.claude/.mcp.json` (configured by `/openloyalty:setup`)
 - Node.js / npx available in PATH
 
 **Optional:**

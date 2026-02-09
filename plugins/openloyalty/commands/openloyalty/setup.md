@@ -74,7 +74,7 @@ Then restart Claude Code and run /openloyalty:setup again.
 
 ### 2. Check Open Loyalty MCP configuration (optional)
 
-Read `~/.claude/settings.local.json` and check if `mcpServers` already contains the `openloyalty` server entry.
+Read `~/.claude/.mcp.json` and check if `mcpServers` already contains the `openloyalty` server entry.
 
 - If `openloyalty` is present with non-empty env values, OL MCP is configured. Skip to step 4.
 
@@ -90,7 +90,7 @@ If yes, collect:
 
 - **`OPENLOYALTY_DEFAULT_STORE_CODE`** — Store identifier. Defaults to `"default"`. Ask: "What is your store code? (press Enter for `default`)" — if the user presses Enter or says default, use `"default"`.
 
-Read `~/.claude/settings.local.json` (create if it doesn't exist). Merge the collected MCP server definition into the `"mcpServers"` object:
+Read `~/.claude/.mcp.json` (create if it doesn't exist). Merge the collected MCP server definition into the `"mcpServers"` object:
 
 ```json
 {
