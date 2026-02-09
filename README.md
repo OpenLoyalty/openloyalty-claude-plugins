@@ -47,11 +47,11 @@ Open Loyalty MCP server providing 60+ tools for loyalty program management direc
 
 | Command | Purpose |
 |---------|---------|
-| `/openloyalty:compound` | Document solved problems with YAML schema validation |
+| `/openloyalty:setup` | Full onboarding: auto-installs compound-engineering plugin, configures MCP env vars |
 | `/openloyalty:review-pr` | Code review with OL conventions, Jira verification, 1-10 scoring |
 | `/openloyalty:backend-pr-create` | Create backend PR with OL conventions and Jira linking |
 | `/openloyalty:jira-ticket-create` | Create Jira tickets from brainstorming/planning sessions |
-| `/openloyalty:setup` | Full onboarding: auto-installs compound-engineering plugin, configures MCP env vars |
+| `/openloyalty:compound` | **[WIP]** Document solved problems with YAML schema validation |
 | `/openloyalty:help` | Show available commands and plugin documentation |
 
 ---
