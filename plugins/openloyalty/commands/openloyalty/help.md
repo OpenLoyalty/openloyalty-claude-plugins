@@ -17,7 +17,6 @@ This plugin provides engineering workflows for the Open Loyalty development team
 | `/openloyalty:backend-pr-create` | Create backend PR with OL conventions and Jira linking |
 | `/openloyalty:jira-ticket-create` | Create Jira tickets from brainstorming/planning sessions |
 | `/openloyalty:compound` | **[WIP]** Document solved problems with YAML schema validation |
-| `/openloyalty:run-coding-agent` | Generate PHP code artifacts (commands, handlers, events, entities) following DDD/CQRS conventions |
 | `/openloyalty:help` | Show available commands and plugin documentation |
 
 ## Compound Learning System

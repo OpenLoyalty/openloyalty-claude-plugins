@@ -1,0 +1,82 @@
+#!/bin/bash
+set -euo pipefail
+
+# Pre-commit hook: block commits that change plugin files without bumping the version.
+# Ensures plugin.json and marketplace.json versions stay in sync.
+
+PLUGIN_DIR="plugins/openloyalty"
+PLUGIN_JSON="plugins/openloyalty/.claude-plugin/plugin.json"
+MARKETPLACE_JSON=".claude-plugin/marketplace.json"
+
+# Get staged files
+STAGED_FILES=$(git diff --cached --name-only)
+
+# Check if any plugin files changed (excluding the version files themselves)
+PLUGIN_CHANGES=$(echo "$STAGED_FILES" | grep "^${PLUGIN_DIR}/" | grep -v "\.claude-plugin/plugin\.json$" || true)
+
+if [ -z "$PLUGIN_CHANGES" ]; then
+    exit 0
+fi
+
+# Plugin files changed — both version files must be staged
+PLUGIN_JSON_STAGED=$(echo "$STAGED_FILES" | grep "^${PLUGIN_JSON}$" || true)
+MARKETPLACE_STAGED=$(echo "$STAGED_FILES" | grep "^${MARKETPLACE_JSON}$" || true)
+
+ERRORS=()
+
+if [ -z "$PLUGIN_JSON_STAGED" ]; then
+    ERRORS+=("  ${PLUGIN_JSON} — not staged")
+fi
+
+if [ -z "$MARKETPLACE_STAGED" ]; then
+    ERRORS+=("  ${MARKETPLACE_JSON} — not staged")
+fi
+
+if [ ${#ERRORS[@]} -gt 0 ]; then
+    echo "ERROR: Plugin files changed but version not bumped!"
+    echo ""
+    echo "Changed plugin files:"
+    echo "$PLUGIN_CHANGES" | while read -r f; do echo "  $f"; done
+    echo ""
+    echo "Missing version updates:"
+    for err in "${ERRORS[@]}"; do echo "$err"; done
+    echo ""
+    echo "Bump the version in both files and stage them."
+    exit 1
+fi
+
+# Both staged — check that the version actually changed
+PLUGIN_VER=$(git show :"${PLUGIN_JSON}" | python3 -c "import sys,json; print(json.load(sys.stdin)['version'])")
+COMMITTED_VER=$(git show HEAD:"${PLUGIN_JSON}" 2>/dev/null | python3 -c "import sys,json; print(json.load(sys.stdin)['version'])" 2>/dev/null || echo "")
+
+if [ -n "$COMMITTED_VER" ] && [ "$PLUGIN_VER" = "$COMMITTED_VER" ]; then
+    echo "ERROR: Plugin files changed but version is still ${PLUGIN_VER}!"
+    echo ""
+    echo "Changed plugin files:"
+    echo "$PLUGIN_CHANGES" | while read -r f; do echo "  $f"; done
+    echo ""
+    echo "Bump the version in both:"
+    echo "  ${PLUGIN_JSON}"
+    echo "  ${MARKETPLACE_JSON}"
+    exit 1
+fi
+
+# Check versions are in sync between the two files
+MARKETPLACE_VER=$(git show :"${MARKETPLACE_JSON}" | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+plugins = [p for p in data['plugins'] if p['name'] == 'openloyalty']
+print(plugins[0]['version'] if plugins else 'NOT_FOUND')
+")
+
+if [ "$PLUGIN_VER" != "$MARKETPLACE_VER" ]; then
+    echo "ERROR: Version mismatch!"
+    echo ""
+    echo "  plugin.json:      ${PLUGIN_VER}"
+    echo "  marketplace.json: ${MARKETPLACE_VER}"
+    echo ""
+    echo "Both must have the same version."
+    exit 1
+fi
+
+echo "Version check passed: ${PLUGIN_VER}"
