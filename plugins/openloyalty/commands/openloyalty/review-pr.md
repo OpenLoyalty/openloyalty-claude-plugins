@@ -1,12 +1,12 @@
 ---
 name: openloyalty:review-pr
-description: Code review with OL conventions, Jira ticket verification, test quality analysis, N+1 detection, and 1-10 scoring. Delegates deep analysis to compound-engineering review agents.
+description: Code review with OL conventions, Jira ticket verification, test quality analysis, N+1 detection, and 1-10 scoring. Spawns selected CE agents directly (no Rails agents), skips duplicate OL sub-agents when CE runs.
 argument-hint: "[--base <branch>] [--all | --last <N>] [--strict] [--ticket <ID>] [--skip-jira] [--quick]"
 ---
 
 # Code Review
 
-Review code changes against Open Loyalty conventions, Jira ticket requirements, and senior engineer best practices. Leverages compound-engineering's multi-agent review system for deep analysis, then adds OL-specific layers: AGENTS.md conventions, Jira ticket compliance, and 1-10 scoring.
+Review code changes against Open Loyalty conventions, Jira ticket requirements, and senior engineer best practices. Spawns selected compound-engineering review agents directly (excluding Rails-specific ones), then adds OL-specific layers: AGENTS.md conventions, Jira ticket compliance, and 1-10 scoring. When CE agents run, duplicate OL sub-agents are skipped to avoid wasted tokens.
 
 ## Arguments
 
@@ -49,8 +49,8 @@ Display this warning and continue with OL-only review:
 
 ```
 NOTE: compound-engineering plugin not installed. Running OL-only review.
-For the full multi-agent deep review (15 parallel review agents, ultra-thinking,
-security/performance/architecture analysis), install it:
+For deep review with 6 specialized agents (security, performance, architecture,
+patterns, simplicity, data integrity), install it:
 
   /install compound-engineering
 
@@ -108,7 +108,7 @@ Prompt: |
 
 ---
 
-## Phase 2: Deep Review via compound-engineering
+## Phase 2: Deep Review via compound-engineering Agents
 
 **MANDATORY unless ONE of these exact conditions is true:**
 1. The `--quick` flag was explicitly passed by the user
@@ -116,36 +116,57 @@ Prompt: |
 
 **You MUST NOT skip this phase for any other reason.** Do not skip because the PR "seems simple", "is small", "doesn't need deep review", or any self-generated rationale. If neither condition above is met, run Phase 2.
 
-Invoke the compound-engineering review workflow:
+Instead of invoking the full compound-engineering review workflow (which includes Rails-specific agents irrelevant to PHP/Symfony), spawn only the language-agnostic CE review agents directly.
+
+### Step 1: Spawn CE review agents in parallel
+
+Launch ALL core agents simultaneously using the Task tool. Each agent is self-contained — it will read the diff and analyze the code on its own. Pass each agent this context in its prompt:
 
 ```
-Skill: compound-engineering:workflows:review
-Args: {PR number or branch name from Phase 1}
+Review the code changes on branch {branch_name} (commit range: {commit_range}).
+Changed files: {files_changed list}
+Run `git diff {commit_range} -U10` to see the full diff.
+Focus your analysis on the changed files only.
 ```
 
-This runs 15+ parallel review agents covering:
-- Security (security-sentinel)
-- Performance (performance-oracle)
-- Architecture (architecture-strategist)
-- Pattern consistency (pattern-recognition-specialist)
-- Code simplicity (code-simplicity-reviewer)
-- Data integrity (data-integrity-guardian)
-- And more specialized agents
+**Core agents (always run):**
 
-**Wait for compound-engineering review to complete before proceeding.**
+| # | Agent | subagent_type | Purpose |
+|---|-------|--------------|---------|
+| 1 | security-sentinel | `compound-engineering:review:security-sentinel` | Vulnerabilities, input validation, auth, OWASP |
+| 2 | performance-oracle | `compound-engineering:review:performance-oracle` | N+1 queries, algorithmic complexity, memory, caching |
+| 3 | architecture-strategist | `compound-engineering:review:architecture-strategist` | Design patterns, component boundaries, coupling |
+| 4 | pattern-recognition-specialist | `compound-engineering:review:pattern-recognition-specialist` | Naming conventions, duplication, consistency |
+| 5 | code-simplicity-reviewer | `compound-engineering:review:code-simplicity-reviewer` | YAGNI violations, over-engineering, unnecessary complexity |
+| 6 | data-integrity-guardian | `compound-engineering:review:data-integrity-guardian` | Migration safety, data constraints, transaction boundaries |
 
-The CE review produces:
-- P1/P2/P3 categorized findings
-- Todo files in `todos/` directory
-- A summary report
+**Conditional agents (spawn ONLY when criteria match):**
 
-Store the CE findings for synthesis in Phase 4.
+| # | Agent | subagent_type | Condition |
+|---|-------|--------------|-----------|
+| 7 | data-migration-expert | `compound-engineering:review:data-migration-expert` | `has_migrations=true` |
+| 8 | deployment-verification-agent | `compound-engineering:review:deployment-verification-agent` | `has_migrations=true` |
+
+**Excluded agents (Rails-specific or low signal for PHP/Symfony):**
+- `kieran-rails-reviewer` — Rails conventions, irrelevant for PHP
+- `dhh-rails-reviewer` — DHH/Rails philosophy, irrelevant for PHP
+- `agent-native-reviewer` — checks agent accessibility, not applicable
+- `devops-harmony-analyst` — Rails deployment patterns
+- `dependency-detective` — Ruby gem analysis
+- `code-philosopher` — low signal-to-noise ratio
+
+### Step 2: Collect findings
+
+Wait for all agents to complete. Store each agent's report for synthesis in Phase 4.
+The CE agents produce unstructured reports — during Phase 4 synthesis, categorize their findings into Critical/Important/Suggestion.
 
 ---
 
 ## Phase 3: OL-Specific Review Layer (Self-Contained Orchestrator)
 
-This phase runs regardless of whether CE review was available. When CE was used, this phase adds OL-specific checks that CE agents do not cover. When CE was not available, this phase is the primary review.
+This phase always runs, but its scope depends on whether CE agents ran in Phase 2:
+- **CE ran (`ce_ran=true`):** Only spawn sub-agents 1 (AGENTS.md Conventions) and 5 (Ticket Compliance). Skip sub-agents 2, 3, 4 — they duplicate CE's performance-oracle, code-simplicity-reviewer, and data-integrity-guardian.
+- **CE did NOT run (`ce_ran=false`):** Spawn all 5 sub-agents. This is the primary review.
 
 **Spawn a single `general-purpose` Task agent** that works like CE does in Phase 2 — self-contained, fetches its own context, spawns its own sub-agents, returns only findings. The diff, AGENTS.md rules, and Jira ticket body never enter main context.
 
@@ -228,6 +249,8 @@ Prompt: |
 
   ### Sub-agent 2: Test Quality Review
 
+  **SKIP if `ce_ran=true`.** CE's code-simplicity-reviewer already covers test quality and coverage gaps.
+
   ```
   Task: general-purpose
   Prompt: |
@@ -277,14 +300,12 @@ Prompt: |
 
   ### Sub-agent 3: Performance & N+1 Review
 
+  **SKIP if `ce_ran=true`.** CE's performance-oracle already covers N+1 queries, algorithmic complexity, memory, and caching.
+
   ```
   Task: general-purpose
   Prompt: |
     Review code changes for performance issues.
-
-    **CE already ran:** {ce_ran}
-    If CE ran, focus ONLY on OL/PHP/Symfony-specific patterns that CE's
-    Rails-focused agents would miss. If CE did NOT run, do a full performance review.
 
     **Source file diffs (non-test, non-migration):**
     {paste source file diffs}
@@ -306,7 +327,7 @@ Prompt: |
 
   ### Sub-agent 4: Migration Review (CONDITIONAL)
 
-  **Only spawn this sub-agent if `has_migrations=true`.** Otherwise skip entirely.
+  **Only spawn if `has_migrations=true` AND `ce_ran=false`.** When CE runs, data-integrity-guardian and data-migration-expert already cover migration safety.
 
   ```
   Task: general-purpose
@@ -408,14 +429,14 @@ Prompt: |
 ### Step 1: Merge All Findings
 
 Combine findings from:
-- **CE review** (if available): P1/P2/P3 findings from 15+ agents
+- **CE agents** (if available): Reports from security-sentinel, performance-oracle, architecture-strategist, pattern-recognition-specialist, code-simplicity-reviewer, data-integrity-guardian (and conditional agents if triggered)
 - **OL orchestrator findings.conventions**: AGENTS.md rule violations
-- **OL orchestrator findings.test_quality**: Missing/weak tests
-- **OL orchestrator findings.performance**: N+1 and DB issues
-- **OL orchestrator findings.migrations**: Safety concerns
+- **OL orchestrator findings.test_quality**: Missing/weak tests (only when CE didn't run)
+- **OL orchestrator findings.performance**: N+1 and DB issues (only when CE didn't run)
+- **OL orchestrator findings.migrations**: Safety concerns (only when CE didn't run)
 - **OL orchestrator findings.ticket_compliance** + requirements/scope_concerns: Requirements gaps
 
-**Deduplicate:** If CE and OL found the same issue, keep the more detailed finding.
+**Deduplicate:** If multiple CE agents found the same issue, keep the most detailed finding. CE agents may overlap on cross-cutting concerns (e.g., a performance issue flagged by both performance-oracle and architecture-strategist).
 
 ### Step 2: Categorize by OL Severity
 
@@ -490,7 +511,7 @@ If `--strict` flag: promote all Important findings to Critical.
 **Ticket:** {OLOY-XXX} - {ticket summary if available}
 **Commits Reviewed:** {count}
 **Files Changed:** {count}
-**Review Engine:** {compound-engineering vX.XX + OL conventions | OL-only (CE not installed) | OL-only (--quick)}
+**Review Engine:** {CE agents (6 core + conditional) + OL conventions | OL-only (CE not installed) | OL-only (--quick)}
 
 ---
 
@@ -632,7 +653,7 @@ After generating the report:
 2. **Provide a quick summary:**
    - **PR Score** with brief justification
    - **Ticket compliance** status
-   - Total issues by severity (noting which came from CE vs OL)
+   - Total issues by severity (noting which came from CE agents vs OL)
    - Most important thing to fix (if any)
    - What would raise the score
 
@@ -641,10 +662,9 @@ After generating the report:
    - "Want me to suggest fixes for the critical issues?"
    - "Should I check anything else?"
    - "Want me to generate the exploratory test scenarios in more detail?"
-   - If CE produced todos: "Want me to run `/resolve_todo_parallel` to fix the findings?"
 
 4. **If CE was not available:**
-   - Remind that installing compound-engineering would add 15+ review agents
+   - Remind that installing compound-engineering would add 6+ specialized review agents
    - "For deeper security, performance, and architecture analysis: `/install compound-engineering`"
 
 5. **If no Jira context was found:**
