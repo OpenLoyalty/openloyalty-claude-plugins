@@ -13,15 +13,15 @@ Review code changes against Open Loyalty conventions, Jira ticket requirements, 
 | Argument | Description | Example |
 |----------|-------------|---------|
 | `--base <branch>` | Compare against specific branch (auto-detected if not provided) | `--base 5.144` |
-| `--all` | Review all commits since base branch (not just last commit) | `--all` |
-| `--last <N>` | Review the last N commits | `--last 3` |
+| `--last <N>` | Review only the last N commits (instead of all) | `--last 3` |
+| `--last-commit` | Review only the last commit (shorthand for `--last 1`) | `--last-commit` |
 | `--files <pattern>` | Only review matching files | `--files "src/**/*.ts"` |
 | `--strict` | Treat important issues as critical | `--strict` |
 | `--ticket <ID>` | Override ticket ID detection | `--ticket OLOY-123` |
 | `--skip-jira` | Skip Jira context fetching | `--skip-jira` |
 | `--quick` | Skip compound-engineering deep review, run OL-only review | `--quick` |
 
-**Note:** By default, only the last commit is reviewed. Use `--all` to review all commits since base branch, or `--last N` to review a specific number of recent commits.
+**Note:** By default, all commits since the base branch are reviewed. Use `--last N` to narrow to the last N commits, or `--last-commit` to review only the most recent commit.
 
 ---
 
@@ -57,108 +57,64 @@ security/performance/architecture analysis), install it:
 Then re-run this review for significantly deeper analysis.
 ```
 
-### Step 2: Gather OL-Specific Context (Parallel Agents)
+### Step 2: Gather Orchestration Metadata
 
-Run these agents **IN PARALLEL**:
-
-#### Agent A: Git & PR Context
+Run a **single Bash agent** to collect only the metadata the main agent needs for orchestration. No diff, no stat output, no PR body — sub-agents will fetch their own context later.
 
 ```
 Task: Bash
 Prompt: |
-  Run a single batched command to gather all git context:
+  Run a single batched command to gather orchestration metadata:
 
   echo "=== BRANCH ===" && git rev-parse --abbrev-ref HEAD && \
-  echo "=== PR ===" && (gh pr view --json title,body,number,baseRefName 2>/dev/null || echo "NO_PR") && \
+  echo "=== PR ===" && (gh pr view --json title,number,baseRefName 2>/dev/null || echo "NO_PR") && \
   echo "=== BASE_DETECT ===" && (git rev-parse --abbrev-ref @{upstream} 2>/dev/null | sed 's|origin/||' || echo "DETECT_NEEDED") && \
   echo "=== LOG ===" && git log {range} --oneline 2>/dev/null && \
-  echo "=== STAT ===" && git diff {range} --stat 2>/dev/null && \
   echo "=== FILES ===" && git diff {range} --name-only 2>/dev/null
 
   **Determine {range} BEFORE running:**
 
-  - DEFAULT (no flags): range = "HEAD~1..HEAD" (last commit only)
-  - If --all flag: range = "{base}..HEAD" (all since base)
+  - DEFAULT (no flags): range = "{base}..HEAD" (all commits since base branch)
   - If --last N flag: range = "HEAD~{N}..HEAD" (last N commits)
+  - If --last-commit flag: range = "HEAD~1..HEAD" (last commit only)
 
   **Base branch detection order:**
   a) If --base flag provided by user, use that value
   b) Extract from PR JSON (baseRefName field) if PR exists
   c) Use upstream tracking branch from BASE_DETECT section
-  d) If still needed and --all mode, ask user: "Could not detect base branch. Please run with --base <branch>"
+  d) If still needed, ask user: "Could not detect base branch. Please run with --base <branch>"
 
   **Handle edge cases:**
-  - For DEFAULT mode, if HEAD~1 fails (only 1 commit on branch), detect merge-base
-  - If using --all and commit count >50, STOP and ask user to verify base branch
+  - For DEFAULT mode, base branch is required — if detection fails, ask user: "Could not detect base branch. Please run with --base <branch>"
+  - If commit count >50, STOP and ask user to verify base branch before proceeding
+  - For --last-commit mode, if HEAD~1 fails (only 1 commit on branch), detect merge-base
 
-  **Parse and return:**
-  - review_mode, commit_range, base_branch, branch_name
-  - ticket_id: extract OLOY-\d+ pattern from branch name if present
-  - commit_count, files_changed, total_additions/deletions
-  - pr_context: { title, body, number } or { status: "no_pr" }
+  **Return ONLY these fields (compact, no raw output):**
+  - branch_name, base_branch, commit_range, review_mode
+  - ticket_id (extracted from branch name via OLOY-\d+ pattern, or from --ticket flag)
+  - commit_count, files_changed_count
+  - files_changed: [list of file paths, name-only]
+  - has_migrations: true/false (check if any file in files_changed matches **/migrations/** or **/Migration/**)
+  - pr_number, pr_title (NOT the full PR body)
+  - pr_status: "found" | "no_pr"
 ```
 
-#### Agent B: AGENTS.md Conventions Loader
-
-```
-Task: Explore
-Prompt: |
-  Read the AGENTS.md file from the repository root.
-
-  Extract and categorize:
-  1. Critical rules (must not violate)
-  2. Coding conventions by category:
-     - Backend (PHP/Symfony) rules
-     - Frontend (TypeScript/React) rules
-     - General rules
-  3. Rule IDs and their descriptions (e.g., DEV020, TS001)
-  4. Common anti-patterns mentioned
-
-  If no AGENTS.md exists, return: { "status": "not_found" }
-
-  **Return a structured summary (not the raw file):**
-  - critical_rules: [list of rule IDs that must not be violated]
-  - backend_rules: {rule_id: brief_description}
-  - frontend_rules: {rule_id: brief_description}
-  - anti_patterns: [list of common mistakes to flag]
-```
-
-#### Agent C: Jira Ticket Context (Optional - Graceful Degradation)
-
-**Skip this agent entirely if:**
-- No ticket_id was found in branch name AND no `--ticket` flag provided
-- User passed `--skip-jira` flag
-
-```
-Task: general-purpose
-Prompt: |
-  Attempt to fetch Jira ticket context for: {ticket_id}
-
-  IMPORTANT: This is optional. The review works fine without Jira.
-
-  Steps:
-  1. Check if the Atlassian plugin is available by looking for
-     mcp__claude_ai_Atlassian__* tools in your available tools
-  2. If plugin not available:
-     - Return immediately: { "status": "plugin_not_installed" }
-  3. If plugin available, try: mcp__claude_ai_Atlassian__getJiraIssue with issueIdOrKey={ticket_id}
-  4. If successful, extract:
-     - Summary (ticket title)
-     - Description (full requirements)
-     - Acceptance criteria (look in description or custom fields)
-     - Expected behavior changes
-     - Any linked issues or epic context
-  5. If call fails:
-     - Return: { "status": "unavailable", "reason": "..." }
-
-  Return structured ticket context or status indicating why it's unavailable.
-```
+**What is NOT gathered here (sub-agents fetch their own):**
+- AGENTS.md rules — loaded by Phase 3 orchestrator
+- Jira ticket body — fetched by Phase 3 ticket compliance sub-agent
+- Full PR body — not needed in main context
+- Git stat output — not needed in main context
+- Git diff — loaded by Phase 3 orchestrator, never enters main context
 
 ---
 
 ## Phase 2: Deep Review via compound-engineering
 
-**Skip this phase if `--quick` flag is set OR `CE_AVAILABLE=false`.**
+**MANDATORY unless ONE of these exact conditions is true:**
+1. The `--quick` flag was explicitly passed by the user
+2. `CE_AVAILABLE=false` (compound-engineering plugin is not installed)
+
+**You MUST NOT skip this phase for any other reason.** Do not skip because the PR "seems simple", "is small", "doesn't need deep review", or any self-generated rationale. If neither condition above is met, run Phase 2.
 
 Invoke the compound-engineering review workflow:
 
@@ -187,106 +143,263 @@ Store the CE findings for synthesis in Phase 4.
 
 ---
 
-## Phase 3: OL-Specific Review Layer
+## Phase 3: OL-Specific Review Layer (Self-Contained Orchestrator)
 
 This phase runs regardless of whether CE review was available. When CE was used, this phase adds OL-specific checks that CE agents do not cover. When CE was not available, this phase is the primary review.
 
-### Step 1: Get Full Diff with Context
+**Spawn a single `general-purpose` Task agent** that works like CE does in Phase 2 — self-contained, fetches its own context, spawns its own sub-agents, returns only findings. The diff, AGENTS.md rules, and Jira ticket body never enter main context.
 
-```bash
-git diff {commit_range} -U15
 ```
+Task: general-purpose
+Prompt: |
+  You are the OL Code Review Orchestrator. Review code changes against
+  Open Loyalty conventions. You are self-contained: fetch your own context,
+  spawn your own sub-agents, and return ONLY a structured findings summary.
 
-### Step 2: AGENTS.md Convention Compliance
+  **Inputs from main agent:**
+  - commit_range: {commit_range}
+  - files_changed: {files_changed list}
+  - ticket_id: {ticket_id or "none"}
+  - skip_jira: {true/false}
+  - ce_ran: {true/false}
+  - has_migrations: {true/false}
 
-**Skip if AGENTS.md was not found.**
+  **Step 1: Fetch your own context**
 
-For each changed file, check against AGENTS.md rules loaded in Phase 1:
+  Run these commands via Bash:
+  - `git diff {commit_range} -U10` — store the full diff (you will partition it for sub-agents)
+  - Read the AGENTS.md file from the repository root (if it exists)
+  - Identify which files are test files, migration files, backend (PHP) files, frontend (TS/React) files
 
-#### Backend Files (PHP/Symfony)
+  **Step 2: Spawn parallel sub-agents**
 
-- **DEV020**: CQRS patterns - commands/queries properly separated
-- **DEV022**: Event handling - events properly dispatched
-- **DEV027**: Value objects - immutability, proper construction
-- **DEV034**: Dependency injection - constructor injection preferred
-- **DEV035**: Repository patterns - proper query methods
+  Launch the following sub-agents IN PARALLEL using the Task tool.
+  Pass each sub-agent ONLY the diff sections and context it needs.
 
-#### Frontend Files (TypeScript/React)
+  ---
 
-- **TS001**: Prefer `const` over `let`
-- **TS002**: Explicit types on function parameters
-- **COMP002**: Component structure - proper separation
-- **FORM001**: Form handling patterns
-- **HOOK001**: Custom hooks conventions
+  ### Sub-agent 1: AGENTS.md Convention Compliance
 
-#### General Checks (All Files)
+  **Skip if no AGENTS.md exists.** Return `{ "status": "not_found" }` instead.
 
-Always check, even if CE already ran (CE agents do NOT check AGENTS.md rules):
-- Violations of specific rule IDs from AGENTS.md
-- OL-specific anti-patterns documented in AGENTS.md
-- PHP/Symfony conventions not covered by CE's Rails-focused agents
+  ```
+  Task: general-purpose
+  Prompt: |
+    Check code changes against AGENTS.md conventions.
 
-### Step 3: Test Quality Review
+    **AGENTS.md rules:**
+    {paste the relevant rules you loaded — critical rules, backend rules, frontend rules, anti-patterns}
 
-For each test file changed, evaluate:
+    **Diff of changed files:**
+    {paste only the diff sections for source files (not test files, not migrations)}
 
-1. **Coverage of edge cases:**
-   - Boundary conditions, error paths, null/empty inputs
+    **What to check:**
 
-2. **Assertion quality:**
-   - Meaningful value checks vs weak assertions
-   - **Snapshot concern**: Flag tests checking specific fields only, not full responses
-   - New fields appearing/disappearing won't be caught by partial assertions
+    Backend Files (PHP/Symfony):
+    - DEV020: CQRS patterns — commands/queries properly separated
+    - DEV022: Event handling — events properly dispatched
+    - DEV027: Value objects — immutability, proper construction
+    - DEV034: Dependency injection — constructor injection preferred
+    - DEV035: Repository patterns — proper query methods
 
-3. **Test data quality:**
-   - Realistic data, edge cases in test data
+    Frontend Files (TypeScript/React):
+    - TS001: Prefer const over let
+    - TS002: Explicit types on function parameters
+    - COMP002: Component structure — proper separation
+    - FORM001: Form handling patterns
+    - HOOK001: Custom hooks conventions
 
-4. **Missing test cases:**
-   - New code without corresponding tests
-   - Obvious scenarios not covered
+    General (all files):
+    - Violations of specific rule IDs from AGENTS.md
+    - OL-specific anti-patterns documented in AGENTS.md
+    - PHP/Symfony conventions not covered by CE's Rails-focused agents
 
-**Flag these test issues:**
-- Tests that only assert on specific fields (recommend snapshot/full response testing)
-- Missing tests for new public methods/endpoints
-- Tests with weak assertions (`assertNotNull` when value should be checked)
-- Tests that wouldn't catch API response structure changes
+    **Return format:**
+    {
+      "status": "found",
+      "rules_checked_count": <number>,
+      "findings": [
+        { "rule_id": "DEV020", "file": "path/to/file", "line": <number>, "description": "...", "severity": "critical|important|suggestion", "fix": "..." }
+      ]
+    }
+  ```
 
-### Step 4: Performance Review (N+1, Memory, DB)
+  ---
 
-**Skip if CE review already ran performance-oracle** — only add OL-specific patterns:
+  ### Sub-agent 2: Test Quality Review
 
-- **N+1 queries**: Loops calling repository methods, foreach over entities with lazy-load, missing `->with()` / `JOIN FETCH`
-- **Database**: New queries without index consideration, missing pagination on listings
-- **Memory**: Large collections in memory, missing generators, unbounded result sets
+  ```
+  Task: general-purpose
+  Prompt: |
+    Review test quality for the following code changes.
 
-### Step 5: Migration Review
+    **Test file diffs:**
+    {paste only the diff sections for test files}
 
-If migrations are present:
+    **Non-test files changed (for coverage gap detection):**
+    {list of non-test files that were changed}
 
-1. **Cross-DB syntax**: Valid for both MySQL and PostgreSQL? Database-agnostic syntax?
-2. **Data safety**: Handles existing data correctly? Safe rollback path? Table lock duration?
-3. **Recommend**: "Consider running this migration locally against a copy of {base_branch} database"
+    **What to check:**
 
-### Step 6: Ticket Compliance Check
+    1. Coverage of edge cases:
+       - Boundary conditions, error paths, null/empty inputs
 
-**Skip if:** No ticket ID, Jira unavailable, or `--skip-jira` passed.
+    2. Assertion quality:
+       - Meaningful value checks vs weak assertions
+       - Snapshot concern: Flag tests checking specific fields only, not full responses
+       - New fields appearing/disappearing won't be caught by partial assertions
 
-**If Jira ticket context was retrieved:**
+    3. Test data quality:
+       - Realistic data, edge cases in test data
 
-Compare code changes against ticket requirements:
+    4. Missing test cases:
+       - New code without corresponding tests
+       - Obvious scenarios not covered
 
-1. **Requirements coverage:**
-   - Does the implementation address all acceptance criteria?
-   - Are there requirements not implemented?
-   - Is there code beyond what the ticket asks for?
+    **Flag these issues:**
+    - Tests that only assert on specific fields (recommend snapshot/full response testing)
+    - Missing tests for new public methods/endpoints
+    - Tests with weak assertions (assertNotNull when value should be checked)
+    - Tests that wouldn't catch API response structure changes
 
-2. **Expected behavior:**
-   - Does the code produce expected outcomes from the ticket?
-   - Are edge cases mentioned in the ticket handled?
+    **Return format:**
+    {
+      "tests_reviewed_count": <number>,
+      "coverage_assessment": "Good|Adequate|Needs improvement",
+      "findings": [
+        { "file": "path/to/test", "issue_type": "weak_assertion|missing_test|missing_edge_case|partial_assertion", "description": "...", "severity": "critical|important|suggestion" }
+      ],
+      "missing_test_cases": ["..."]
+    }
+  ```
 
-3. **Scope creep detection:**
-   - Flag changes unrelated to the ticket
-   - Note if PR does more or less than the ticket describes
+  ---
+
+  ### Sub-agent 3: Performance & N+1 Review
+
+  ```
+  Task: general-purpose
+  Prompt: |
+    Review code changes for performance issues.
+
+    **CE already ran:** {ce_ran}
+    If CE ran, focus ONLY on OL/PHP/Symfony-specific patterns that CE's
+    Rails-focused agents would miss. If CE did NOT run, do a full performance review.
+
+    **Source file diffs (non-test, non-migration):**
+    {paste source file diffs}
+
+    **What to check:**
+    - N+1 queries: Loops calling repository methods, foreach over entities with lazy-load, missing ->with() / JOIN FETCH
+    - Database: New queries without index consideration, missing pagination on listings
+    - Memory: Large collections in memory, missing generators, unbounded result sets
+
+    **Return format:**
+    {
+      "findings": [
+        { "file": "path/to/file", "pattern": "n_plus_one|missing_index|unbounded_query|memory_leak", "line": <number>, "description": "...", "impact": "high|medium|low" }
+      ]
+    }
+  ```
+
+  ---
+
+  ### Sub-agent 4: Migration Review (CONDITIONAL)
+
+  **Only spawn this sub-agent if `has_migrations=true`.** Otherwise skip entirely.
+
+  ```
+  Task: general-purpose
+  Prompt: |
+    Review database migrations for safety and correctness.
+
+    **Migration file diffs:**
+    {paste only the migration file diffs}
+
+    **What to check:**
+    1. Cross-DB syntax: Valid for both MySQL and PostgreSQL? Database-agnostic syntax?
+    2. Data safety: Handles existing data correctly? Safe rollback path? Table lock duration?
+    3. Recommend: "Consider running this migration locally against a copy of {base_branch} database"
+
+    **Return format:**
+    {
+      "findings": [
+        { "migration_file": "path/to/migration", "concern_type": "cross_db|data_safety|lock_duration|rollback", "description": "...", "severity": "critical|important|suggestion" }
+      ]
+    }
+  ```
+
+  ---
+
+  ### Sub-agent 5: Ticket Compliance (CONDITIONAL)
+
+  **Only spawn this sub-agent if `ticket_id != "none"` AND `skip_jira=false`.**
+  Otherwise skip entirely.
+
+  ```
+  Task: general-purpose
+  Prompt: |
+    Check if code changes implement the requirements from Jira ticket: {ticket_id}
+
+    **Step 1:** Fetch the Jira ticket yourself.
+    - Check if Atlassian MCP tools are available (mcp__claude_ai_Atlassian__* or mcp__plugin_atlassian_atlassian__*)
+    - If plugin not available: return { "status": "plugin_not_installed" }
+    - If available: call getJiraIssue with issueIdOrKey={ticket_id}
+    - If call fails: return { "status": "unavailable", "reason": "..." }
+
+    **Step 2:** Extract from the ticket:
+    - Summary (ticket title)
+    - Description (full requirements)
+    - Acceptance criteria (look in description or custom fields)
+    - Expected behavior changes
+
+    **Step 3:** Compare against the code changes.
+    - Files changed: {files_changed list}
+    - Diff summary: {commit_count} commits, {files_changed_count} files
+
+    **What to check:**
+    1. Requirements coverage: Does implementation address all acceptance criteria?
+       Are there requirements not implemented? Code beyond what the ticket asks for?
+    2. Expected behavior: Does code produce expected outcomes from the ticket?
+       Are edge cases mentioned in the ticket handled?
+    3. Scope creep: Flag changes unrelated to the ticket.
+       Note if PR does more or less than the ticket describes.
+
+    **Return format:**
+    {
+      "status": "found",
+      "ticket_summary": "...",
+      "jira_status": "found",
+      "requirements": [
+        { "requirement": "...", "status": "implemented|partial|missing", "notes": "..." }
+      ],
+      "scope_concerns": ["..."]
+    }
+  ```
+
+  ---
+
+  **Step 3: Collect and return findings**
+
+  After all sub-agents complete, assemble and return ONLY this structured object
+  to the main agent. Do NOT return raw diff, raw AGENTS.md content, or raw Jira ticket body.
+
+  **Return format:**
+  {
+    "agents_md_status": "found" | "not_found",
+    "jira_status": "found" | "plugin_not_installed" | "unavailable" | "skipped",
+    "ticket_summary": "..." (if available, else omit),
+    "requirements": [...] (if available, else omit),
+    "scope_concerns": [...] (if available, else omit),
+    "findings": {
+      "conventions": [...],
+      "test_quality": { "tests_reviewed_count": N, "coverage_assessment": "...", "findings": [...], "missing_test_cases": [...] },
+      "performance": [...],
+      "migrations": [...],
+      "ticket_compliance": [...]
+    }
+  }
+```
 
 ---
 
@@ -296,11 +409,11 @@ Compare code changes against ticket requirements:
 
 Combine findings from:
 - **CE review** (if available): P1/P2/P3 findings from 15+ agents
-- **OL conventions check**: AGENTS.md rule violations
-- **Test quality review**: Missing/weak tests
-- **Performance review**: N+1 and DB issues
-- **Migration review**: Safety concerns
-- **Ticket compliance**: Requirements gaps
+- **OL orchestrator findings.conventions**: AGENTS.md rule violations
+- **OL orchestrator findings.test_quality**: Missing/weak tests
+- **OL orchestrator findings.performance**: N+1 and DB issues
+- **OL orchestrator findings.migrations**: Safety concerns
+- **OL orchestrator findings.ticket_compliance** + requirements/scope_concerns: Requirements gaps
 
 **Deduplicate:** If CE and OL found the same issue, keep the more detailed finding.
 
@@ -398,11 +511,11 @@ If `--strict` flag: promote all Important findings to Critical.
 
 ## Ticket Compliance
 
-{Choose the appropriate message based on status:}
+{Choose the appropriate message based on OL orchestrator's jira_status:}
 
-**If Jira context available:**
+**If jira_status = "found":**
 
-**Ticket:** {OLOY-XXX} - {summary}
+**Ticket:** {OLOY-XXX} - {ticket_summary from orchestrator}
 
 | Requirement | Status | Notes |
 |-------------|--------|-------|
@@ -412,11 +525,11 @@ If `--strict` flag: promote all Important findings to Critical.
 
 **If no ticket ID in branch:** "No ticket ID found in branch name. Skipping ticket compliance check."
 
-**If Atlassian plugin not installed:** "Atlassian plugin not installed. To enable ticket compliance checking, install it with `/install atlassian`."
+**If jira_status = "plugin_not_installed":** "Atlassian plugin not installed. To enable ticket compliance checking, install it with `/install atlassian`."
 
-**If Jira fetch failed:** "Could not fetch ticket {OLOY-XXX}: {reason}. Review based on code only."
+**If jira_status = "unavailable":** "Could not fetch ticket {OLOY-XXX}: {reason}. Review based on code only."
 
-**If --skip-jira used:** "Ticket compliance check skipped (--skip-jira flag)."
+**If jira_status = "skipped" (--skip-jira used):** "Ticket compliance check skipped (--skip-jira flag)."
 
 ---
 
@@ -448,7 +561,7 @@ If `--strict` flag: promote all Important findings to Critical.
 
 ## AGENTS.md Convention Compliance
 
-{If AGENTS.md found:}
+{If agents_md_status = "found":}
 **Rules checked:** {count}
 **Violations found:** {count}
 
@@ -456,34 +569,34 @@ If `--strict` flag: promote all Important findings to Critical.
 |---------|------|-----------|-----|
 | {DEV020} | `{path}` | {description} | {fix} |
 
-{If AGENTS.md not found:}
+{If agents_md_status = "not_found":}
 "No AGENTS.md found in repository root. Review used general best practices only. Consider creating AGENTS.md for team-specific conventions."
 
 ---
 
 ## Test Quality Assessment
 
-**Tests reviewed:** {count}
-**Coverage assessment:** {Good/Adequate/Needs improvement}
+**Tests reviewed:** {count from orchestrator findings.test_quality.tests_reviewed_count}
+**Coverage assessment:** {from orchestrator findings.test_quality.coverage_assessment}
 
 ### Concerns:
-- {List test quality issues}
+- {List test quality issues from findings.test_quality.findings}
 - {Snapshot testing recommendations if applicable}
 
 ### Missing Test Cases:
-- {List scenarios that should be tested}
+- {List from findings.test_quality.missing_test_cases}
 
 ---
 
 ## Performance Notes
 
-{N+1 queries, database concerns, memory issues - or "No performance concerns identified"}
+{N+1 queries, database concerns, memory issues from findings.performance — or "No performance concerns identified"}
 
 ---
 
 ## Migration Notes
 
-{If migrations present: assessment and recommendations}
+{If has_migrations: assessment from findings.migrations}
 {If no migrations: "No migrations in this PR"}
 
 ---
