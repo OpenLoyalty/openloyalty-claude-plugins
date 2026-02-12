@@ -25,6 +25,12 @@ Review code changes against Open Loyalty conventions, Jira ticket requirements, 
 
 ---
 
+## Execution Discipline
+
+**IMPORTANT:** Before starting any work, create a task for each phase using TaskCreate (Phase 1 through Phase 6). Follow the phases sequentially, marking each task as completed before moving to the next. Do not execute from memory — use the task list to track progress and ensure no phases are skipped.
+
+---
+
 ## Phase 1: Dependency Check & Context Gathering
 
 ### Step 1: Verify compound-engineering plugin
