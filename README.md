@@ -31,6 +31,60 @@ The setup command handles the full onboarding process:
 
 ---
 
+## OpenCode Install
+
+This repo includes a Bun/TypeScript CLI that converts the Claude Code plugin to OpenCode format.
+
+```bash
+# Install the openloyalty plugin into OpenCode
+bunx @open-loyalty/claude-plugin install openloyalty --to opencode
+```
+
+Output is written to `~/.config/opencode/` by default, with `opencode.json` at the root and `skills/` alongside it.
+
+Local dev:
+
+```bash
+bun run src/index.ts install ./plugins/openloyalty --to opencode
+```
+
+### Post-Install: Dependencies
+
+After installing the openloyalty plugin, install the compound-engineering dependency:
+
+```bash
+bunx @every-env/compound-plugin install compound-engineering --to opencode
+```
+
+For Atlassian (Jira/Confluence) integration, add your Atlassian MCP server to `~/.config/opencode/opencode.json` manually:
+
+```json
+{
+  "mcp": {
+    "atlassian": {
+      "type": "local",
+      "command": ["npx", "-y", "@modelcontextprotocol/server-atlassian"],
+      "environment": {
+        "ATLASSIAN_SITE_URL": "https://your-site.atlassian.net",
+        "ATLASSIAN_USER_EMAIL": "your-email@example.com",
+        "ATLASSIAN_API_TOKEN": "your-api-token"
+      },
+      "enabled": true
+    }
+  }
+}
+```
+
+### Updating
+
+Re-run the install command to get the latest version:
+
+```bash
+bunx @open-loyalty/claude-plugin install openloyalty --to opencode
+```
+
+---
+
 ## How It Works
 
 The plugin provides **slash commands** (code review, PR creation, Jira tickets, etc.) that are installed via the plugin system.

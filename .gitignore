@@ -12,3 +12,8 @@ Thumbs.db
 # Temp files
 *.tmp
 *.bak
+
+# Node / Bun
+node_modules/
+dist/
+bun.lock
