@@ -1,12 +1,16 @@
 ---
 name: openloyalty:jira-ticket-breakdown
-description: Break down features, epics, or PRDs into a structured Jira hierarchy (Epic > Tasks > Subtasks) with FE/BE team split, effort estimates, and automatic ticket creation.
+description: Break down features, epics, or PRDs into a structured Jira hierarchy (Epic > Stories > Subtasks, with Tasks for chores) with FE/BE team split, effort estimates, and automatic ticket creation.
 argument-hint: "[<jira-key|text|file>] [--project <KEY>]"
 ---
 
 # Jira Ticket Breakdown
 
-Break down a feature description into a structured Jira hierarchy (Epic > Tasks > Subtasks) and create all tickets automatically via the Atlassian plugin.
+Break down a feature description into a structured Jira hierarchy and create all tickets automatically via the Atlassian plugin.
+
+**Hierarchy:**
+- **Epic > Story > Subtasks** — Stories represent stages that deliver business value
+- **Epic > Task** — Tasks are standalone chore/technical items (migrations, cleanup, infra) that don't belong to a Story
 
 ## Arguments
 
@@ -79,31 +83,39 @@ Keep it brief — one confirmation question, not a questionnaire.
 
 ```
 Epic (the feature/initiative)
-  └── Task (= one Stage — a milestone with real deliverables)
-        └── Subtask (~1 day of work, assigned to one team: FE or BE)
+  ├── Story (= one Stage — a business-value milestone with real deliverables)
+  │     └── Subtask (~1 day of work, assigned to one team: FE or BE)
+  └── Task (standalone chore/technical item — migration, cleanup, infra, FF setup)
+        └── Subtask (optional, if the chore is large enough to split)
 ```
+
+**Key distinction:**
+- **Story** = delivers business value. A user/admin can do something new after it's done. Stories are milestones, not features.
+- **Task** = technical chore that doesn't directly deliver user-facing value but is required (e.g., data migration, legacy code removal, feature flag setup, CI/CD changes). Tasks live directly under the Epic, NOT under a Story.
 
 ### Rules
 
 1. **Identify stages** — Look for natural phases in the work:
-   - Stage 1: CRUD / foundation / data model / migration
+   - Stage 1: CRUD / foundation / data model
    - Stage 2: integrations / advanced features / effects
-   - Stage 3: cleanup / polish / legacy removal (if needed)
+   - Stage 3: cleanup / polish (if needed)
    - If no explicit stages, create them based on dependency order
 
-2. **One Task per Stage** — Each stage becomes exactly one Task. Do NOT create separate Tasks for individual features within a stage. Tasks are milestones, not features.
+2. **One Story per business-value Stage** — Each stage that delivers user-facing functionality becomes exactly one Story. Do NOT create separate Stories for individual features within a stage.
 
-3. **Split into Subtasks** — Each subtask is ~1 day of work for one team. Prefix with team label (`BE:`, `FE:`).
+3. **Tasks for chores** — Technical items that don't fit a Story (migrations, legacy cleanup, infra, feature flags) become standalone Tasks under the Epic. Do NOT force them into a Story.
 
-4. **Group repetitive work** — When the same pattern applies across multiple modules, create ONE subtask covering all modules, not separate subtasks per module.
+4. **Split into Subtasks** — Each subtask is ~1 day of work for one team. Prefix with team label (`BE:`, `FE:`).
 
-5. **Estimate effort** — Simple day estimates:
+5. **Group repetitive work** — When the same pattern applies across multiple modules, create ONE subtask covering all modules, not separate subtasks per module.
+
+6. **Estimate effort** — Simple day estimates:
    - 0.5d: simple endpoint, minor UI change, config-only
    - 1d: standard CRUD, new component, migration, applying known pattern across modules
    - 1.5d: complex logic, multiple interconnected changes
    - 2d: large cohesive area (e.g., full admin CRUD UI with list + form + delete)
 
-6. **Order by dependency** — Earlier stages unblock later ones.
+7. **Order by dependency** — Earlier stages unblock later ones.
 
 ### Anti-pattern: Over-splitting
 
@@ -121,16 +133,35 @@ BE: Badge effect infrastructure and execution logic (1d)
 BE: Add badge effects to all modules (Campaigns, Leaderboards, Fortune Wheel, Automations) (1d)
 ```
 
+### Anti-pattern: Forcing chores into Stories
+
+**Bad** (migration shoved into a business-value Story):
+```
+Story: [Stage 1] Badge CRUD & Foundation
+  Subtask: BE: Migration script + feature flag for achievement handler
+```
+
+**Good** (migration as a standalone Task):
+```
+Story: [Stage 1] Badge CRUD & Foundation
+  Subtask: BE: Create Badge Type endpoint
+  ...
+Task: Migrate existing badges to new data structure
+Task: Add feature flag to disable legacy achievement-badge coupling
+```
+
 ### Title Conventions
 
 - **Epic:** `{Feature Name}`
-- **Task:** `[Stage N] {Milestone Name}` — {what this stage delivers}
+- **Story:** `[Stage N] {Milestone Name}` — {what this stage delivers}
+- **Task:** `{Short description of the chore/technical work}`
 - **Subtask:** `{TEAM}: {Short description of work}`
 
 ### Description Guidelines
 
 - **Epic:** High-level overview of the feature
-- **Task:** Summary of what the stage delivers + acceptance criteria as bullet list
+- **Story:** Summary of what the stage delivers + acceptance criteria as bullet list
+- **Task:** What needs to be done and why, technical context
 - **Subtask:** Enough technical detail for a developer to start work. Include API contracts for BE, component details for FE.
 
 ---
@@ -142,31 +173,33 @@ Present the complete breakdown as a **markdown table** with these exact columns:
 ```markdown
 | # | Type | Title | Team | ~Days |
 |---|------|-------|------|-------|
-| | Epic | **Enhanced Badges Functionality** | | |
-| S1 | Task | **[Stage 1] Badge CRUD & Foundation** — Admin can manage badge types and member badges | | |
+| | **Epic** | **Enhanced Badges Functionality** | | |
+| S1 | **Story** | **[Stage 1] Badge CRUD & Foundation** — Admin can manage badge types and member badges | | |
 | 1.1 | Subtask | BE: Create Badge Type endpoint (POST, translations, system_code, active) | BE | 1 |
 | 1.2 | Subtask | BE: List & Get Badge Type endpoints (paginated + single) | BE | 1 |
 | 1.3 | Subtask | BE: Update Badge Type endpoint (PUT) | BE | 1 |
 | 1.4 | Subtask | BE: Delete & Deactivate Badge Type (with in-use validation) | BE | 1 |
 | 1.5 | Subtask | BE: Member Badge endpoints (GET list, POST assign, DELETE remove, PUT count) | BE | 1.5 |
-| 1.6 | Subtask | BE: Migration script + feature flag for achievement handler | BE | 1 |
 | 1.7 | Subtask | FE: Badge Type list view, create/edit form, delete/deactivate UI | FE | 2 |
 | 1.8 | Subtask | FE: Member Badge section + assign/remove UI | FE | 1.5 |
-| S2 | Task | **[Stage 2] Effects Integration & Event History** — Badges awarded from all modules with audit trail | | |
+| S2 | **Story** | **[Stage 2] Effects Integration & Event History** — Badges awarded from all modules with audit trail | | |
 | 2.1 | Subtask | BE: Badge effect infrastructure + execution logic (origin tracking, increment/remove) | BE | 1.5 |
 | 2.2 | Subtask | BE: Add badge effects to all modules (Campaigns, Leaderboards, Fortune Wheel, Automations) | BE | 1 |
 | 2.3 | Subtask | BE: Badge event emission + history handlers (award/removal/count change with source) | BE | 1.5 |
-| 2.4 | Subtask | BE: Remove legacy achievement-badge coupling | BE | 1 |
 | 2.5 | Subtask | FE: Badge effect UI across all module configurators | FE | 1 |
 | 2.6 | Subtask | FE: Badge events in member history timeline | FE | 1 |
-| | | **Totals: 2 Tasks, 14 Subtasks** | **BE: 11.5d** | **FE: 5.5d** |
+| T1 | **Task** | **Migrate existing badges to new data structure (translations + system_code)** | BE | 1 |
+| T2 | **Task** | **Add feature flag to disable legacy achievement-badge coupling** | BE | 0.5 |
+| T3 | **Task** | **Remove legacy achievement-badge coupling code** | BE | 1 |
+| | | **Totals: 2 Stories, 3 Tasks, 12 Subtasks** | **BE: 11.5d** | **FE: 5.5d** |
 ```
 
 **Formatting rules:**
-- Epic and Task rows: Title in **bold**, Team and ~Days cells empty
-- Subtask rows: plain title, Team = `BE` or `FE`, ~Days = number
+- **Epic** and **Story** rows: Type and Title in **bold**, Team and ~Days cells empty
+- **Task** rows: Type and Title in **bold**, Team = the team responsible, ~Days = estimate
+- **Subtask** rows: plain title, Team = `BE` or `FE`, ~Days = number
 - Totals row: bold, split by team
-- `#` column: empty for Epic, `S1`/`S2`/... for Tasks, `1.1`/`1.2`/... for Subtasks
+- `#` column: empty for Epic, `S1`/`S2`/... for Stories, `1.1`/`1.2`/... for Subtasks, `T1`/`T2`/... for Tasks
 
 **GATE:** Do NOT proceed to Phase 5 until user explicitly approves.
 
@@ -180,24 +213,28 @@ Present the complete breakdown as a **markdown table** with these exact columns:
 
 1. **Get cloud ID** — `mcp__plugin_atlassian_atlassian__getAccessibleAtlassianResources`
 
-2. **Discover issue types** — `mcp__plugin_atlassian_atlassian__getJiraProjectIssueTypesMetadata` for the target project. Map available types: Epic, Task (or Story), Subtask (or Sub-task). Adapt to whatever the project has.
+2. **Discover issue types** — `mcp__plugin_atlassian_atlassian__getJiraProjectIssueTypesMetadata` for the target project. Map available types: Epic, Story, Task, Subtask (or Sub-task). Adapt to whatever the project has.
 
 3. **Create Epic** — `mcp__plugin_atlassian_atlassian__createJiraIssue` with `issueTypeName: "Epic"`, collect key
 
-4. **Create Tasks** — `mcp__plugin_atlassian_atlassian__createJiraIssue` with `parent: "EPIC-KEY"`, collect keys
+4. **Create Stories** — `mcp__plugin_atlassian_atlassian__createJiraIssue` with `issueTypeName: "Story"` and `parent: "EPIC-KEY"`, collect keys. **If the project lacks the Story type, fall back to Task and inform the user.**
 
-5. **Create Subtasks** — `mcp__plugin_atlassian_atlassian__createJiraIssue` with `issueTypeName: "Subtask"` and `parent: "TASK-KEY"`
+5. **Create Subtasks** — `mcp__plugin_atlassian_atlassian__createJiraIssue` with `issueTypeName: "Subtask"` and `parent: "STORY-KEY"`
 
-6. **Present results** — same table format but with Jira keys added:
+6. **Create Tasks (chores)** — `mcp__plugin_atlassian_atlassian__createJiraIssue` with `issueTypeName: "Task"` and `parent: "EPIC-KEY"`. These are standalone under the Epic, NOT under a Story.
+
+7. **Present results** — same table format but with Jira keys added:
 
 ```
-Created 16 tickets:
+Created 17 tickets:
 
 | # | Key | Type | Title |
 |---|-----|------|-------|
 | | OLOY-500 | Epic | Enhanced Badges Functionality |
-| S1 | OLOY-501 | Task | [Stage 1] Badge CRUD & Foundation |
+| S1 | OLOY-501 | Story | [Stage 1] Badge CRUD & Foundation |
 | 1.1 | OLOY-502 | Subtask | BE: Create Badge Type endpoint |
+| ... | | | |
+| T1 | OLOY-515 | Task | Migrate existing badges to new data structure |
 | ... | | | |
 
 Epic: https://openloyalty.atlassian.net/browse/OLOY-500
@@ -205,16 +242,18 @@ Epic: https://openloyalty.atlassian.net/browse/OLOY-500
 
 **API notes:**
 - Always use `parent` field for hierarchy
-- Include acceptance criteria in Task descriptions
-- Subtask descriptions: enough detail for a dev to start work
+- **Stories** get acceptance criteria in descriptions
+- **Tasks** get technical context in descriptions
+- **Subtasks** get enough detail for a dev to start work
+- If the project has no Story type, fall back to Task for everything and warn the user
 
 ---
 
 ## Error Handling
 
 **Issue type not available:**
-- Some projects lack Story — use Task instead
-- Some projects lack Subtask — check exact name via `getJiraProjectIssueTypesMetadata`
+- Some projects lack Story type — fall back to Task for all parent issues and warn the user that proper Story/Task distinction is not possible
+- Some projects lack Subtask — check exact name via `getJiraProjectIssueTypesMetadata` (may be "Sub-task")
 - Never hardcode type IDs
 
 **Field errors:**
