@@ -276,6 +276,27 @@ Prompt: |
 
 When adding or modifying commands/skills:
 
-1. Bump `version` in `plugins/openloyalty/.claude-plugin/plugin.json`
-2. Use semver: patch for fixes, minor for new commands, major for breaking changes
+1. Bump `version` in **both** files (they must stay in sync):
+   - `plugins/openloyalty/.claude-plugin/plugin.json` — plugin metadata
+   - `.claude-plugin/marketplace.json` — marketplace definition (has **two** `version` fields: `metadata.version` and `plugins[0].version`)
+2. Use semver: patch for fixes, minor for new commands/skills, major for breaking changes
 3. Current version: check `plugin.json` before bumping
+4. A **pre-commit hook** validates that both files are bumped when plugin files change — the commit will be rejected if versions are missing or out of sync
+5. Include the version in the commit message: e.g., `Add jira-ticket-breakdown skill and bump to v3.2.0`
+
+### Quick version bump procedure
+
+```bash
+# 1. Create a branch
+git checkout -b bump-version-X.Y.Z
+
+# 2. Update both version files (replace OLD with NEW version)
+# plugins/openloyalty/.claude-plugin/plugin.json  →  "version": "X.Y.Z"
+# .claude-plugin/marketplace.json                 →  "version": "X.Y.Z" (both occurrences)
+
+# 3. Stage, commit, push, and create PR
+git add .claude-plugin/marketplace.json plugins/openloyalty/.claude-plugin/plugin.json <changed-files>
+git commit -m "Description of changes (vX.Y.Z)"
+git push -u origin bump-version-X.Y.Z
+gh pr create --title "Title (vX.Y.Z)" --body "..."
+```
