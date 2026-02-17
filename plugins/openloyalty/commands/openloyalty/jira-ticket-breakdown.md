@@ -245,6 +245,7 @@ Epic: https://openloyalty.atlassian.net/browse/OLOY-500
 - **Stories** get acceptance criteria in descriptions
 - **Tasks** get technical context in descriptions
 - **Subtasks** get enough detail for a dev to start work
+- **Do NOT include effort estimates (~Days) in ticket descriptions.** Estimates are only shown in the Phase 4 breakdown table for planning purposes — they must not appear in any Jira ticket body.
 - If the project has no Story type, fall back to Task for everything and warn the user
 
 ---
