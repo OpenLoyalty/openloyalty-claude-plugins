@@ -2,12 +2,9 @@
   "name": "@open-loyalty/claude-plugin",
   "version": "0.1.0",
   "type": "module",
-  "private": false,
+  "private": true,
   "bin": {
     "ol-claude-plugin": "./src/index.ts"
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "scripts": {
     "dev": "bun run src/index.ts",

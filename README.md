@@ -37,7 +37,7 @@ This repo includes a Bun/TypeScript CLI that converts the Claude Code plugin to 
 
 ```bash
 # Install the openloyalty plugin into OpenCode
-bunx @open-loyalty/claude-plugin install openloyalty --to opencode
+bunx github:OpenLoyalty/openloyalty-claude-plugins install openloyalty --to opencode
 ```
 
 Output is written to `~/.config/opencode/` by default, with `opencode.json` at the root and `skills/` alongside it.
@@ -80,7 +80,7 @@ For Atlassian (Jira/Confluence) integration, add your Atlassian MCP server to `~
 Re-run the install command to get the latest version:
 
 ```bash
-bunx @open-loyalty/claude-plugin install openloyalty --to opencode
+bunx github:OpenLoyalty/openloyalty-claude-plugins install openloyalty --to opencode
 ```
 
 ---
