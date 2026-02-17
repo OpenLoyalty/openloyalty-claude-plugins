@@ -15,8 +15,7 @@ This plugin provides engineering workflows for the Open Loyalty development team
 | `/openloyalty:setup` | Full onboarding: installs compound-engineering plugin, configures MCP servers in user scope |
 | `/openloyalty:review-pr` | Code review with OL conventions, Jira verification, 1-10 scoring |
 | `/openloyalty:backend-pr-create` | Create backend PR with OL conventions and Jira linking |
-| `/openloyalty:jira-ticket-create` | Create Jira tickets from brainstorming/planning sessions |
-| `/openloyalty:jira-ticket-breakdown` | Break down epics/PRDs into structured Jira hierarchy (Epic > Stories > Subtasks) |
+| `/openloyalty:jira-ticket-breakdown` | Break down features/epics into Jira hierarchy (Epic > Tasks > Subtasks) with FE/BE split |
 | `/openloyalty:compound` | **[WIP]** Document solved problems with YAML schema validation |
 | `/openloyalty:help` | Show available commands and plugin documentation |
 
@@ -89,7 +88,7 @@ The code review workflow reads AGENTS.md from your repo to check against OL conv
 
 Jira and Confluence integration is provided by the official Atlassian plugin (`atlassian@claude-plugins-official`). It's installed automatically by `/openloyalty:setup`.
 
-- **Required by:** `/openloyalty:jira-ticket-create`, `/openloyalty:jira-ticket-breakdown`
+- **Required by:** `/openloyalty:jira-ticket-breakdown`
 - **Optional for:** `/openloyalty:review-pr`, `/openloyalty:backend-pr-create`, `/openloyalty:compound` (these commands degrade gracefully without Jira)
 
 Authentication is handled through Claude's native Atlassian OAuth — no API tokens needed.
