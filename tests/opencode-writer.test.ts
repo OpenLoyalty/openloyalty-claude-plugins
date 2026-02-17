@@ -86,6 +86,42 @@ describe("opencode writer", () => {
     expect(config.$schema).toBe("https://opencode.ai/config.json")
   })
 
+  test("merges commands into existing config instead of replacing", async () => {
+    const outputRoot = path.join(tempDir, "opencode")
+    await fs.mkdir(outputRoot, { recursive: true })
+
+    // Simulate existing config with another plugin's commands and MCP servers
+    const configPath = path.join(outputRoot, "opencode.json")
+    await fs.writeFile(
+      configPath,
+      JSON.stringify({
+        $schema: "https://opencode.ai/config.json",
+        command: {
+          "compound:review": {
+            description: "CE review",
+            template: "Review code",
+          },
+        },
+        mcp: {
+          atlassian: { type: "local", command: ["npx", "atlassian-mcp"] },
+        },
+      }),
+      "utf8",
+    )
+
+    await writeOpenCodeBundle(outputRoot, makeBundle())
+
+    const config = await readJson<Record<string, unknown>>(configPath)
+    const commands = config.command as Record<string, unknown>
+
+    // New commands are added
+    expect(commands["test:hello"]).toBeDefined()
+    // Existing commands are preserved
+    expect(commands["compound:review"]).toBeDefined()
+    // MCP config is preserved
+    expect(config.mcp).toBeDefined()
+  })
+
   test("handles custom output directory with .opencode nesting", async () => {
     const outputRoot = path.join(tempDir, "my-project")
     const fixtureSkillDir = path.join(
