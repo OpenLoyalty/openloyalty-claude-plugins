@@ -33,20 +33,17 @@ The setup command handles the full onboarding process:
 
 ## OpenCode Install
 
-This repo includes a Bun/TypeScript CLI that converts the Claude Code plugin to OpenCode format.
+This repo includes a CLI that converts the Claude Code plugin to OpenCode format. Requires `bun` and `gh` CLI (authenticated).
 
 ```bash
-# Install the openloyalty plugin into OpenCode
-bunx github:OpenLoyalty/openloyalty-claude-plugins install openloyalty --to opencode
+bash <(gh api repos/OpenLoyalty/openloyalty-claude-plugins/contents/install.sh -H "Accept: application/vnd.github.raw")
 ```
 
 Output is written to `~/.config/opencode/` by default, with `opencode.json` at the root and `skills/` alongside it.
 
-Local dev:
+### Updating
 
-```bash
-bun run src/index.ts install ./plugins/openloyalty --to opencode
-```
+Re-run the same command to get the latest version.
 
 ### Post-Install: Dependencies
 
@@ -75,12 +72,10 @@ For Atlassian (Jira/Confluence) integration, add your Atlassian MCP server to `~
 }
 ```
 
-### Updating
-
-Re-run the install command to get the latest version:
+### Local Development
 
 ```bash
-bunx github:OpenLoyalty/openloyalty-claude-plugins install openloyalty --to opencode
+bun run src/index.ts install ./plugins/openloyalty --to opencode
 ```
 
 ---
