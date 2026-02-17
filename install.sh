@@ -5,7 +5,7 @@ set -euo pipefail
 # Usage:
 #   bash <(gh api repos/OpenLoyalty/openloyalty-claude-plugins/contents/install.sh -H "Accept: application/vnd.github.raw")
 
-REPO="git@github.com:OpenLoyalty/openloyalty-claude-plugins.git"
+REPO="https://github.com/OpenLoyalty/openloyalty-claude-plugins.git"
 TMPDIR=$(mktemp -d)
 
 cleanup() { rm -rf "$TMPDIR"; }
