@@ -10,15 +10,18 @@ TMPDIR=$(mktemp -d)
 cleanup() { rm -rf "$TMPDIR"; }
 trap cleanup EXIT
 
-echo "Cloning openloyalty-claude-plugins..."
+echo "[1/4] Cloning openloyalty-claude-plugins..."
 gh repo clone OpenLoyalty/openloyalty-claude-plugins "$TMPDIR" -- --depth 1 2>/dev/null
 
-echo "Installing dependencies..."
+echo "[2/4] Installing dependencies..."
 cd "$TMPDIR"
 bun install --frozen-lockfile 2>/dev/null || bun install
 
-echo "Converting plugin to OpenCode format..."
+echo "[3/4] Converting Claude Code plugin to OpenCode format..."
 bun run src/index.ts install ./plugins/openloyalty --to opencode
+
+echo "[4/4] Cleaning up temporary files..."
+# cleanup runs automatically via trap
 
 echo ""
 echo "Done! Plugin installed to ~/.config/opencode/"
