@@ -1,33 +1,30 @@
 ---
 name: openloyalty:jira-ticket-create
-description: Create Jira tickets from a brainstorming or planning session with OL conventions.
-argument-hint: "[--project <OLOY>] [--type <story|bug|task>] [--epic <OLOY-XXX>]"
+description: Break down features, epics, or PRDs into a structured Jira hierarchy (Epic > Tasks > Subtasks) with FE/BE team split, effort estimates, and automatic ticket creation.
+argument-hint: "[<jira-key|text|file>] [--project <KEY>]"
 ---
 
 # Jira Ticket Create
 
-Turn a brainstorming or planning session into structured Jira tickets. Extracts actionable items from the conversation, groups them into tickets, and creates them in bulk after user approval.
+Break down a feature description into a structured Jira hierarchy (Epic > Tasks > Subtasks) and create all tickets automatically via the Atlassian plugin.
 
 ## Arguments
 
 | Argument | Description | Example |
 |----------|-------------|---------|
-| `--project <KEY>` | Jira project key (default: `OLOY`) | `--project OLOY` |
-| `--type <type>` | Force issue type for all tickets: `story`, `bug`, `task` | `--type story` |
-| `--epic <ID>` | Link all tickets to an existing epic | `--epic OLOY-100` |
+| `<source>` | Jira ticket key, file path, or freeform text | `OLOY-500` or paste text |
+| `--project <KEY>` | Jira project key (default: `OLOY`) | `--project AI` |
 
-## Precondition: Atlassian Plugin Required
+## Precondition: Atlassian Plugin
 
-**BLOCKING:** This command requires the official Atlassian plugin (`atlassian@claude-plugins-official`).
+**BLOCKING:** Verify the Atlassian plugin is connected before doing anything else.
 
-Before proceeding, verify the Atlassian plugin is available by checking for `mcp__claude_ai_Atlassian__getJiraIssue` in the available tools.
+Check for `mcp__plugin_atlassian_atlassian__getJiraIssue` in available tools.
 
 **If not available, STOP and display:**
 
 ```
 Atlassian plugin is not installed.
-
-This command requires the official Atlassian plugin to create Jira tickets.
 
 Install it:
   /plugin install atlassian@claude-plugins-official
@@ -39,179 +36,195 @@ Then restart Claude Code and run /openloyalty:setup to configure.
 
 ---
 
-## Phase 1: Extract Tickets from Conversation
+## Phase 1: Gather Input
 
-Analyze the full conversation history to identify distinct actionable items.
+Determine the input source and collect the feature description:
 
-### Step 1: Scan Conversation
+**Jira key or URL provided:**
+1. Use `mcp__plugin_atlassian_atlassian__getJiraIssue` to fetch the ticket
+2. Extract summary, description, status, existing child issues
 
-Review the entire conversation and extract:
+**Raw text or document path provided:**
+Use the text directly or read the file.
 
-1. **Distinct work items** — each feature, task, fix, or improvement discussed
-2. **Context per item** — why it was discussed, what problem it solves
-3. **Dependencies** — which items depend on or relate to each other
-4. **Priorities discussed** — any urgency or ordering mentioned
-5. **Related tickets** — any `OLOY-\d+` references mentioned
+**Conversation context (no explicit source):**
+Scan the current conversation for the feature being discussed — extract the description from context.
 
-**Grouping rules:**
-- One ticket per distinct deliverable (not per conversation message)
-- Merge duplicates or variations of the same idea
-- Split items that are too large into logical sub-tickets
-- Preserve the user's intent — don't invent work items not discussed
-
-### Step 2: Fetch Jira Project Metadata
+**BLOCKING:** If the description is too vague to identify stages or work items, ask:
 
 ```
-Task: general-purpose
-Prompt: |
-  Fetch Jira project metadata for: {project_key}
+The description is too high-level to break down. I need:
 
-  Steps:
-  1. Use mcp__claude_ai_Atlassian__searchJiraIssuesUsingJql with jql="project = {project_key} ORDER BY created DESC" to understand recent issue patterns
-  2. Use mcp__claude_ai_Atlassian__getJiraIssueTypeMetaWithFields to discover available fields
-  3. Extract:
-     - Available issue types
-     - Available priorities
-     - Custom fields relevant to OL (story points, team, sprint, etc.)
-  4. Return structured metadata
+1. What are the main deliverables?
+2. Are there natural phases (e.g., foundation first, then integrations)?
+3. Which teams are involved? (default: FE + BE)
 ```
 
-## Phase 2: Build Ticket List
+---
 
-For each extracted work item, construct ticket fields.
+## Phase 2: Clarify Configuration
 
-### Issue Type Selection
+Ask the user to confirm before proceeding:
 
-If `--type` not provided, infer per ticket from context:
+1. **Project key** — Default `OLOY`. Ask: "Creating tickets in **OLOY** — want a different project?"
+2. **Team split** — Default FE + BE. Ask what teams are involved (e.g., FE/BE, BE-only, FE/BE/Mobile).
 
-| Context Signal | Inferred Type |
-|----------------|---------------|
-| Error messages, "bug", "fix", "broken" | `bug` |
-| "Add", "implement", "feature", "new" | `story` |
-| "Refactor", "update", "chore", "cleanup" | `task` |
+Keep it brief — one confirmation question, not a questionnaire.
 
-### Title Format
+---
+
+## Phase 3: Analyze and Break Down
+
+### Hierarchy
 
 ```
-[{Module}] {Concise summary in imperative mood}
+Epic (the feature/initiative)
+  └── Task (= one Stage — a milestone with real deliverables)
+        └── Subtask (~1 day of work, assigned to one team: FE or BE)
 ```
 
-Examples:
-- `[Points] Add batch transfer endpoint for bulk operations`
-- `[Campaigns] Fix reward calculation for tiered discounts`
+### Rules
 
-### Description Template
+1. **Identify stages** — Look for natural phases in the work:
+   - Stage 1: CRUD / foundation / data model / migration
+   - Stage 2: integrations / advanced features / effects
+   - Stage 3: cleanup / polish / legacy removal (if needed)
+   - If no explicit stages, create them based on dependency order
+
+2. **One Task per Stage** — Each stage becomes exactly one Task. Do NOT create separate Tasks for individual features within a stage. Tasks are milestones, not features.
+
+3. **Split into Subtasks** — Each subtask is ~1 day of work for one team. Prefix with team label (`BE:`, `FE:`).
+
+4. **Group repetitive work** — When the same pattern applies across multiple modules, create ONE subtask covering all modules, not separate subtasks per module.
+
+5. **Estimate effort** — Simple day estimates:
+   - 0.5d: simple endpoint, minor UI change, config-only
+   - 1d: standard CRUD, new component, migration, applying known pattern across modules
+   - 1.5d: complex logic, multiple interconnected changes
+   - 2d: large cohesive area (e.g., full admin CRUD UI with list + form + delete)
+
+6. **Order by dependency** — Earlier stages unblock later ones.
+
+### Anti-pattern: Over-splitting
+
+**Bad** (same pattern repeated per module):
+```
+BE: Add badge effect to Campaigns (0.5d)
+BE: Add badge effect to Leaderboards (0.5d)
+BE: Add badge effect to Fortune Wheel (0.5d)
+BE: Add badge effect to Automations (0.5d)
+```
+
+**Good** (properly grouped):
+```
+BE: Badge effect infrastructure and execution logic (1d)
+BE: Add badge effects to all modules (Campaigns, Leaderboards, Fortune Wheel, Automations) (1d)
+```
+
+### Title Conventions
+
+- **Epic:** `{Feature Name}`
+- **Task:** `[Stage N] {Milestone Name}` — {what this stage delivers}
+- **Subtask:** `{TEAM}: {Short description of work}`
+
+### Description Guidelines
+
+- **Epic:** High-level overview of the feature
+- **Task:** Summary of what the stage delivers + acceptance criteria as bullet list
+- **Subtask:** Enough technical detail for a developer to start work. Include API contracts for BE, component details for FE.
+
+---
+
+## Phase 4: Present for Review
+
+Present the complete breakdown as a **markdown table** with these exact columns:
 
 ```markdown
-## Summary
-
-{1-3 sentences describing the issue/feature}
-
-## Context
-
-{Background and motivation — why is this needed?}
-
-## Acceptance Criteria
-
-- [ ] {Criterion 1}
-- [ ] {Criterion 2}
-- [ ] {Criterion 3}
-
-## Technical Notes
-
-{Implementation hints, affected modules, architectural considerations}
-
-## Related
-
-- {Links to related tickets or dependencies from this batch}
+| # | Type | Title | Team | ~Days |
+|---|------|-------|------|-------|
+| | Epic | **Enhanced Badges Functionality** | | |
+| S1 | Task | **[Stage 1] Badge CRUD & Foundation** — Admin can manage badge types and member badges | | |
+| 1.1 | Subtask | BE: Create Badge Type endpoint (POST, translations, system_code, active) | BE | 1 |
+| 1.2 | Subtask | BE: List & Get Badge Type endpoints (paginated + single) | BE | 1 |
+| 1.3 | Subtask | BE: Update Badge Type endpoint (PUT) | BE | 1 |
+| 1.4 | Subtask | BE: Delete & Deactivate Badge Type (with in-use validation) | BE | 1 |
+| 1.5 | Subtask | BE: Member Badge endpoints (GET list, POST assign, DELETE remove, PUT count) | BE | 1.5 |
+| 1.6 | Subtask | BE: Migration script + feature flag for achievement handler | BE | 1 |
+| 1.7 | Subtask | FE: Badge Type list view, create/edit form, delete/deactivate UI | FE | 2 |
+| 1.8 | Subtask | FE: Member Badge section + assign/remove UI | FE | 1.5 |
+| S2 | Task | **[Stage 2] Effects Integration & Event History** — Badges awarded from all modules with audit trail | | |
+| 2.1 | Subtask | BE: Badge effect infrastructure + execution logic (origin tracking, increment/remove) | BE | 1.5 |
+| 2.2 | Subtask | BE: Add badge effects to all modules (Campaigns, Leaderboards, Fortune Wheel, Automations) | BE | 1 |
+| 2.3 | Subtask | BE: Badge event emission + history handlers (award/removal/count change with source) | BE | 1.5 |
+| 2.4 | Subtask | BE: Remove legacy achievement-badge coupling | BE | 1 |
+| 2.5 | Subtask | FE: Badge effect UI across all module configurators | FE | 1 |
+| 2.6 | Subtask | FE: Badge events in member history timeline | FE | 1 |
+| | | **Totals: 2 Tasks, 14 Subtasks** | **BE: 11.5d** | **FE: 5.5d** |
 ```
 
-### Fields per Ticket
+**Formatting rules:**
+- Epic and Task rows: Title in **bold**, Team and ~Days cells empty
+- Subtask rows: plain title, Team = `BE` or `FE`, ~Days = number
+- Totals row: bold, split by team
+- `#` column: empty for Epic, `S1`/`S2`/... for Tasks, `1.1`/`1.2`/... for Subtasks
 
-| Field | Source | Default |
-|-------|--------|---------|
-| Project | `--project` flag | `OLOY` |
-| Issue Type | `--type` flag or inferred per ticket | `task` |
-| Summary | Generated title | — |
-| Description | Generated from template | — |
-| Epic Link | `--epic` flag | None |
-| Priority | Inferred from context | `Medium` |
+**GATE:** Do NOT proceed to Phase 5 until user explicitly approves.
 
-## Phase 3: Review & Create
+- **"Looks good" / "Go ahead"** — Proceed to Phase 5
+- **Adjustment requests** — Modify and present again
+- **"Cancel"** — Abort
 
-### Step 1: Present Ticket List Preview
+---
 
-Show all extracted tickets in a numbered table for review:
+## Phase 5: Create in Jira
 
-```
-Found {N} tickets from this session:
+1. **Get cloud ID** — `mcp__plugin_atlassian_atlassian__getAccessibleAtlassianResources`
 
- #  Type    Priority  Title
- 1  story   High      [Points] Add batch transfer endpoint
- 2  task    Medium    [API] Define OpenAPI schema for transfers
- 3  story   Medium    [Campaigns] Support tiered reward rules
- 4  task    Low       [Docs] Document new transfer API
+2. **Discover issue types** — `mcp__plugin_atlassian_atlassian__getJiraProjectIssueTypesMetadata` for the target project. Map available types: Epic, Task (or Story), Subtask (or Sub-task). Adapt to whatever the project has.
 
-Epic: {epic_id or "None"}
-Project: {project_key}
+3. **Create Epic** — `mcp__plugin_atlassian_atlassian__createJiraIssue` with `issueTypeName: "Epic"`, collect key
 
-What's next?
-1. Create all tickets (recommended)
-2. Review a ticket in detail — enter ticket number (e.g., "2")
-3. Remove a ticket — enter "remove N"
-4. Edit a ticket — enter "edit N"
-5. Add a ticket — describe the missing item
-6. Cancel
-```
+4. **Create Tasks** — `mcp__plugin_atlassian_atlassian__createJiraIssue` with `parent: "EPIC-KEY"`, collect keys
 
-**WAIT for user response before proceeding.**
+5. **Create Subtasks** — `mcp__plugin_atlassian_atlassian__createJiraIssue` with `issueTypeName: "Subtask"` and `parent: "TASK-KEY"`
 
-**Handle responses:**
-
-- **Option 1:** Proceed to Step 2
-- **Option 2:** Show full title + description for the selected ticket, then return to this menu
-- **Option 3:** Remove the ticket from the list, then return to this menu
-- **Option 4:** Ask what to change, update the ticket, then return to this menu
-- **Option 5:** Ask user to describe the item, build a new ticket, add to list, then return to this menu
-- **Option 6:** Abort without creating anything
-
-### Step 2: Create Tickets
-
-After user confirms (Option 1), create tickets sequentially:
+6. **Present results** — same table format but with Jira keys added:
 
 ```
-For each ticket in the list:
-  Use mcp__claude_ai_Atlassian__createJiraIssue with:
-    - project_key: {project_key}
-    - issue_type: {issue_type}
-    - summary: {title}
-    - description: {description}
-    - priority: {priority}
-    - epic_key: {epic_id} (if provided)
+Created 16 tickets:
+
+| # | Key | Type | Title |
+|---|-----|------|-------|
+| | OLOY-500 | Epic | Enhanced Badges Functionality |
+| S1 | OLOY-501 | Task | [Stage 1] Badge CRUD & Foundation |
+| 1.1 | OLOY-502 | Subtask | BE: Create Badge Type endpoint |
+| ... | | | |
+
+Epic: https://openloyalty.atlassian.net/browse/OLOY-500
 ```
 
-### Step 3: Post-Creation Summary
+**API notes:**
+- Always use `parent` field for hierarchy
+- Include acceptance criteria in Task descriptions
+- Subtask descriptions: enough detail for a dev to start work
 
-After all tickets are created, show a summary:
+---
 
-```
-Created {N} tickets:
+## Error Handling
 
- #  Key        Type    Title
- 1  OLOY-501   story   [Points] Add batch transfer endpoint
- 2  OLOY-502   task    [API] Define OpenAPI schema for transfers
- 3  OLOY-503   story   [Campaigns] Support tiered reward rules
- 4  OLOY-504   task    [Docs] Document new transfer API
+**Issue type not available:**
+- Some projects lack Story — use Task instead
+- Some projects lack Subtask — check exact name via `getJiraProjectIssueTypesMetadata`
+- Never hardcode type IDs
 
-What's next?
-1. Done (recommended)
-2. Link tickets as dependencies (e.g., "OLOY-502 blocks OLOY-501")
-3. Create a branch for a ticket
-```
+**Field errors:**
+- Check full error response body
+- Some projects have required custom fields — discover them first
+
+---
 
 ## Related Commands
 
-- `/openloyalty:backend-pr-create` - Create a PR linked to a Jira ticket
-- `/openloyalty:review-pr` - Review code changes
-- `/openloyalty:compound` - Document solved problems
-- `/openloyalty:help` - Plugin documentation
+- `/openloyalty:backend-pr-create` — Create a PR linked to a Jira ticket
+- `/openloyalty:review-pr` — Review code changes
+- `/openloyalty:help` — Plugin documentation
