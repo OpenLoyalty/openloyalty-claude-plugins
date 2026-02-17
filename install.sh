@@ -18,7 +18,7 @@ cd "$TMPDIR"
 bun install --frozen-lockfile 2>/dev/null || bun install
 
 echo "Converting plugin to OpenCode format..."
-bun run install:opencode
+bun run src/index.ts install ./plugins/openloyalty --to opencode
 
 echo ""
 echo "Done! Plugin installed to ~/.config/opencode/"
