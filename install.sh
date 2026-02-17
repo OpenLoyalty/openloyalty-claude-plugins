@@ -15,7 +15,7 @@ gh repo clone OpenLoyalty/openloyalty-claude-plugins "$TMPDIR" -- --depth 1 2>/d
 
 echo "[2/4] Installing dependencies..."
 cd "$TMPDIR"
-bun install --frozen-lockfile 2>/dev/null || bun install
+bun install --frozen-lockfile || bun install
 
 echo "[3/4] Converting Claude Code plugin to OpenCode format..."
 bun run src/index.ts install ./plugins/openloyalty --to opencode
