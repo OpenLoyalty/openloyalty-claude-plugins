@@ -43,7 +43,7 @@ depends on a prior command's result.
 
 ---
 
-## Step 0: Resolve Arguments
+## Phase 0: Resolve Arguments
 
 Before creating any tasks or spawning any agents, extract the following runtime values from the user's arguments and git state:
 

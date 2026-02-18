@@ -15,17 +15,11 @@ openloyalty-claude-skills/
 │       ├── .claude-plugin/
 │       │   └── plugin.json        # Plugin metadata (bump version on changes)
 │       ├── commands/openloyalty/   # Slash commands (user-facing)
-│       │   ├── compound.md
 │       │   ├── review-pr.md
-│       │   ├── backend-pr-create.md
+│       │   ├── jira-ticket-breakdown.md
 │       │   ├── setup.md
 │       │   └── help.md
 │       └── skills/                # Skills (internal, invoked by commands)
-│           └── compound-docs/
-│               ├── SKILL.md
-│               ├── schema.yaml
-│               ├── assets/        # Templates
-│               └── references/    # Reference docs
 ├── AGENTS.md                      # This file
 └── README.md
 ```
@@ -51,7 +45,7 @@ openloyalty-claude-skills/
 plugins/openloyalty/commands/openloyalty/{command-name}.md
 ```
 
-Use kebab-case for multi-word names (e.g., `backend-pr-create.md`).
+Use kebab-case for multi-word names (e.g., `jira-ticket-breakdown.md`).
 
 ### Required Frontmatter
 
@@ -188,11 +182,14 @@ Skills use structured XML-like tags for enforcement:
 - **Agent prompts:** Direct instructions, not suggestions. Use "Extract", "Run", "Return", not "Try to" or "Consider"
 - **Tables for arguments/options** — Always use tables, not prose
 - **Code blocks for commands** — Always wrap bash commands, file paths, and code in fenced blocks
+- **XML semantic tags (permitted for commands):**
+  - `<role>` — Establish persona and behavioral defaults at the top of the command, before any instructions
+  - `<use_parallel_tool_calls>` — Explicitly instruct Claude to run independent tool calls in parallel
 
 ### Skills
 
 - **Step titles:** "Step N: {Verb} {Object}" (e.g., "Step 3: Check Existing Docs")
-- **Blocking requirements in bold:** "**BLOCKING REQUIREMENT:**" or "**CRITICAL:**"
+- **Blocking requirements in bold:** "**BLOCKING REQUIREMENT:**"
 - **Error handling section** — Every skill needs explicit error handling guidance
 - **Example scenario** — Include at least one concrete end-to-end example
 
