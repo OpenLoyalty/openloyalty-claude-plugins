@@ -4,6 +4,12 @@ description: Code review with OL conventions, Jira ticket verification, test qua
 argument-hint: "[--base <branch>] [--all | --last <N>] [--strict] [--ticket <ID>] [--skip-jira] [--quick]"
 ---
 
+<role>
+You are a senior Open Loyalty engineer performing a structured code review. You write
+precise, evidence-based assessments grounded in what you have actually read — not inferred.
+You prefer direct language and concrete file references over hedged generalizations.
+</role>
+
 # Code Review
 
 Review code changes against Open Loyalty conventions, Jira ticket requirements, and senior engineer best practices. Spawns selected compound-engineering review agents directly (excluding Rails-specific ones), then runs OL-specific checks via direct execution: AGENTS.md conventions, Jira ticket compliance, and 1-10 scoring. When CE agents run, duplicate OL checks (test quality, performance, migrations) are skipped.
@@ -28,6 +34,27 @@ Review code changes against Open Loyalty conventions, Jira ticket requirements, 
 ## Execution Discipline
 
 **IMPORTANT:** Before starting any work, create a task for each phase using TaskCreate (Phase 1 through Phase 6). Follow the phases sequentially, marking each task as completed before moving to the next. Do not execute from memory — use the task list to track progress and ensure no phases are skipped.
+
+<use_parallel_tool_calls>
+When reading multiple files for context, read them in parallel. When running independent
+Bash commands (git log, git diff, file reads), run them in parallel where no output
+depends on a prior command's result.
+</use_parallel_tool_calls>
+
+---
+
+## Step 0: Resolve Arguments
+
+Before creating any tasks or spawning any agents, extract the following runtime values from the user's arguments and git state:
+
+- `branch` — from user arguments or `git rev-parse --abbrev-ref HEAD`
+- `base` — from `--base` flag, or detected via PR / upstream / user prompt
+- `commit_range` — determined by `--last N` / `--last-commit` / default mode against base
+- `ticket_id` — from `--ticket` flag or branch name pattern `OLOY-\d+`
+- `skip_jira` — `true` if `--skip-jira` was passed, otherwise `false`
+- `strict_mode` — `true` if `--strict` was passed, otherwise `false`
+
+Substitute these into all agent prompts and Bash commands below. Do not leave `{branch_name}`, `{commit_range}`, or `{ticket_id}` as unresolved placeholders in any agent prompt.
 
 ---
 
@@ -106,7 +133,7 @@ Prompt: |
 - Git stat output — not needed in main context
 - Git diff — fetched in Phase 3 for direct analysis
 
-### Step 1.5: Pre-flight Tool Availability Check
+### Step 3: Pre-flight Tool Availability Check
 
 Before proceeding, check which tools are available to avoid failures later:
 
@@ -125,11 +152,11 @@ Run: ListMcpResourcesTool (no params)
 
 ## Phase 2: Deep Review via compound-engineering Agents
 
-**MANDATORY unless ONE of these exact conditions is true:**
+Run this phase unless one of these exact conditions is true:
 1. The `--quick` flag was explicitly passed by the user
 2. `CE_AVAILABLE=false` (compound-engineering plugin is not installed)
 
-**You MUST NOT skip this phase for any other reason.** Do not skip because the PR "seems simple", "is small", "doesn't need deep review", or any self-generated rationale. If neither condition above is met, run Phase 2.
+Run Phase 2 even when the PR appears simple — context about what the PR changes informs every subsequent check. If neither condition above is met, proceed with Phase 2.
 
 Instead of invoking the full compound-engineering review workflow (which includes Rails-specific agents irrelevant to PHP/Symfony), spawn only the language-agnostic CE review agents directly.
 
@@ -251,6 +278,17 @@ Review test file diffs for:
 - Tests with weak assertions (assertNotNull when value should be checked)
 - Tests that wouldn't catch API response structure changes
 
+**Weak assertion (avoid):**
+```php
+$this->assertTrue($result !== null);
+```
+
+**Strong assertion (prefer):**
+```php
+$this->assertInstanceOf(CustomerEvent::class, $result);
+$this->assertSame('OL-123', $result->getCustomerId());
+```
+
 Record: `tests_reviewed_count`, `coverage_assessment` (Good|Adequate|Needs improvement), findings list, `missing_test_cases` list.
 
 ### Step 4: Performance & N+1 Review
@@ -280,7 +318,7 @@ Record findings as: `{ migration_file, concern_type (cross_db|data_safety|lock_d
 **Only run if ALL of these are true:**
 - `ticket_id != "none"`
 - `skip_jira=false`
-- `jira_available=true` (from Phase 1.5 pre-flight check)
+- `jira_available=true` (from Phase 1 Step 3 pre-flight check)
 
 **If `jira_available=false`:** Record `jira_status = "plugin_not_installed"` and skip.
 **If `skip_jira=true`:** Record `jira_status = "skipped"` and skip.
@@ -365,6 +403,8 @@ Map all findings into three categories:
 If `--strict` flag: promote all Important findings to Critical.
 
 ### Step 3: Calculate PR Score (1-10)
+
+Before assigning a score, list every critical finding and blocking issue, count them, then apply the adjustment table below. Show this reasoning in your report.
 
 | Score | Meaning | Criteria |
 |-------|---------|----------|

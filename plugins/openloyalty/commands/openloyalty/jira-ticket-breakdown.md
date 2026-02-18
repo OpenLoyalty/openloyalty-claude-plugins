@@ -4,6 +4,10 @@ description: Break down features, epics, or PRDs into a structured Jira hierarch
 argument-hint: "[<jira-key|text|file>] [--project <KEY>]"
 ---
 
+<role>
+You are a senior Open Loyalty project analyst breaking down feature descriptions into a structured Jira hierarchy. You produce precise ticket hierarchies grounded in the actual feature description — not invented work. You prefer concrete acceptance criteria and technical context over vague placeholders.
+</role>
+
 # Jira Ticket Breakdown
 
 Break down a feature description into a structured Jira hierarchy and create all tickets automatically via the Atlassian plugin.
@@ -21,9 +25,9 @@ Break down a feature description into a structured Jira hierarchy and create all
 
 ## Precondition: Atlassian Plugin
 
-**BLOCKING:** Verify the Atlassian plugin is connected before doing anything else.
+Verify Atlassian connectivity before Phase 2.
 
-Check for `mcp__plugin_atlassian_atlassian__getJiraIssue` in available tools.
+Check for `mcp__claude_ai_Atlassian__getJiraIssue` in available tools.
 
 **If not available, STOP and display:**
 
@@ -45,7 +49,7 @@ Then restart Claude Code and run /openloyalty:setup to configure.
 Determine the input source and collect the feature description:
 
 **Jira key or URL provided:**
-1. Use `mcp__plugin_atlassian_atlassian__getJiraIssue` to fetch the ticket
+1. Use `mcp__claude_ai_Atlassian__getJiraIssue` to fetch the ticket
 2. Extract summary, description, status, existing child issues
 
 **Raw text or document path provided:**
@@ -54,7 +58,7 @@ Use the text directly or read the file.
 **Conversation context (no explicit source):**
 Scan the current conversation for the feature being discussed — extract the description from context.
 
-**BLOCKING:** If the description is too vague to identify stages or work items, ask:
+If the description is too vague to identify stages or work items, ask:
 
 ```
 The description is too high-level to break down. I need:
@@ -211,17 +215,17 @@ Present the complete breakdown as a **markdown table** with these exact columns:
 
 ## Phase 5: Create in Jira
 
-1. **Get cloud ID** — `mcp__plugin_atlassian_atlassian__getAccessibleAtlassianResources`
+1. **Get cloud ID** — `mcp__claude_ai_Atlassian__getAccessibleAtlassianResources`
 
-2. **Discover issue types** — `mcp__plugin_atlassian_atlassian__getJiraProjectIssueTypesMetadata` for the target project. Map available types: Epic, Story, Task, Subtask (or Sub-task). Adapt to whatever the project has.
+2. **Discover issue types** — `mcp__claude_ai_Atlassian__getJiraProjectIssueTypesMetadata` for the target project. Map available types: Epic, Story, Task, Subtask (or Sub-task). Adapt to whatever the project has.
 
-3. **Create Epic** — `mcp__plugin_atlassian_atlassian__createJiraIssue` with `issueTypeName: "Epic"`, collect key
+3. **Create Epic** — `mcp__claude_ai_Atlassian__createJiraIssue` with `issueTypeName: "Epic"`, collect key
 
-4. **Create Stories** — `mcp__plugin_atlassian_atlassian__createJiraIssue` with `issueTypeName: "Story"` and `parent: "EPIC-KEY"`, collect keys. **If the project lacks the Story type, fall back to Task and inform the user.**
+4. **Create Stories** — `mcp__claude_ai_Atlassian__createJiraIssue` with `issueTypeName: "Story"` and `parent: "EPIC-KEY"`, collect keys. **If the project lacks the Story type, fall back to Task and inform the user.**
 
-5. **Create Subtasks** — `mcp__plugin_atlassian_atlassian__createJiraIssue` with `issueTypeName: "Subtask"` and `parent: "STORY-KEY"`
+5. **Create Subtasks** — `mcp__claude_ai_Atlassian__createJiraIssue` with `issueTypeName: "Subtask"` and `parent: "STORY-KEY"`
 
-6. **Create Tasks (chores)** — `mcp__plugin_atlassian_atlassian__createJiraIssue` with `issueTypeName: "Task"` and `parent: "EPIC-KEY"`. These are standalone under the Epic, NOT under a Story.
+6. **Create Tasks (chores)** — `mcp__claude_ai_Atlassian__createJiraIssue` with `issueTypeName: "Task"` and `parent: "EPIC-KEY"`. These are standalone under the Epic, NOT under a Story.
 
 7. **Present results** — same table format but with Jira keys added:
 
@@ -265,6 +269,5 @@ Epic: https://openloyalty.atlassian.net/browse/OLOY-500
 
 ## Related Commands
 
-- `/openloyalty:backend-pr-create` — Create a PR linked to a Jira ticket
 - `/openloyalty:review-pr` — Review code changes
 - `/openloyalty:help` — Plugin documentation

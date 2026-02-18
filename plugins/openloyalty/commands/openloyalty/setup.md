@@ -4,21 +4,27 @@ description: Install dependencies and configure MCP server environment variables
 argument-hint: ""
 ---
 
+<role>
+You are a senior Open Loyalty developer helping configure the development environment. You
+follow each step precisely, verify actual installation state via CLI commands (not session-loaded
+tools), and guide the user clearly through any failures.
+</role>
+
 # Open Loyalty Plugin — Interactive Setup
 
 Guide the user through installing required plugin dependencies and configuring MCP server environment variables.
 
 ## Steps
 
-### 0. Install required plugin: compound-engineering
+### 1. Install required plugin: compound-engineering
 
-The Open Loyalty plugin requires the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin for review workflows, agent types, and engineering best practices.
+The Open Loyalty plugin requires the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin for review workflows and specialized agent types used by `/openloyalty:review-pr`.
 
 **IMPORTANT:** Do NOT check for this plugin by looking at available tools/skills in the session — tools loaded at session start persist even after a plugin is removed. Always use the CLI command to verify actual installation state.
 
 Run `claude plugin list` and check if the output contains `compound-engineering`.
 
-**If already installed**, tell the user and continue to step 1.
+**If already installed**, tell the user and continue to step 2.
 
 **If not installed**, install it in two steps:
 
@@ -55,15 +61,15 @@ Then restart Claude Code and run /openloyalty:setup again.
 
 ---
 
-### 1. Install required plugin: atlassian
+### 2. Install required plugin: atlassian
 
-The Open Loyalty plugin requires the official [Atlassian](https://github.com/anthropics/claude-plugins-official) plugin for Jira and Confluence integration. This is used by `/openloyalty:review-pr`, `/openloyalty:backend-pr-create`, and `/openloyalty:jira-ticket-create`.
+The Open Loyalty plugin requires the official [Atlassian](https://github.com/anthropics/claude-plugins-official) plugin for Jira and Confluence integration. This is used by `/openloyalty:review-pr` and `/openloyalty:jira-ticket-create`.
 
 **IMPORTANT:** Do NOT check for this plugin by looking at available `mcp__claude_ai_Atlassian__*` tools in the session — tools loaded at session start persist even after a plugin is removed. Always use the CLI command to verify actual installation state.
 
 Run `claude plugin list` and check if the output contains `atlassian`.
 
-**If already installed**, tell the user and continue to step 2.
+**If already installed**, tell the user and continue to step 3.
 
 **If not installed**, install it in two steps:
 
@@ -96,15 +102,15 @@ Could not auto-install the Atlassian plugin. Install it manually:
 Then restart Claude Code and run /openloyalty:setup again.
 ```
 
-### 2. Check Open Loyalty MCP configuration (optional)
+### 3. Check Open Loyalty MCP configuration (optional)
 
 Read `~/.claude/.mcp.json` and check if `mcpServers` already contains the `openloyalty` server entry.
 
-- If `openloyalty` is present with non-empty env values, OL MCP is configured. Skip to step 4.
+- If `openloyalty` is present with non-empty env values, OL MCP is configured. Skip to step 5.
 
-### 3. Collect Open Loyalty MCP values (optional)
+### 4. Collect Open Loyalty MCP values (optional)
 
-Ask: "Do you want to configure the Open Loyalty MCP server? (needed for loyalty API tools — you can skip this and configure later)" — if the user says no/skip, skip to step 4.
+Ask: "Do you want to configure the Open Loyalty MCP server? (needed for loyalty API tools — you can skip this and configure later)" — if the user says no/skip, skip to step 5.
 
 If yes, collect:
 
@@ -134,7 +140,7 @@ Read `~/.claude/.mcp.json` (create if it doesn't exist). Merge the collected MCP
 
 **Important:** Preserve any existing keys in the file — only add or update the server entry being configured. Use the Read and Edit tools to merge, not overwrite.
 
-### 4. Instruct to restart
+### 5. Instruct to restart
 
 Tell the user:
 
