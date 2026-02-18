@@ -17,3 +17,6 @@ Thumbs.db
 node_modules/
 dist/
 bun.lock
+
+# Docs
+docs/
