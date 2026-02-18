@@ -73,21 +73,11 @@ describe("converter: openloyalty plugin", () => {
     const bundle = convertClaudeToOpenCode(plugin, { permissions: "broad" })
 
     const commandNames = Object.keys(bundle.config.command!)
-    expect(commandNames).toHaveLength(6)
+    expect(commandNames).toHaveLength(4)
     expect(commandNames).toContain("openloyalty:help")
     expect(commandNames).toContain("openloyalty:setup")
-    expect(commandNames).toContain("openloyalty:compound")
     expect(commandNames).toContain("openloyalty:review-pr")
-    expect(commandNames).toContain("openloyalty:backend-pr-create")
     expect(commandNames).toContain("openloyalty:jira-ticket-breakdown")
-  })
-
-  test("includes compound-docs skill", async () => {
-    const plugin = await loadClaudePlugin(PLUGIN_DIR)
-    const bundle = convertClaudeToOpenCode(plugin, { permissions: "broad" })
-
-    expect(bundle.skillDirs).toHaveLength(1)
-    expect(bundle.skillDirs[0].name).toBe("compound-docs")
   })
 
   test("setup command uses bunx for compound-engineering install", async () => {

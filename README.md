@@ -1,6 +1,6 @@
 # Open Loyalty Claude Plugins
 
-Engineering workflows and MCP tools for the Open Loyalty development team. Auto-updating Claude Code plugins with compound learning documentation system.
+Engineering workflows and MCP tools for the Open Loyalty development team.
 
 ## Quick Start
 
@@ -25,7 +25,7 @@ This installs engineering workflows (slash commands). MCP servers are configured
 
 The setup command handles the full onboarding process:
 
-1. **Installs the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin** — automatically adds the marketplace and installs the plugin. This dependency provides review workflows, specialized agent types (architecture strategist, performance oracle, security sentinel, etc.), and engineering best practices used by `/openloyalty:review-pr` and other commands.
+1. **Installs the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin** — automatically adds the marketplace and installs the plugin. This dependency provides review workflows and specialized agent types (architecture strategist, performance oracle, security sentinel, etc.) used by `/openloyalty:review-pr`.
 2. **Installs the official [Atlassian plugin](https://github.com/anthropics/claude-plugins-official)** — installs `atlassian@claude-plugins-official` which provides Jira and Confluence tools. Authentication is handled through Claude's native Atlassian OAuth — no API tokens needed.
 3. **Configures Open Loyalty MCP server** (optional) — prompts for `OPENLOYALTY_API_URL` and `OPENLOYALTY_API_TOKEN`, writes the `openloyalty` server definition to `~/.claude/.mcp.json`. Skippable if you don't need direct loyalty API access.
 
@@ -98,18 +98,8 @@ The plugin provides **slash commands** (code review, PR creation, Jira tickets, 
 |---------|---------|
 | `/openloyalty:setup` | Full onboarding: installs compound-engineering plugin, configures MCP servers in user scope |
 | `/openloyalty:review-pr` | Code review with OL conventions, Jira verification, 1-10 scoring |
-| `/openloyalty:backend-pr-create` | Create backend PR with OL conventions and Jira linking |
 | `/openloyalty:jira-ticket-create` | Create Jira tickets from brainstorming/planning sessions |
-| `/openloyalty:compound` | **[WIP]** Document solved problems with YAML schema validation |
 | `/openloyalty:help` | Show available commands and plugin documentation |
-
----
-
-## Compound Learning System
-
-The `/openloyalty:compound` command creates a compounding knowledge repository with parallel subagents, YAML schema validation, and auto-categorized output. Each documented solution makes the team smarter.
-
-See [compound-docs skill README](plugins/openloyalty/skills/compound-docs/README.md) for full documentation — usage, auto-invoke triggers, output categories, and YAML schema reference.
 
 ---
 
@@ -118,7 +108,7 @@ See [compound-docs skill README](plugins/openloyalty/skills/compound-docs/README
 Jira and Confluence integration is provided by the official Atlassian plugin (`atlassian@claude-plugins-official`). It's installed automatically by `/openloyalty:setup`.
 
 - **Required by:** `/openloyalty:jira-ticket-create`
-- **Optional for:** `/openloyalty:review-pr`, `/openloyalty:backend-pr-create`, `/openloyalty:compound` (these commands degrade gracefully without Jira)
+- **Optional for:** `/openloyalty:review-pr` (degrades gracefully without Jira)
 
 **Manual install (if not using setup):**
 ```bash
@@ -190,31 +180,6 @@ For private repo access, use the same auth method as your normal git:
 ## Claude Desktop
 
 The Open Loyalty MCP server is also available for Claude Desktop via the `.mcpb` extension from the MCP server repository. See the [@open-loyalty/mcp-server](https://github.com/OpenLoyalty/mcp-server) repo for Claude Desktop setup instructions.
-
-## Output Locations
-
-| Document Type | Path |
-|---------------|------|
-| Compound Learnings | `engineering/compound-learnings/{category}/{filename}.md` |
-| Critical Patterns | `engineering/compound-learnings/patterns/ol-critical-patterns.md` |
-| Code Reviews | Chat output (not saved) |
-
----
-
-## The Compounding Philosophy
-
-> Each documented solution compounds your team's knowledge.
-> The first time you solve a problem takes research.
-> Document it, and the next occurrence takes minutes.
-> Knowledge compounds.
-
-```
-Build → Test → Find Issue → Research → Improve → Document → Validate → Deploy
-    ↑                                                                      ↓
-    └──────────────────────────────────────────────────────────────────────┘
-```
-
-**Each unit of engineering work should make subsequent units of work easier—not harder.**
 
 ---
 
