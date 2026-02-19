@@ -100,6 +100,50 @@ If the user wants to skip Atlassian, continue to step 2.
   ],
 ]
 
+// Review-PR command rewrites — applied only to the openloyalty:review-pr command body.
+// Note: these run after rewriteClaudePaths(), so patterns match ~/.config/opencode/ paths.
+const REVIEW_PR_REWRITES: [RegExp | string, string][] = [
+  // CE detection: replace Claude Code plugin-cache ls check with opencode.json command-key lookup
+  [
+    /Check if the compound-engineering plugin is installed:\n\n```\nRun: ls ~\/.config\/opencode\/plugins\/cache\/every-marketplace\/compound-engineering\/ 2>\/dev\/null\n```\n\n- If found: set `CE_AVAILABLE=true`, note the version\n- If not found: set `CE_AVAILABLE=false`/,
+    `Check if the compound-engineering plugin is installed in OpenCode:
+
+\`\`\`bash
+python3 -c "import json, os; d=json.load(open(os.path.expanduser('~/.config/opencode/opencode.json'))); print('found' if any(k in d.get('command', {}) for k in ['test-browser', 'deepen-plan', 'workflows:work']) else 'not_found')" 2>/dev/null
+\`\`\`
+
+- If output is \`found\`: set \`CE_AVAILABLE=true\`
+- If output is \`not_found\` or empty: set \`CE_AVAILABLE=false\``,
+  ],
+
+  // Phase 2 Step 1: replace parallel Task sub-agent spawning with inline CE-equivalent review
+  [
+    /### Step 1: Spawn CE review agents in parallel\n\nLaunch ALL core agents simultaneously[\s\S]*?(?=\n### Step 2: Collect findings)/,
+    `### Step 1: Run CE-equivalent review inline
+
+OpenCode does not support spawning compound-engineering sub-agents by type. Instead, run the CE-equivalent review inline by analysing \`git diff {commit_range} -U10\` directly, covering the same six areas:
+
+1. **Security** (security-sentinel): Vulnerabilities, input validation, auth/authz, OWASP top 10, hardcoded secrets
+2. **Performance** (performance-oracle): N+1 queries, algorithmic complexity, memory usage, caching, scalability
+3. **Architecture** (architecture-strategist): Design patterns, component boundaries, coupling, structural integrity
+4. **Patterns** (pattern-recognition-specialist): Naming conventions, duplication, codebase consistency
+5. **Simplicity** (code-simplicity-reviewer): YAGNI violations, over-engineering, unnecessary abstractions
+6. **Data integrity** (data-integrity-guardian): Migration safety, data constraints, transaction boundaries
+
+If \`has_migrations=true\`, also cover:
+7. **Migration** (data-migration-expert): ID mappings, column renames, enum conversions, schema changes
+8. **Deployment** (deployment-verification-agent): Rollback procedures, SQL verification, monitoring plans
+
+Set \`ce_ran=true\` after completing this analysis. Record findings per area for Phase 4 synthesis.`,
+  ],
+
+  // Phase 1 warning + Phase 6: update /install compound-engineering to bunx command
+  [
+    "/install compound-engineering",
+    "bunx @every-env/compound-plugin install compound-engineering --to opencode",
+  ],
+]
+
 export function convertClaudeToOpenCode(
   plugin: ClaudePlugin,
   options: ClaudeToOpenCodeOptions,
@@ -134,6 +178,11 @@ function convertCommands(
       body = applySetupRewrites(body)
     }
 
+    // Apply review-pr-specific rewrites
+    if (command.name === "openloyalty:review-pr") {
+      body = applyReviewPrRewrites(body)
+    }
+
     const entry: OpenCodeCommandConfig = {
       description: command.description,
       template: body,
@@ -149,6 +198,18 @@ function convertCommands(
 function applySetupRewrites(body: string): string {
   let result = body
   for (const [pattern, replacement] of SETUP_REWRITES) {
+    if (pattern instanceof RegExp) {
+      result = result.replace(pattern, replacement)
+    } else {
+      result = result.replaceAll(pattern, replacement)
+    }
+  }
+  return result
+}
+
+function applyReviewPrRewrites(body: string): string {
+  let result = body
+  for (const [pattern, replacement] of REVIEW_PR_REWRITES) {
     if (pattern instanceof RegExp) {
       result = result.replace(pattern, replacement)
     } else {
