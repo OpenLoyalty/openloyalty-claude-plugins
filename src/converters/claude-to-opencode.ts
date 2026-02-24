@@ -63,13 +63,9 @@ If not found, tell the user to install uv first:
 
 Then continue once \`uvx\` is available.
 
-Read \`~/.config/opencode/opencode.json\`. If \`mcp-atlassian\` is already configured, skip to step 3.
+Read \`~/.config/opencode/opencode.json\`. If \`mcp-atlassian\` is already configured with real credentials (not placeholders), skip to step 3.
 
-Otherwise, ask the user for:
-1. **Atlassian email** — their email for Jira/Confluence (e.g. \`you@company.com\`)
-2. **API token** — generate one at https://id.atlassian.com/manage-profile/security/api-tokens
-
-Write the MCP configuration to \`~/.config/opencode/opencode.json\` (merge into existing config):
+Otherwise, write the MCP configuration to \`~/.config/opencode/opencode.json\` (merge into existing config, preserve other keys):
 
 \`\`\`json
 {
@@ -79,11 +75,11 @@ Write the MCP configuration to \`~/.config/opencode/opencode.json\` (merge into 
       "command": ["uvx", "mcp-atlassian"],
       "environment": {
         "JIRA_URL": "https://openloyalty.atlassian.net",
-        "JIRA_USERNAME": "<collected email>",
-        "JIRA_API_TOKEN": "<collected token>",
+        "JIRA_USERNAME": "YOUR_EMAIL@openloyalty.io",
+        "JIRA_API_TOKEN": "YOUR_API_TOKEN",
         "CONFLUENCE_URL": "https://openloyalty.atlassian.net/wiki",
-        "CONFLUENCE_USERNAME": "<collected email>",
-        "CONFLUENCE_API_TOKEN": "<collected token>"
+        "CONFLUENCE_USERNAME": "YOUR_EMAIL@openloyalty.io",
+        "CONFLUENCE_API_TOKEN": "YOUR_API_TOKEN"
       },
       "enabled": true
     }
@@ -91,9 +87,15 @@ Write the MCP configuration to \`~/.config/opencode/opencode.json\` (merge into 
 }
 \`\`\`
 
-**Important:** Preserve any existing keys in the file — only add or update the \`mcp-atlassian\` entry. Use the Read and Edit tools to merge, not overwrite.
+After writing the file, tell the user:
 
-If the user wants to skip Atlassian, continue to step 3.
+> Atlassian MCP config added. Edit \`~/.config/opencode/opencode.json\` and replace:
+> - \`YOUR_EMAIL@openloyalty.io\` with your Atlassian email (in both JIRA_USERNAME and CONFLUENCE_USERNAME)
+> - \`YOUR_API_TOKEN\` with your API token (in both JIRA_API_TOKEN and CONFLUENCE_API_TOKEN)
+>
+> Generate an API token at: https://id.atlassian.com/manage-profile/security/api-tokens
+
+Do NOT ask the user for their email or token interactively. Just write the placeholders and instruct them to edit the file.
 
 `,
   ],
