@@ -22,8 +22,8 @@ const CLAUDE_FAMILY_ALIASES: Record<string, string> = {
 const SETUP_REWRITES: [RegExp | string, string][] = [
   // compound-engineering: two-step Claude plugin install → single bunx command
   [
-    /### 0\. Install required plugin: compound-engineering[\s\S]*?(?=###\s+1\.)/,
-    `### 0. Install required plugin: compound-engineering
+    /### 1\. Install required plugin: compound-engineering[\s\S]*?(?=###\s+2\.)/,
+    `### 1. Install required plugin: compound-engineering
 
 The Open Loyalty plugin requires the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin for review workflows, agent types, and engineering best practices.
 
@@ -42,25 +42,48 @@ If it fails, show the error and tell the user to install manually.
 `,
   ],
 
-  // Atlassian: Claude plugin install → manual MCP config instructions
+  // Atlassian: Claude plugin install → mcp-atlassian MCP server config (sooperset)
   [
-    /### 1\. Install required plugin: atlassian[\s\S]*?(?=###\s+2\.)/,
-    `### 1. Configure Atlassian integration
+    /### 2\. Install required plugin: atlassian[\s\S]*?(?=###\s+3\.)/,
+    `### 2. Configure Atlassian MCP server
 
 The Open Loyalty plugin uses Atlassian (Jira/Confluence) for ticket management and code review.
 
-In OpenCode, Atlassian is configured as an MCP server. Add the following to your \`~/.config/opencode/opencode.json\`:
+In OpenCode, Atlassian is configured as an MCP server using [mcp-atlassian](https://github.com/sooperset/mcp-atlassian).
+
+**Prerequisites:** This requires \`uvx\` (part of [uv](https://docs.astral.sh/uv/)). Check if it's available:
+
+\`\`\`bash
+which uvx
+\`\`\`
+
+If not found, tell the user to install uv first:
+- macOS: \`brew install uv\`
+- Linux/other: \`curl -LsSf https://astral.sh/uv/install.sh | sh\`
+
+Then continue once \`uvx\` is available.
+
+Read \`~/.config/opencode/opencode.json\`. If \`mcp-atlassian\` is already configured, skip to step 3.
+
+Otherwise, ask the user for:
+1. **Atlassian email** — their email for Jira/Confluence (e.g. \`you@company.com\`)
+2. **API token** — generate one at https://id.atlassian.com/manage-profile/security/api-tokens
+
+Write the MCP configuration to \`~/.config/opencode/opencode.json\` (merge into existing config):
 
 \`\`\`json
 {
   "mcp": {
-    "atlassian": {
+    "mcp-atlassian": {
       "type": "local",
-      "command": ["npx", "-y", "@modelcontextprotocol/server-atlassian"],
+      "command": ["uvx", "mcp-atlassian"],
       "environment": {
-        "ATLASSIAN_SITE_URL": "https://your-site.atlassian.net",
-        "ATLASSIAN_USER_EMAIL": "your-email@example.com",
-        "ATLASSIAN_API_TOKEN": "your-api-token"
+        "JIRA_URL": "https://openloyalty.atlassian.net",
+        "JIRA_USERNAME": "<collected email>",
+        "JIRA_API_TOKEN": "<collected token>",
+        "CONFLUENCE_URL": "https://openloyalty.atlassian.net/wiki",
+        "CONFLUENCE_USERNAME": "<collected email>",
+        "CONFLUENCE_API_TOKEN": "<collected token>"
       },
       "enabled": true
     }
@@ -68,29 +91,23 @@ In OpenCode, Atlassian is configured as an MCP server. Add the following to your
 }
 \`\`\`
 
-Ask the user for their Atlassian credentials:
-1. **ATLASSIAN_SITE_URL** — their Atlassian site URL (e.g. \`https://company.atlassian.net\`)
-2. **ATLASSIAN_USER_EMAIL** — their Atlassian email
-3. **ATLASSIAN_API_TOKEN** — API token from https://id.atlassian.com/manage-profile/security/api-tokens
+**Important:** Preserve any existing keys in the file — only add or update the \`mcp-atlassian\` entry. Use the Read and Edit tools to merge, not overwrite.
 
-Write the MCP configuration to \`~/.config/opencode/opencode.json\` (merge into existing config).
-
-If the user wants to skip Atlassian, continue to step 2.
+If the user wants to skip Atlassian, continue to step 3.
 
 `,
   ],
 
-  // OL MCP server: after generic rewrite, ~/.claude/.mcp.json became ~/.config/opencode/.mcp.json
-  // Rewrite to opencode.json (the main config file in OpenCode)
+  // Remove OL MCP configuration steps (3 & 4) — not needed for OpenCode setup
   [
-    "~/.config/opencode/.mcp.json",
-    "~/.config/opencode/opencode.json",
+    /### 3\. Check Open Loyalty MCP[\s\S]*?(?=###\s+5\.)/,
+    "",
   ],
 
-  // "mcpServers" key (Claude format) → "mcp" key (OpenCode format)
+  // Renumber step 5 → step 3 after removing OL MCP steps
   [
-    '"mcpServers"',
-    '"mcp"',
+    "### 5. Instruct to restart",
+    "### 3. Instruct to restart",
   ],
 
   // Restart instructions: Claude Code → OpenCode

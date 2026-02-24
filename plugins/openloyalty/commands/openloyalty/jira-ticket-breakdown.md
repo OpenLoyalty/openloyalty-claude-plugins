@@ -23,24 +23,21 @@ Break down a feature description into a structured Jira hierarchy and create all
 | `<source>` | Jira ticket key, file path, or freeform text | `OLOY-500` or paste text |
 | `--project <KEY>` | Jira project key (default: `OLOY`) | `--project AI` |
 
-## Precondition: Atlassian Plugin
+## Precondition: Jira Integration
 
-Verify Atlassian connectivity before Phase 2.
+Verify Jira connectivity before Phase 2.
 
-Check for `mcp__claude_ai_Atlassian__getJiraIssue` in available tools.
+Check for any available Jira-related tools (e.g. tools containing `atlassian`, `jira`, or similar).
 
 **If not available, STOP and display:**
 
 ```
-Atlassian plugin is not installed.
+Jira integration is not available.
 
-Install it:
-  /plugin install atlassian@claude-plugins-official
-
-Then restart Claude Code and run /openloyalty:setup to configure.
+Run /openloyalty:setup to configure Atlassian, then restart.
 ```
 
-**Do NOT proceed without a working Atlassian plugin connection.**
+**Do NOT proceed without a working Jira connection.**
 
 ---
 
@@ -49,7 +46,7 @@ Then restart Claude Code and run /openloyalty:setup to configure.
 Determine the input source and collect the feature description:
 
 **Jira key or URL provided:**
-1. Use `mcp__claude_ai_Atlassian__getJiraIssue` to fetch the ticket
+1. Fetch the Jira issue using the available Jira/Atlassian tools
 2. Extract summary, description, status, existing child issues
 
 **Raw text or document path provided:**
@@ -215,17 +212,17 @@ Present the complete breakdown as a **markdown table** with these exact columns:
 
 ## Phase 5: Create in Jira
 
-1. **Get cloud ID** — `mcp__claude_ai_Atlassian__getAccessibleAtlassianResources`
+Use the available Jira/Atlassian tools to create all tickets. The exact tool names depend on which Atlassian MCP is configured — discover them from the available tools.
 
-2. **Discover issue types** — `mcp__claude_ai_Atlassian__getJiraProjectIssueTypesMetadata` for the target project. Map available types: Epic, Story, Task, Subtask (or Sub-task). Adapt to whatever the project has.
+1. **Discover issue types** — Query the target project's available issue types. Map available types: Epic, Story, Task, Subtask (or Sub-task). Adapt to whatever the project has.
 
-3. **Create Epic** — `mcp__claude_ai_Atlassian__createJiraIssue` with `issueTypeName: "Epic"`, collect key
+2. **Create Epic** — Create an issue with type "Epic", collect the key
 
-4. **Create Stories** — `mcp__claude_ai_Atlassian__createJiraIssue` with `issueTypeName: "Story"` and `parent: "EPIC-KEY"`, collect keys. **If the project lacks the Story type, fall back to Task and inform the user.**
+3. **Create Stories** — Create issues with type "Story" and parent set to the Epic key. **If the project lacks the Story type, fall back to Task and inform the user.**
 
-5. **Create Subtasks** — `mcp__claude_ai_Atlassian__createJiraIssue` with `issueTypeName: "Subtask"` and `parent: "STORY-KEY"`
+4. **Create Subtasks** — Create issues with type "Subtask" and parent set to the Story key
 
-6. **Create Tasks (chores)** — `mcp__claude_ai_Atlassian__createJiraIssue` with `issueTypeName: "Task"` and `parent: "EPIC-KEY"`. These are standalone under the Epic, NOT under a Story.
+5. **Create Tasks (chores)** — Create issues with type "Task" and parent set to the Epic key. These are standalone under the Epic, NOT under a Story.
 
 7. **Present results** — same table format but with Jira keys added:
 
@@ -258,7 +255,7 @@ Epic: https://openloyalty.atlassian.net/browse/OLOY-500
 
 **Issue type not available:**
 - Some projects lack Story type — fall back to Task for all parent issues and warn the user that proper Story/Task distinction is not possible
-- Some projects lack Subtask — check exact name via `getJiraProjectIssueTypesMetadata` (may be "Sub-task")
+- Some projects lack Subtask — discover available types first (may be "Sub-task" instead of "Subtask")
 - Never hardcode type IDs
 
 **Field errors:**

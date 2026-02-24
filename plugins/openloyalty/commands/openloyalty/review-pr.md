@@ -141,10 +141,10 @@ Before proceeding, check which tools are available to avoid failures later:
 Run: ListMcpResourcesTool (no params)
 ```
 
-**Check for Atlassian MCP tools:**
-- Look for `mcp__claude_ai_Atlassian__*` tools in available tools
+**Check for Atlassian/Jira MCP tools:**
+- Look for any available Jira-related tools (e.g. tools containing `atlassian`, `jira`, or similar)
 - If found: set `jira_available=true`
-- If NOT found: set `jira_available=false`, log: "Atlassian MCP not available — Jira ticket compliance will be skipped"
+- If NOT found: set `jira_available=false`, log: "Jira MCP not available — Jira ticket compliance will be skipped"
 
 **This prevents Phase 3 from attempting Jira calls that would fail.** The `--skip-jira` flag always takes precedence (if set, skip regardless of availability).
 
@@ -323,9 +323,8 @@ Record findings as: `{ migration_file, concern_type (cross_db|data_safety|lock_d
 **If `jira_available=false`:** Record `jira_status = "plugin_not_installed"` and skip.
 **If `skip_jira=true`:** Record `jira_status = "skipped"` and skip.
 
-1. Call `mcp__claude_ai_Atlassian__getJiraIssue` directly with `issueIdOrKey={ticket_id}`
-   - First call `mcp__claude_ai_Atlassian__getAccessibleAtlassianResources` to get the cloudId
-   - If call fails: record `jira_status = "unavailable"` with reason and continue
+1. Fetch the Jira issue `{ticket_id}` using the available Jira/Atlassian tools
+   - If the call fails: record `jira_status = "unavailable"` with reason and continue
 2. Extract from the ticket: summary, description, acceptance criteria, expected behavior
 3. Compare against code changes:
    - **Requirements coverage:** Does implementation address all acceptance criteria? Missing requirements? Code beyond ticket scope?
@@ -480,7 +479,7 @@ Before assigning a score, list every critical finding and blocking issue, count 
 
 **If no ticket ID in branch:** "No ticket ID found in branch name. Skipping ticket compliance check."
 
-**If jira_status = "plugin_not_installed":** "Atlassian plugin not installed. To enable ticket compliance checking, install it with `/install atlassian`."
+**If jira_status = "plugin_not_installed":** "Jira integration not available. To enable ticket compliance checking, run `/openloyalty:setup` to configure Atlassian."
 
 **If jira_status = "unavailable":** "Could not fetch ticket {OLOY-XXX}: {reason}. Review based on code only."
 

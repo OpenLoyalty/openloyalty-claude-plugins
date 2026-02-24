@@ -22,7 +22,7 @@ This plugin provides engineering workflows for the Open Loyalty development team
 This plugin depends on:
 
 - **[compound-engineering](https://github.com/EveryInc/compound-engineering-plugin)** — review workflows, agent types, engineering best practices
-- **[atlassian@claude-plugins-official](https://github.com/anthropics/claude-plugins-official)** — Jira/Confluence integration via OAuth
+- **Atlassian (Jira/Confluence)** — configured via `/openloyalty:setup`
 
 Run `/openloyalty:setup` to install all dependencies automatically.
 
@@ -36,11 +36,9 @@ The code review workflow reads AGENTS.md from your repo to check against OL conv
 
 ## Atlassian (Jira/Confluence) Setup
 
-Jira and Confluence integration is provided by the official Atlassian plugin (`atlassian@claude-plugins-official`). It's installed automatically by `/openloyalty:setup`.
+Jira and Confluence integration is configured automatically by `/openloyalty:setup`. The setup command installs the appropriate Atlassian MCP server for your environment.
 
 - **Required by:** `/openloyalty:jira-ticket-breakdown`
 - **Optional for:** `/openloyalty:review-pr` (degrades gracefully without Jira)
-
-Authentication is handled through Claude's native Atlassian OAuth — no API tokens needed.
 
 

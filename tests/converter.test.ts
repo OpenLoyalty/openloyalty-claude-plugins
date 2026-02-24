@@ -90,22 +90,27 @@ describe("converter: openloyalty plugin", () => {
     )
   })
 
-  test("setup command has Atlassian MCP manual config", async () => {
+  test("setup command has mcp-atlassian config with OL Atlassian URLs", async () => {
     const plugin = await loadClaudePlugin(PLUGIN_DIR)
     const bundle = convertClaudeToOpenCode(plugin, { permissions: "broad" })
 
     const setup = bundle.config.command!["openloyalty:setup"]
-    expect(setup.template).toContain("@modelcontextprotocol/server-atlassian")
-    expect(setup.template).toContain("ATLASSIAN_SITE_URL")
-    expect(setup.template).toContain("ATLASSIAN_API_TOKEN")
+    expect(setup.template).toContain("mcp-atlassian")
+    expect(setup.template).toContain("uvx")
+    expect(setup.template).toContain("https://openloyalty.atlassian.net")
+    expect(setup.template).toContain("JIRA_URL")
+    expect(setup.template).toContain("JIRA_API_TOKEN")
+    expect(setup.template).toContain("id.atlassian.com/manage-profile/security/api-tokens")
   })
 
-  test("setup command rewrites OL MCP path to opencode.json", async () => {
+  test("setup command does not include OL MCP configuration steps", async () => {
     const plugin = await loadClaudePlugin(PLUGIN_DIR)
     const bundle = convertClaudeToOpenCode(plugin, { permissions: "broad" })
 
     const setup = bundle.config.command!["openloyalty:setup"]
-    expect(setup.template).toContain("~/.config/opencode/opencode.json")
+    expect(setup.template).not.toContain("Check Open Loyalty MCP")
+    expect(setup.template).not.toContain("Collect Open Loyalty MCP")
+    expect(setup.template).not.toContain("OPENLOYALTY_API_URL")
     expect(setup.template).not.toContain(".mcp.json")
   })
 
