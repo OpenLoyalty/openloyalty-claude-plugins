@@ -216,13 +216,25 @@ Use the available Jira/Atlassian tools to create all tickets. The exact tool nam
 
 1. **Discover issue types** — Query the target project's available issue types. Map available types: Epic, Story, Task, Subtask (or Sub-task). Adapt to whatever the project has.
 
-2. **Create Epic** — Create an issue with type "Epic", collect the key
+2. **Verify team labels** — Before creating tickets, search Jira to check if `Frontend` and `Backend` labels exist in the project (e.g., JQL: `project = <KEY> AND labels = Frontend`). If either label does NOT exist or the search fails, **warn the user explicitly:**
 
-3. **Create Stories** — Create issues with type "Story" and parent set to the Epic key. **If the project lacks the Story type, fall back to Task and inform the user.**
+   ```
+   ⚠️ Could not verify that the following labels exist in Jira: Frontend, Backend.
+   Labels are auto-created when first used, so I'll proceed — but if your project
+   restricts labels, ticket creation may fail. Check Project Settings > Labels.
+   ```
 
-4. **Create Subtasks** — Create issues with type "Subtask" and parent set to the Story key
+   Then proceed regardless (Jira auto-creates labels on use).
 
-5. **Create Tasks (chores)** — Create issues with type "Task" and parent set to the Epic key. These are standalone under the Epic, NOT under a Story.
+3. **Create Epic** — Create an issue with type "Epic", collect the key
+
+4. **Create Stories** — Create issues with type "Story" and parent set to the Epic key. **If the project lacks the Story type, fall back to Task and inform the user.**
+
+5. **Create Subtasks** — Create issues with type "Subtask" and parent set to the Story key. **Add team labels:**
+   - Subtasks with `FE:` prefix → add label `Frontend`
+   - Subtasks with `BE:` prefix → add label `Backend`
+
+6. **Create Tasks (chores)** — Create issues with type "Task" and parent set to the Epic key. These are standalone under the Epic, NOT under a Story. **Add team labels based on the Team column** (`BE` → `Backend`, `FE` → `Frontend`).
 
 7. **Present results** — same table format but with Jira keys added:
 
@@ -247,6 +259,7 @@ Epic: https://openloyalty.atlassian.net/browse/OLOY-500
 - **Tasks** get technical context in descriptions
 - **Subtasks** get enough detail for a dev to start work
 - **Do NOT include effort estimates (~Days) in ticket descriptions.** Estimates are only shown in the Phase 4 breakdown table for planning purposes — they must not appear in any Jira ticket body.
+- **Labels:** Add `labels: ["Frontend"]` for FE tickets and `labels: ["Backend"]` for BE tickets. Apply to Subtasks and Tasks that have a team assignment. Do NOT add team labels to Epics or Stories (they span both teams).
 - If the project has no Story type, fall back to Task for everything and warn the user
 
 ---
