@@ -58,6 +58,21 @@ Follow the OL review skill's phases with these CI adaptations:
 
 ---
 
+## Step 4: Post the Review
+
+After completing the review, post the final report as a PR comment using `gh`:
+
+```bash
+gh pr comment {PR_NUMBER} --body "$(cat <<'REVIEW_EOF'
+{your full review report here}
+REVIEW_EOF
+)"
+```
+
+Use the PR number from Step 1. The report must follow the OL skill's template exactly.
+
+---
+
 ## Execution Notes
 
 - **Read each source file fully** before acting on it. They are your protocol — do not paraphrase or skip sections.
