@@ -22,19 +22,23 @@ Then fetch the full diff: `git diff {commit_range} -U10`
 
 ### OL review skill (primary source — defines WHAT to check, HOW to score, and the report format)
 
+Find and read the OL review protocol. IMPORTANT: Use Bash (`cat`) to read plugin cache files — the Read tool cannot access paths outside the repo.
+
 ```bash
-ls ~/.claude/plugins/cache/openloyalty-claude-plugins/openloyalty/*/commands/openloyalty/review-pr.md 2>/dev/null | head -1
+OL_REVIEW=$(ls ~/.claude/plugins/cache/openloyalty-claude-plugins/openloyalty/*/commands/openloyalty/review-pr.md 2>/dev/null | head -1)
+echo "=== OL REVIEW PATH: $OL_REVIEW ===" && cat "$OL_REVIEW"
 ```
 
-Read this file fully. It is your review protocol. Follow its phases, checks, scoring rubric, and report template.
+This file is your review protocol. Follow its phases, checks, scoring rubric, and report template.
 
 ### CE agent definitions (defines HOW to do deep analysis per domain)
 
 ```bash
-ls -d ~/.claude/plugins/cache/every-marketplace/compound-engineering/*/agents/review/ 2>/dev/null | head -1
+CE_AGENTS_DIR=$(ls -d ~/.claude/plugins/cache/every-marketplace/compound-engineering/*/agents/review/ 2>/dev/null | head -1)
+echo "=== CE AGENTS DIR: $CE_AGENTS_DIR ===" && ls "$CE_AGENTS_DIR" 2>/dev/null
 ```
 
-If found, set `CE_AGENTS_DIR`. If not found, follow the OL skill's `--quick` mode (OL-only checks).
+If found, use `cat` to read CE agent files (not the Read tool). If not found, follow the OL skill's `--quick` mode (OL-only checks).
 
 ### Project conventions
 
@@ -46,7 +50,7 @@ Read from the repo: `AGENTS.md` and `CLAUDE.md` (if they exist)
 
 Follow the OL review skill's phases with these CI adaptations:
 
-1. **CE agent passes run sequentially, not in parallel.** Where the skill says to spawn agents via the Task tool, instead: read the CE agent file from `{CE_AGENTS_DIR}/{filename}.md`, follow its methodology against the diff, then move to the next agent.
+1. **CE agent passes run sequentially, not in parallel.** Where the skill says to spawn agents via the Task tool, instead: read the CE agent file using `cat {CE_AGENTS_DIR}/{filename}.md`, follow its methodology against the diff, then move to the next agent.
 
 2. **Skip Jira ticket compliance.** Atlassian MCP is not available in CI. Note the ticket ID extracted from the branch name instead.
 
