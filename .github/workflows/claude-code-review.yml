@@ -26,8 +26,9 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           label_trigger: aireview
+          use_sticky_comment: true
           claude_args: |
-            --allowedTools Bash
+            --allowedTools "Bash,Read"
           prompt: |
             Read the file .github/prompts/ci-review.md and follow its instructions to perform a code review of this PR.
           plugin_marketplaces: |
