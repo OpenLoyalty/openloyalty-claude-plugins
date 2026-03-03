@@ -210,7 +210,7 @@ Most commands use this Phase 1 pattern:
 | Agent | Type | Purpose |
 |-------|------|---------|
 | Git/Branch Context | `Bash` | Branch name, commits, diff stats, remote status |
-| Jira Ticket (optional) | `general-purpose` | Fetch ticket details via Atlassian plugin |
+| Jira Ticket (optional) | `general-purpose` | Fetch ticket details via Atlassian tools |
 | Code/Conventions | `Explore` | Read AGENTS.md, analyze changed files |
 
 ### Jira Agent Template (Reusable)
@@ -223,9 +223,9 @@ Prompt: |
   Attempt to fetch Jira ticket context for: {ticket_id}
 
   Steps:
-  1. Check if Atlassian plugin tools are available (mcp__claude_ai_Atlassian__*)
+  1. Check if Jira/Atlassian tools are available (any tools containing `atlassian`, `jira`, or similar)
   2. If not available: return { "status": "plugin_not_installed" }
-  3. If available, try: mcp__claude_ai_Atlassian__getJiraIssue with issueIdOrKey={ticket_id}
+  3. If available, try fetching the Jira issue using the available tools with issueIdOrKey={ticket_id}
   4. If successful, extract: summary, description, acceptance criteria
   5. If call fails: return { "status": "unavailable", "reason": "..." }
 

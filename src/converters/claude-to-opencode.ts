@@ -20,7 +20,7 @@ const CLAUDE_FAMILY_ALIASES: Record<string, string> = {
 
 // Setup command rewrite map — string replacements applied to the setup command body.
 const SETUP_REWRITES: [RegExp | string, string][] = [
-  // compound-engineering: two-step Claude plugin install → single bunx command
+  // compound-engineering install (bunx) + Atlassian MCP server config injection
   [
     /### 1\. Install required plugin: compound-engineering[\s\S]*?(?=###\s+2\.)/,
     `### 1. Install required plugin: compound-engineering
@@ -39,13 +39,7 @@ If the command succeeds, tell the user:
 
 If it fails, show the error and tell the user to install manually.
 
-`,
-  ],
-
-  // Atlassian: Claude plugin install → mcp-atlassian MCP server config (sooperset)
-  [
-    /### 2\. Install required plugin: atlassian[\s\S]*?(?=###\s+3\.)/,
-    `### 2. Configure Atlassian MCP server
+### 2. Configure Atlassian MCP server
 
 The Open Loyalty plugin uses Atlassian (Jira/Confluence) for ticket management and code review.
 
@@ -100,15 +94,15 @@ Do NOT ask the user for their email or token interactively. Just write the place
 `,
   ],
 
-  // Remove OL MCP configuration steps (3 & 4) — not needed for OpenCode setup
+  // Remove OL MCP configuration steps (2 & 3) — not needed for OpenCode setup
   [
-    /### 3\. Check Open Loyalty MCP[\s\S]*?(?=###\s+5\.)/,
+    /### 2\. Check Open Loyalty MCP[\s\S]*?(?=###\s+4\.)/,
     "",
   ],
 
-  // Renumber step 5 → step 3 after removing OL MCP steps
+  // Renumber step 4 → step 3 after removing OL MCP steps
   [
-    "### 5. Instruct to restart",
+    "### 4. Instruct to restart",
     "### 3. Instruct to restart",
   ],
 

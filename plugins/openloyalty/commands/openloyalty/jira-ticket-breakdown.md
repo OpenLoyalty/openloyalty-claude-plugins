@@ -32,9 +32,7 @@ Check for any available Jira-related tools (e.g. tools containing `atlassian`, `
 **If not available, STOP and display:**
 
 ```
-Jira integration is not available.
-
-Run /openloyalty:setup to configure Atlassian, then restart.
+Jira tools not detected. If using Claude for Teams, try restarting your session.
 ```
 
 **Do NOT proceed without a working Jira connection.**

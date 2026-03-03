@@ -479,7 +479,7 @@ Before assigning a score, list every critical finding and blocking issue, count 
 
 **If no ticket ID in branch:** "No ticket ID found in branch name. Skipping ticket compliance check."
 
-**If jira_status = "plugin_not_installed":** "Jira integration not available. To enable ticket compliance checking, run `/openloyalty:setup` to configure Atlassian."
+**If jira_status = "plugin_not_installed":** "Jira tools not detected. If using Claude for Teams, try restarting your session."
 
 **If jira_status = "unavailable":** "Could not fetch ticket {OLOY-XXX}: {reason}. Review based on code only."
 

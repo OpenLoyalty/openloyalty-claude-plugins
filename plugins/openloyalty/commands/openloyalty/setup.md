@@ -61,56 +61,15 @@ Then restart Claude Code and run /openloyalty:setup again.
 
 ---
 
-### 2. Install required plugin: atlassian
-
-The Open Loyalty plugin requires the official [Atlassian](https://github.com/anthropics/claude-plugins-official) plugin for Jira and Confluence integration. This is used by `/openloyalty:review-pr` and `/openloyalty:jira-ticket-create`.
-
-**IMPORTANT:** Do NOT check for this plugin by looking at available `mcp__claude_ai_Atlassian__*` tools in the session — tools loaded at session start persist even after a plugin is removed. Always use the CLI command to verify actual installation state.
-
-Run `claude plugin list` and check if the output contains `atlassian`.
-
-**If already installed**, tell the user and continue to step 3.
-
-**If not installed**, install it in two steps:
-
-**Step A — Add the Anthropic official plugins marketplace:**
-
-```bash
-claude plugin marketplace add https://github.com/anthropics/claude-plugins-official
-```
-
-If it reports "already exists", that's fine — continue to step B. If it fails with a network or clone error, show the error and tell the user to install manually (see fallback below).
-
-**Step B — Install the plugin from the marketplace:**
-
-```bash
-claude plugin install atlassian@claude-plugins-official
-```
-
-If the install succeeds, tell the user:
-
-> Installed Atlassian plugin. It will be available after restart. You'll be prompted to connect your Atlassian account on first use.
-
-If the install fails, show the error and tell the user to install manually:
-
-```
-Could not auto-install the Atlassian plugin. Install it manually:
-
-  /plugin marketplace add https://github.com/anthropics/claude-plugins-official
-  /plugin install atlassian@claude-plugins-official
-
-Then restart Claude Code and run /openloyalty:setup again.
-```
-
-### 3. Check Open Loyalty MCP configuration (optional)
+### 2. Check Open Loyalty MCP configuration (optional)
 
 Read `~/.claude/.mcp.json` and check if `mcpServers` already contains the `openloyalty` server entry.
 
-- If `openloyalty` is present with non-empty env values, OL MCP is configured. Skip to step 5.
+- If `openloyalty` is present with non-empty env values, OL MCP is configured. Skip to step 4.
 
-### 4. Collect Open Loyalty MCP values (optional)
+### 3. Collect Open Loyalty MCP values (optional)
 
-Ask: "Do you want to configure the Open Loyalty MCP server? (needed for loyalty API tools — you can skip this and configure later)" — if the user says no/skip, skip to step 5.
+Ask: "Do you want to configure the Open Loyalty MCP server? (needed for loyalty API tools — you can skip this and configure later)" — if the user says no/skip, skip to step 4.
 
 If yes, collect:
 
@@ -140,7 +99,7 @@ Read `~/.claude/.mcp.json` (create if it doesn't exist). Merge the collected MCP
 
 **Important:** Preserve any existing keys in the file — only add or update the server entry being configured. Use the Read and Edit tools to merge, not overwrite.
 
-### 5. Instruct to restart
+### 4. Instruct to restart
 
 Tell the user:
 

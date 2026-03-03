@@ -26,8 +26,7 @@ This installs engineering workflows (slash commands). MCP servers are configured
 The setup command handles the full onboarding process:
 
 1. **Installs the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin** — automatically adds the marketplace and installs the plugin. This dependency provides review workflows and specialized agent types (architecture strategist, performance oracle, security sentinel, etc.) used by `/openloyalty:review-pr`.
-2. **Installs the official [Atlassian plugin](https://github.com/anthropics/claude-plugins-official)** — installs `atlassian@claude-plugins-official` which provides Jira and Confluence tools. Authentication is handled through Claude's native Atlassian OAuth — no API tokens needed.
-3. **Configures Open Loyalty MCP server** (optional) — prompts for `OPENLOYALTY_API_URL` and `OPENLOYALTY_API_TOKEN`, writes the `openloyalty` server definition to `~/.claude/.mcp.json`. Skippable if you don't need direct loyalty API access.
+2. **Configures Open Loyalty MCP server** (optional) — prompts for `OPENLOYALTY_API_URL` and `OPENLOYALTY_API_TOKEN`, writes the `openloyalty` server definition to `~/.claude/.mcp.json`. Skippable if you don't need direct loyalty API access.
 
 ---
 
@@ -51,25 +50,6 @@ After installing the openloyalty plugin, install the compound-engineering depend
 
 ```bash
 bunx @every-env/compound-plugin install compound-engineering --to opencode
-```
-
-For Atlassian (Jira/Confluence) integration, add your Atlassian MCP server to `~/.config/opencode/opencode.json` manually:
-
-```json
-{
-  "mcp": {
-    "atlassian": {
-      "type": "local",
-      "command": ["npx", "-y", "@modelcontextprotocol/server-atlassian"],
-      "environment": {
-        "ATLASSIAN_SITE_URL": "https://your-site.atlassian.net",
-        "ATLASSIAN_USER_EMAIL": "your-email@example.com",
-        "ATLASSIAN_API_TOKEN": "your-api-token"
-      },
-      "enabled": true
-    }
-  }
-}
 ```
 
 ### Local Development
@@ -100,22 +80,6 @@ The plugin provides **slash commands** (code review, PR creation, Jira tickets, 
 | `/openloyalty:review-pr` | Code review with OL conventions, Jira verification, 1-10 scoring |
 | `/openloyalty:jira-ticket-create` | Create Jira tickets from brainstorming/planning sessions |
 | `/openloyalty:help` | Show available commands and plugin documentation |
-
----
-
-## Atlassian (Jira/Confluence) Setup
-
-Jira and Confluence integration is provided by the official Atlassian plugin (`atlassian@claude-plugins-official`). It's installed automatically by `/openloyalty:setup`.
-
-- **Required by:** `/openloyalty:jira-ticket-create`
-- **Optional for:** `/openloyalty:review-pr` (degrades gracefully without Jira)
-
-**Manual install (if not using setup):**
-```bash
-/plugin install atlassian@claude-plugins-official
-```
-
-Authentication is handled through Claude's native Atlassian OAuth — no API tokens or environment variables needed. You'll be prompted to connect your Atlassian account on first use.
 
 ---
 
@@ -190,7 +154,6 @@ The Open Loyalty MCP server is also available for Claude Desktop via the `.mcpb`
 
 **Plugin dependencies (installed by `/openloyalty:setup`):**
 - [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) — review workflows, agent types, engineering best practices
-- [atlassian@claude-plugins-official](https://github.com/anthropics/claude-plugins-official) — Jira/Confluence integration via OAuth
 
 > These cannot be declared in `plugin.json` (Claude Code doesn't support plugin dependencies). Run `/openloyalty:setup` after installing to ensure all dependencies are present.
 
