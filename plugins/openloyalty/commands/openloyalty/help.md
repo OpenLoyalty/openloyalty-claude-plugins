@@ -17,6 +17,13 @@ This plugin provides engineering workflows for the Open Loyalty development team
 | `/openloyalty:jira-ticket-breakdown` | Break down features/epics into Jira hierarchy (Epic > Tasks > Subtasks) with FE/BE split |
 | `/openloyalty:help` | Show available commands and plugin documentation |
 
+## Skills
+
+| Skill | Purpose |
+|-------|---------|
+| `context-doctor` | Diagnose and fix CLAUDE.md files using context engineering best practices |
+| `context-knowledge-updater` | Research latest context engineering advancements and update context-doctor knowledge |
+
 ## Requirements
 
 This plugin depends on:
