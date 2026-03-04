@@ -289,6 +289,7 @@ When Marcin says "release", execute these steps:
 7. **Ask Marcin** for confirmation before pushing
 8. **Push** commit + tag: `git push && git push --tags`
 9. **Create GitHub Release** via `gh release create vX.Y.Z --title "vX.Y.Z" --notes "<changelog>"`
+10. **Post changelog to Slack** — Send the changelog to `#claude-code-engineering` (private channel) using the Slack MCP tool (`mcp__claude_ai_Slack__slack_send_message`). Format the message as: bold version header, then the changelog entries. Degrade gracefully if Slack tools are unavailable.
 
 ### Version files
 
