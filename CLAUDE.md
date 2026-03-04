@@ -4,8 +4,8 @@ Claude Code plugin providing engineering slash commands (code review, Jira ticke
 
 ## Critical Rules
 
-- **VER001**: Every commit touching `plugins/openloyalty/` MUST bump version in BOTH `plugins/openloyalty/.claude-plugin/plugin.json` AND `.claude-plugin/marketplace.json` (3 version fields total). Pre-commit hook blocks mismatches.
-- **VER002**: Use semver — patch for fixes, minor for new commands/skills, major for breaking changes. Include version in commit message (e.g., `Add feature (v3.10.0)`).
+- **VER001**: Version files must stay in sync when both are staged — pre-commit hook blocks mismatches. Releases are done on-demand (see AGENTS.md Release Process).
+- **VER002**: Use semver — patch for fixes, minor for new commands/skills, major for breaking changes.
 - **CMD001**: New commands go in `plugins/openloyalty/commands/openloyalty/{name}.md`. Register in `help.md` commands table.
 - **SKL001**: New skills go in `plugins/openloyalty/skills/{name}/SKILL.md`. See AGENTS.md for full conventions.
 - **DEG001**: Optional integrations (Jira, Slack) must degrade gracefully — return status objects, never fail the workflow.
@@ -35,7 +35,7 @@ Version is tracked in two files that must stay in sync (enforced by `hooks/pre-c
 ## Boundaries
 
 **NEVER:**
-- Skip version bump when changing plugin files (hook will block)
+- Manually edit version files outside the release process
 - Inline API docs or framework docs in command/skill files — link to references instead
 - Repeat AGENTS.md conventions in command files — reference AGENTS.md
 

@@ -269,31 +269,32 @@ Prompt: |
 
 ---
 
-## Versioning
+## Release Process
 
-When adding or modifying commands/skills:
+**Day-to-day rule:** PRs merge without version bumps. Version changes happen only during an explicit release.
 
-1. Bump `version` in **both** files (they must stay in sync):
-   - `plugins/openloyalty/.claude-plugin/plugin.json` — plugin metadata
-   - `.claude-plugin/marketplace.json` — marketplace definition (has **two** `version` fields: `metadata.version` and `plugins[0].version`)
-2. Use semver: patch for fixes, minor for new commands/skills, major for breaking changes
-3. Current version: check `plugin.json` before bumping
-4. A **pre-commit hook** validates that both files are bumped when plugin files change — the commit will be rejected if versions are missing or out of sync
-5. Include the version in the commit message: e.g., `Add jira-ticket-breakdown skill and bump to v3.2.0`
+### Release Protocol
 
-### Quick version bump procedure
+When Marcin says "release", execute these steps:
 
-```bash
-# 1. Create a branch
-git checkout -b bump-version-X.Y.Z
+1. **Read current version** from `plugins/openloyalty/.claude-plugin/plugin.json`
+2. **Determine bump level** — Marcin specifies patch/minor/major, or Claude suggests based on changes since last tag
+3. **Update all 3 version fields** to the new version:
+   - `plugins/openloyalty/.claude-plugin/plugin.json` → `"version": "X.Y.Z"`
+   - `.claude-plugin/marketplace.json` → `metadata.version` field
+   - `.claude-plugin/marketplace.json` → `plugins[0].version` field
+4. **Generate changelog** from `git log --oneline $(git describe --tags --abbrev=0)..HEAD`
+5. **Commit** with message `Release vX.Y.Z`
+6. **Tag** with `vX.Y.Z`
+7. **Ask Marcin** for confirmation before pushing
+8. **Push** commit + tag: `git push && git push --tags`
+9. **Create GitHub Release** via `gh release create vX.Y.Z --title "vX.Y.Z" --notes "<changelog>"`
 
-# 2. Update both version files (replace OLD with NEW version)
-# plugins/openloyalty/.claude-plugin/plugin.json  →  "version": "X.Y.Z"
-# .claude-plugin/marketplace.json                 →  "version": "X.Y.Z" (both occurrences)
+### Version files
 
-# 3. Stage, commit, push, and create PR
-git add .claude-plugin/marketplace.json plugins/openloyalty/.claude-plugin/plugin.json <changed-files>
-git commit -m "Description of changes (vX.Y.Z)"
-git push -u origin bump-version-X.Y.Z
-gh pr create --title "Title (vX.Y.Z)" --body "..."
-```
+Both files must always have matching versions (enforced by pre-commit hook when both are staged):
+
+- `plugins/openloyalty/.claude-plugin/plugin.json` — plugin metadata
+- `.claude-plugin/marketplace.json` — marketplace definition (has **two** `version` fields: `metadata.version` and `plugins[0].version`)
+
+Use semver: patch for fixes, minor for new commands/skills, major for breaking changes.
