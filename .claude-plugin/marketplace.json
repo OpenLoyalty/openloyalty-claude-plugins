@@ -5,17 +5,17 @@
     "url": "https://github.com/OpenLoyalty"
   },
   "metadata": {
-    "description": "Claude Code plugins for Open Loyalty — engineering skills and MCP tools",
+    "description": "Claude Code plugins for Open Loyalty — engineering skills and workflows",
     "version": "3.10.1"
   },
   "plugins": [
     {
       "name": "openloyalty",
-      "description": "Engineering workflows and MCP server tools for Open Loyalty — code review, Jira integration, and 60+ loyalty API tools.",
+      "description": "Engineering workflows for Open Loyalty — code review, Jira integration, and context engineering skills.",
       "version": "3.10.1",
       "author": { "name": "Open Loyalty", "url": "https://github.com/OpenLoyalty" },
       "homepage": "https://github.com/OpenLoyalty/openloyalty-claude-plugins",
-      "tags": ["code-review", "workflow", "mcp", "loyalty", "internal"],
+      "tags": ["code-review", "workflow", "loyalty", "internal"],
       "source": "./plugins/openloyalty"
     }
   ]

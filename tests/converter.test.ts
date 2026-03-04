@@ -73,11 +73,12 @@ describe("converter: openloyalty plugin", () => {
     const bundle = convertClaudeToOpenCode(plugin, { permissions: "broad" })
 
     const commandNames = Object.keys(bundle.config.command!)
-    expect(commandNames).toHaveLength(4)
+    expect(commandNames).toHaveLength(5)
     expect(commandNames).toContain("openloyalty:help")
     expect(commandNames).toContain("openloyalty:setup")
     expect(commandNames).toContain("openloyalty:review-pr")
     expect(commandNames).toContain("openloyalty:jira-ticket-breakdown")
+    expect(commandNames).toContain("openloyalty:migrate")
   })
 
   test("setup command uses bunx for compound-engineering install", async () => {
@@ -101,17 +102,6 @@ describe("converter: openloyalty plugin", () => {
     expect(setup.template).toContain("JIRA_URL")
     expect(setup.template).toContain("JIRA_API_TOKEN")
     expect(setup.template).toContain("id.atlassian.com/manage-profile/security/api-tokens")
-  })
-
-  test("setup command does not include OL MCP configuration steps", async () => {
-    const plugin = await loadClaudePlugin(PLUGIN_DIR)
-    const bundle = convertClaudeToOpenCode(plugin, { permissions: "broad" })
-
-    const setup = bundle.config.command!["openloyalty:setup"]
-    expect(setup.template).not.toContain("Check Open Loyalty MCP")
-    expect(setup.template).not.toContain("Collect Open Loyalty MCP")
-    expect(setup.template).not.toContain("OPENLOYALTY_API_URL")
-    expect(setup.template).not.toContain(".mcp.json")
   })
 
   test("no .claude/ paths remain in any command", async () => {

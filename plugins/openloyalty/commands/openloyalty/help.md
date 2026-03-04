@@ -12,9 +12,10 @@ This plugin provides engineering workflows for the Open Loyalty development team
 
 | Command | Purpose |
 |---------|---------|
-| `/openloyalty:setup` | Full onboarding: installs compound-engineering plugin, configures MCP servers in user scope |
+| `/openloyalty:setup` | Full onboarding: installs compound-engineering plugin dependency |
 | `/openloyalty:review-pr` | Code review with OL conventions, Jira verification, 1-10 scoring |
 | `/openloyalty:jira-ticket-breakdown` | Break down features/epics into Jira hierarchy (Epic > Tasks > Subtasks) with FE/BE split |
+| `/openloyalty:migrate` | Remove legacy Open Loyalty MCP server configuration from user scope |
 | `/openloyalty:help` | Show available commands and plugin documentation |
 
 ## Skills

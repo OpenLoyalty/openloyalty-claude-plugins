@@ -1,6 +1,6 @@
 ---
 name: openloyalty:setup
-description: Install dependencies and configure MCP server environment variables for Open Loyalty plugin
+description: Install dependencies for Open Loyalty plugin
 argument-hint: ""
 ---
 
@@ -12,7 +12,7 @@ tools), and guide the user clearly through any failures.
 
 # Open Loyalty Plugin — Interactive Setup
 
-Guide the user through installing required plugin dependencies and configuring MCP server environment variables.
+Guide the user through installing required plugin dependencies.
 
 ## Steps
 
@@ -57,49 +57,11 @@ Could not auto-install compound-engineering. Install it manually:
 Then restart Claude Code and run /openloyalty:setup again.
 ```
 
-**STOP here if compound-engineering could not be installed.** Do not proceed to environment setup.
+**STOP here if compound-engineering could not be installed.** Do not proceed.
 
 ---
 
-### 2. Check Open Loyalty MCP configuration (optional)
-
-Read `~/.claude/.mcp.json` and check if `mcpServers` already contains the `openloyalty` server entry.
-
-- If `openloyalty` is present with non-empty env values, OL MCP is configured. Skip to step 4.
-
-### 3. Collect Open Loyalty MCP values (optional)
-
-Ask: "Do you want to configure the Open Loyalty MCP server? (needed for loyalty API tools — you can skip this and configure later)" — if the user says no/skip, skip to step 4.
-
-If yes, collect:
-
-- **`OPENLOYALTY_API_URL`** — The base URL of your Open Loyalty instance with `/api` suffix, e.g. `https://your-instance.openloyalty.io/api`. Ask: "What is your Open Loyalty API URL?"
-
-- **`OPENLOYALTY_API_TOKEN`** — API authentication token. Tell the user to get it from: Admin Panel > Settings > API Keys > Generate new key. Ask: "Paste your API token."
-
-- **`OPENLOYALTY_DEFAULT_STORE_CODE`** — Store identifier. Defaults to `"default"`. Ask: "What is your store code? (press Enter for `default`)" — if the user presses Enter or says default, use `"default"`.
-
-Read `~/.claude/.mcp.json` (create if it doesn't exist). Merge the collected MCP server definition into the `"mcpServers"` object:
-
-```json
-{
-  "mcpServers": {
-    "openloyalty": {
-      "command": "npx",
-      "args": ["-y", "@open-loyalty/mcp-server@latest"],
-      "env": {
-        "OPENLOYALTY_API_URL": "<collected value>",
-        "OPENLOYALTY_API_TOKEN": "<collected value>",
-        "OPENLOYALTY_DEFAULT_STORE_CODE": "<collected value>"
-      }
-    }
-  }
-}
-```
-
-**Important:** Preserve any existing keys in the file — only add or update the server entry being configured. Use the Read and Edit tools to merge, not overwrite.
-
-### 4. Instruct to restart
+### 2. Instruct to restart
 
 Tell the user:
 
