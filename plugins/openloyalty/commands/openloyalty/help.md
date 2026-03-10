@@ -15,6 +15,7 @@ This plugin provides engineering workflows for the Open Loyalty development team
 | `/openloyalty:setup` | Full onboarding: installs compound-engineering plugin dependency |
 | `/openloyalty:review-pr` | Code review with OL conventions, Jira verification, 1-10 scoring |
 | `/openloyalty:jira-ticket-breakdown` | Break down features/epics into Jira hierarchy (Epic > Tasks > Subtasks) with FE/BE split |
+| `/openloyalty:qa:test-scenarios` | Generate QA test scenarios from Jira ticket with codebase context, auto-post to Jira |
 | `/openloyalty:migrate` | Remove legacy Open Loyalty MCP server configuration from user scope |
 | `/openloyalty:help` | Show available commands and plugin documentation |
 

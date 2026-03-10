@@ -73,11 +73,12 @@ describe("converter: openloyalty plugin", () => {
     const bundle = convertClaudeToOpenCode(plugin, { permissions: "broad" })
 
     const commandNames = Object.keys(bundle.config.command!)
-    expect(commandNames).toHaveLength(5)
+    expect(commandNames).toHaveLength(6)
     expect(commandNames).toContain("openloyalty:help")
     expect(commandNames).toContain("openloyalty:setup")
     expect(commandNames).toContain("openloyalty:review-pr")
     expect(commandNames).toContain("openloyalty:jira-ticket-breakdown")
+    expect(commandNames).toContain("openloyalty:qa:test-scenarios")
     expect(commandNames).toContain("openloyalty:migrate")
   })
 
