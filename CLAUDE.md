@@ -1,6 +1,6 @@
 # Open Loyalty Claude Plugins
 
-Claude Code plugin providing engineering slash commands (code review, Jira tickets) and an OpenCode converter CLI. TypeScript, Bun runtime.
+Claude Code plugin providing engineering slash commands (code review, Jira tickets). TypeScript, Bun runtime.
 
 ## Critical Rules
 
@@ -10,25 +10,9 @@ Claude Code plugin providing engineering slash commands (code review, Jira ticke
 - **SKL001**: New skills go in `plugins/openloyalty/skills/{name}/SKILL.md`. See AGENTS.md for full conventions.
 - **DEG001**: Optional integrations (Jira, Slack) must degrade gracefully — return status objects, never fail the workflow.
 
-## Quick Start
-
-```bash
-# Run tests
-bun test
-
-# Run converter CLI locally
-bun run src/index.ts install ./plugins/openloyalty --to opencode
-
-# Install to OpenCode (remote)
-bun run install:opencode
-```
-
 ## Architecture
 
-Two concerns in one repo:
-
-1. **Plugin** (`plugins/openloyalty/`) — slash commands and skills loaded by Claude Code's plugin system. Commands orchestrate; skills do focused work.
-2. **Converter CLI** (`src/`) — parses Claude Code plugin format and writes OpenCode-compatible output. Entry point: `src/index.ts`.
+**Plugin** (`plugins/openloyalty/`) — slash commands and skills loaded by Claude Code's plugin system. Commands orchestrate; skills do focused work.
 
 Version is tracked in two files that must stay in sync (enforced by `hooks/pre-commit`).
 

@@ -1,6 +1,6 @@
 {
   "name": "qa",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "QA workflows for Open Loyalty — test scenario generation, quality assurance, and Jira integration.",
   "author": {
     "name": "Open Loyalty",

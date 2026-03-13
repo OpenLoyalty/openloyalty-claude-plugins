@@ -25,33 +25,4 @@ This installs engineering workflows (slash commands).
 
 The setup command installs the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin — automatically adds the marketplace and installs the plugin. This dependency provides review workflows and specialized agent types (architecture strategist, performance oracle, security sentinel, etc.) used by `/openloyalty:review-pr`.
 
----
-
-## OpenCode Install
-
-This repo includes a CLI that converts the Claude Code plugin to OpenCode format. Requires `bun` and `gh` CLI (authenticated).
-
-```bash
-bash <(gh api repos/OpenLoyalty/openloyalty-claude-plugins/contents/install.sh -H "Accept: application/vnd.github.raw")
-```
-
-Output is written to `~/.config/opencode/` by default, with `opencode.json` at the root and `skills/` alongside it.
-
-### Updating
-
-Re-run the same command to get the latest version.
-
-### Post-Install: Dependencies
-
-After installing the openloyalty plugin, install the compound-engineering dependency:
-
-```bash
-bunx @every-env/compound-plugin install compound-engineering --to opencode
-```
-
-### Local Development
-
-```bash
-bun run src/index.ts install ./plugins/openloyalty --to opencode
-```
 
