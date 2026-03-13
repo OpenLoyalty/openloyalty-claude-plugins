@@ -1,6 +1,6 @@
 {
-  "name": "💜 Engineering",
-  "version": "6.0.0",
+  "name": "ol-engineering",
+  "version": "6.1.0",
   "description": "Engineering workflows for Open Loyalty — code review, Jira integration, and context engineering tools.",
   "author": {
     "name": "Open Loyalty",
