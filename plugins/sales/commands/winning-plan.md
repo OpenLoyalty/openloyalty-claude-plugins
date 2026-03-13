@@ -1,25 +1,7 @@
 ---
-name: winning-plan
+name: ol:winning-plan
 description: Build structured deal plans for key sales opportunities by auto-pulling context from HubSpot, Fathom meetings, and web research. Use when preparing for ICP/HPC deals, creating deal strategy, or iterating on an existing winning plan.
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - Grep
-  - Glob
-  - Task
-  - mcp__claude_ai_HubSpot__search_crm_objects
-  - mcp__claude_ai_HubSpot__get_crm_objects
-  - mcp__claude_ai_HubSpot__get_user_details
-  - mcp__claude_ai_HubSpot__search_properties
-  - mcp__claude_ai_HubSpot__get_properties
-  - mcp__claude_ai_HubSpot__search_owners
-  - mcp__claude_ai_Fathom_Video__search_meetings
-  - mcp__claude_ai_Fathom_Video__get_meeting_summary
-  - mcp__claude_ai_Fathom_Video__get_transcript
-  - WebSearch
-  - WebFetch
+argument-hint: "<company-name>"
 ---
 
 # Winning Plan
@@ -175,7 +157,7 @@ REMAINING GAPS (internal OL data — need user input):
 
 <step number="5" required="true" depends_on="4">
 
-**Score each of the 11 key ingredients** based on available information. Consult `references/key-ingredients.md` for detailed guidance on each ingredient.
+**Score each of the 11 key ingredients** based on available information. Consult `winning-plan-references/key-ingredients.md` for detailed guidance on each ingredient.
 
 Present a scorecard:
 
@@ -216,7 +198,7 @@ Present the scorecard to the user. Ask:
 
 <step number="6" required="true" depends_on="5">
 
-**Generate the winning plan** using the template from `assets/winning-plan-template.md`.
+**Generate the winning plan** using the template from `winning-plan-assets/winning-plan-template.md`.
 
 For each section:
 - **Ready ingredients** — fill with the gathered information
@@ -225,7 +207,7 @@ For each section:
 
 Apply these principles:
 - Be specific, never generic — tailor every recommendation to this prospect
-- Link gamification tactics to concrete KPI impacts (see `references/key-ingredients.md`, ingredient #5)
+- Link gamification tactics to concrete KPI impacts (see `winning-plan-references/key-ingredients.md`, ingredient #5)
 - For case studies, suggest the most relevant from OL's portfolio based on industry/scale/use-case match
 - For KPI projections, use conservative estimates with cited benchmarks
 - Action items must have owners and due dates (suggest reasonable timelines)

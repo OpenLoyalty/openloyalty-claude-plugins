@@ -1,6 +1,7 @@
 ---
-name: context-doctor
+name: ol:context-doctor
 description: Analyze and fix CLAUDE.md files using context engineering best practices. Use when reviewing context files, diagnosing context rot, or improving agent performance in a project.
+argument-hint: ""
 ---
 
 # Context Doctor
@@ -9,7 +10,7 @@ Diagnoses and fixes CLAUDE.md files using context engineering best practices.
 
 ## Core Principles
 
-These principles guide every decision (see `references/context-principles.md` for full detail):
+These principles guide every decision (see `context-doctor-references/context-principles.md` for full detail):
 
 1. **Minimal > comprehensive** — every line must earn its place
 2. **Right altitude** — specific heuristics, not if-then rules or vague platitudes
@@ -25,10 +26,10 @@ These principles guide every decision (see `references/context-principles.md` fo
 Run the analysis script to gather project metadata:
 
 ```bash
-bash <skill-dir>/scripts/analyze-context.sh .
+bash <command-dir>/context-doctor-scripts/analyze-context.sh .
 ```
 
-> **Note:** `<skill-dir>` is the directory containing this SKILL.md file. Resolve the full path before executing.
+> **Note:** `<command-dir>` is the directory containing this command file. Resolve the full path before executing.
 
 Then read these files (if they exist):
 - `CLAUDE.md` — root context file (also check `.claude/CLAUDE.md`)
@@ -46,7 +47,7 @@ Read every discovered CLAUDE.md file. Record:
 
 ### Phase 2: Diagnose Issues
 
-Consult `references/anti-patterns.md` and score **each** CLAUDE.md file on six dimensions:
+Consult `context-doctor-references/anti-patterns.md` and score **each** CLAUDE.md file on six dimensions:
 
 | Dimension | Question |
 |---|---|
@@ -60,7 +61,7 @@ Consult `references/anti-patterns.md` and score **each** CLAUDE.md file on six d
 
 **Start with the root CLAUDE.md**, then diagnose each subdomain file.
 
-For subdomain files, also check for **Anti-Pattern 11** (see `references/anti-patterns.md`):
+For subdomain files, also check for **Anti-Pattern 11** (see `context-doctor-references/anti-patterns.md`):
 - Does it duplicate rules already in the root CLAUDE.md?
 - Does it contain cross-cutting concerns that belong in root?
 - Is it missing domain-specific context that justifies its existence?
@@ -102,7 +103,7 @@ Process all discovered CLAUDE.md files. **Always start with root, then subdomain
 
 #### 3a: Root CLAUDE.md
 
-Load the appropriate template from `references/ideal-structure.md` based on project type.
+Load the appropriate template from `context-doctor-references/ideal-structure.md` based on project type.
 
 **For existing files — restructure:**
 1. Extract content worth keeping (critical rules, architecture decisions, unique knowledge)
@@ -120,7 +121,7 @@ Load the appropriate template from `references/ideal-structure.md` based on proj
 
 #### 3b: Subdomain CLAUDE.md Files
 
-Use **Template E: Subdomain** from `references/ideal-structure.md`.
+Use **Template E: Subdomain** from `context-doctor-references/ideal-structure.md`.
 
 **For existing files — restructure:**
 1. Remove anything that duplicates the root CLAUDE.md (it's inherited automatically)

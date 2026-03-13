@@ -1,6 +1,6 @@
 # Open Loyalty Claude Plugins
 
-Engineering, sales, QA, and marketing workflows for the Open Loyalty team.
+Engineering, sales, QA, and marketing workflows for the Open Loyalty team. Four department plugins, all commands use the `/ol:` namespace.
 
 ## Quick Start
 
@@ -9,12 +9,12 @@ Engineering, sales, QA, and marketing workflows for the Open Loyalty team.
 /plugin marketplace add OpenLoyalty/openloyalty-claude-plugins
 ```
 
-**Install the plugin:**
+**Install plugins:**
 ```bash
 /plugin install openloyalty@openloyalty-claude-plugins
 ```
 
-This installs all Open Loyalty workflows (slash commands and skills).
+This installs all four 💜 department plugins (Engineering, Sales, Marketing, QA).
 
 **Run setup (required after first install):**
 ```bash

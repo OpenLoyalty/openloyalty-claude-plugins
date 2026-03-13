@@ -4,28 +4,40 @@ description: Show available Open Loyalty commands, skills, and plugin documentat
 argument-hint: ""
 ---
 
-# Open Loyalty Plugin
+# Open Loyalty Plugins
 
-This plugin provides engineering, sales, QA, and marketing workflows for the Open Loyalty team.
+This plugin suite provides engineering, sales, QA, and marketing workflows for the Open Loyalty team. All commands use the `/ol:` namespace.
+
+**RENDERING INSTRUCTION:** When displaying command names below, print them EXACTLY as written — do not shorten, abbreviate, or omit the `ol:` prefix.
 
 ## Available Commands
+
+### 💜 Engineering
 
 | Command | Purpose |
 |---------|---------|
 | `/ol:setup` | Full onboarding: installs compound-engineering plugin dependency |
 | `/ol:review-pr` | Code review with OL conventions, Jira verification, 1-10 scoring |
 | `/ol:jira-ticket-breakdown` | Break down features/epics into Jira hierarchy (Epic > Tasks > Subtasks) with FE/BE split |
+| `/ol:context-doctor` | Diagnose and fix CLAUDE.md files using context engineering best practices |
+| `/ol:context-knowledge-updater` | Research latest context engineering advancements and update context-doctor knowledge |
+| `/ol:help` | Show this help |
+
+### 💜 Sales
+
+| Command | Purpose |
+|---------|---------|
+| `/ol:winning-plan` | Build structured deal plans for key sales opportunities with HubSpot, Fathom, and web research |
+
+### 💜 QA
+
+| Command | Purpose |
+|---------|---------|
 | `/ol:test-scenarios` | Generate QA test scenarios from Jira ticket with codebase context |
-| `/ol:migrate` | Remove legacy Open Loyalty MCP server configuration from user scope |
-| `/ol:help` | Show available commands and plugin documentation |
 
-## Skills
+### 💜 Marketing
 
-| Skill | Purpose |
-|-------|---------|
-| `context-doctor` | Diagnose and fix CLAUDE.md files using context engineering best practices |
-| `context-knowledge-updater` | Research latest context engineering advancements and update context-doctor knowledge |
-| `winning-plan` | Build structured deal plans for key sales opportunities with HubSpot, Fathom, and web research |
+_No commands yet — plugin ready for future workflows._
 
 ## Requirements
 

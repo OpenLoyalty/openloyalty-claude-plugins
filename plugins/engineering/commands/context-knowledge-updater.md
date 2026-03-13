@@ -1,20 +1,21 @@
 ---
-name: context-knowledge-updater
-description: Research latest context engineering best practices and propose updates to the context-doctor skill. Use when refreshing context knowledge or keeping CLAUDE.md practices current.
+name: ol:context-knowledge-updater
+description: Research latest context engineering best practices and propose updates to the context-doctor command. Use when refreshing context knowledge or keeping CLAUDE.md practices current.
+argument-hint: ""
 ---
 
 <objective>
-Research the latest advancements in context management and context engineering from tiered reputable sources, then propose surgical, evidence-based updates to the context-doctor skill and the comprehensive context engineering guide. Every proposed change traces back to a cited source and requires explicit user approval.
+Research the latest advancements in context management and context engineering from tiered reputable sources, then propose surgical, evidence-based updates to the context-doctor command and the comprehensive context engineering guide. Every proposed change traces back to a cited source and requires explicit user approval.
 </objective>
 
 <context>
-The context-doctor skill encodes ~1100 lines of knowledge across 5 target files that become stale as the field evolves. This updater uses a claim-based research approach: it first inventories what context-doctor currently knows, then sends 4 parallel research agents to verify, extend, or challenge those claims against current sources.
+The context-doctor command encodes ~1100 lines of knowledge across 5 target files that become stale as the field evolves. This updater uses a claim-based research approach: it first inventories what context-doctor currently knows, then sends 4 parallel research agents to verify, extend, or challenge those claims against current sources.
 
-**Target files** (relative to the context-doctor skill directory, a sibling of this skill):
-- `../context-doctor/references/context-principles.md` — 10 core principles
-- `../context-doctor/references/anti-patterns.md` — 11 anti-patterns + scoring
-- `../context-doctor/references/ideal-structure.md` — 5 templates + line budgets
-- `../context-doctor/SKILL.md` — 4-phase workflow procedure
+**Target files** (relative to this command's directory):
+- `context-doctor-references/context-principles.md` — 10 core principles
+- `context-doctor-references/anti-patterns.md` — 11 anti-patterns + scoring
+- `context-doctor-references/ideal-structure.md` — 5 templates + line budgets
+- `context-doctor.md` — 4-phase workflow procedure
 - `context-engineering-comprehensive-guide.md` — project root comprehensive guide
 </context>
 
@@ -25,10 +26,10 @@ The context-doctor skill encodes ~1100 lines of knowledge across 5 target files 
 Run the claim extraction script to produce a structured inventory of everything context-doctor currently knows:
 
 ```bash
-bash <skill-dir>/scripts/extract-claims.sh <context-doctor-dir>
+bash <command-dir>/context-knowledge-updater-scripts/extract-claims.sh <command-dir>
 ```
 
-> **Note:** `<skill-dir>` is the directory containing this SKILL.md file. `<context-doctor-dir>` is the sibling `context-doctor` skill directory. Resolve the full paths before executing.
+> **Note:** `<command-dir>` is the directory containing this command file. Resolve the full path before executing. The script analyzes the context-doctor reference files in the same directory.
 
 Read the output and confirm the claim counts:
 - Principles: expect ~10
@@ -49,7 +50,7 @@ Principles: [N] (context-principles.md, [lines] lines)
 Anti-patterns: [N] (anti-patterns.md, [lines] lines)
 Dimensions: [N]
 Templates: [N] (ideal-structure.md, [lines] lines)
-Guidelines: [N] (SKILL.md, [lines] lines)
+Guidelines: [N] (context-doctor.md, [lines] lines)
 Comprehensive guide: [lines] lines, last updated [date]
 Sources in guide: [N]
 
@@ -58,7 +59,7 @@ Ready to research. Proceeding to parallel research phase.
 
 ## Phase 2: Parallel Research
 
-Load the source registry from `references/source-registry.md` and the research brief template from `references/research-brief-template.md`.
+Load the source registry from `context-knowledge-updater-references/source-registry.md` and the research brief template from `context-knowledge-updater-references/research-brief-template.md`.
 
 Spawn **4 research agents in parallel** using the Agent tool with `subagent_type: "general-purpose"`. Each agent receives:
 1. The full claim inventory output from Phase 1
@@ -71,7 +72,7 @@ Spawn **4 research agents in parallel** using the Agent tool with `subagent_type
 ```
 You are researching context engineering PRINCIPLES for AI coding agents.
 
-Your task: Verify, extend, or challenge the existing principles encoded in the context-doctor skill.
+Your task: Verify, extend, or challenge the existing principles encoded in the context-doctor command.
 
 [Paste claim inventory — PRINCIPLES section]
 
@@ -180,13 +181,13 @@ After all 4 agents complete, merge their findings:
 
 1. **Collect** all findings from 4 agent reports
 2. **Deduplicate** — same finding from multiple agents? Keep highest-tier source, merge citations
-3. **Resolve conflicts** — use rules from `references/claim-categories.md`:
+3. **Resolve conflicts** — use rules from `context-knowledge-updater-references/claim-categories.md`:
    - Higher tier wins
    - Same tier: more recent wins
    - Same tier + date: more specific wins
    - Unresolvable: flag for user
 4. **Categorize** each finding: confirms | contradicts | extends | new
-5. **Score priority** using the formula from `references/claim-categories.md`
+5. **Score priority** using the formula from `context-knowledge-updater-references/claim-categories.md`
 6. **Filter** by confidence threshold:
    - High/medium confidence + Tier 1-3 → propose diff
    - Low confidence + Tier 1-2 → flag for review
@@ -242,10 +243,10 @@ Summary: [1-2 sentence description of the change]
 ```
 
 Group diffs by target file:
-1. `context-principles.md` diffs
-2. `anti-patterns.md` diffs
-3. `ideal-structure.md` diffs
-4. `SKILL.md` diffs
+1. `context-doctor-references/context-principles.md` diffs
+2. `context-doctor-references/anti-patterns.md` diffs
+3. `context-doctor-references/ideal-structure.md` diffs
+4. `context-doctor.md` diffs
 5. `context-engineering-comprehensive-guide.md` diffs
 
 After all diffs, include:
@@ -278,15 +279,15 @@ Present all diffs to the user grouped by file. For each file:
 2. Ask the user to approve or reject **each diff individually**
 3. For approved diffs, apply using the Edit tool
 4. After all diffs for a file are applied, verify line counts still respect budgets:
-   - `context-principles.md`: soft limit ~150 lines
-   - `anti-patterns.md`: soft limit ~300 lines
-   - `ideal-structure.md`: soft limit ~350 lines
-   - `SKILL.md`: soft limit ~220 lines
+   - `context-doctor-references/context-principles.md`: soft limit ~150 lines
+   - `context-doctor-references/anti-patterns.md`: soft limit ~300 lines
+   - `context-doctor-references/ideal-structure.md`: soft limit ~350 lines
+   - `context-doctor.md`: soft limit ~220 lines
    - `comprehensive-guide.md`: no strict limit but flag if >600 lines
 
-5. For discovered sources approved by user, append to `references/source-registry.md`
+5. For discovered sources approved by user, append to `context-knowledge-updater-references/source-registry.md`
 
-6. Log all applied changes to the context-doctor's `changelog.md`:
+6. Log all applied changes to `context-doctor-changelog.md`:
 ```markdown
 ## [YYYY-MM-DD] Knowledge Update
 
@@ -313,7 +314,7 @@ Sources added to registry: [N]
 Modified files:
   [file]: [before lines] → [after lines] ([+N/-M] lines)
 
-Changelog updated: context-doctor/changelog.md
+Changelog updated: context-doctor-changelog.md
 ```
 
 </workflow>
@@ -325,7 +326,7 @@ Changelog updated: context-doctor/changelog.md
 - Every proposed diff includes source citation, confidence level, and priority score
 - User approved or rejected each diff individually
 - Applied diffs do not break context-doctor file structure or exceed soft line limits
-- Changelog entry created in context-doctor with full audit trail
+- Changelog entry created with full audit trail
 - Discovered sources (if any) proposed for registry addition
 - No existing knowledge removed without explicit user approval and Tier 1-2 contradicting evidence
 </success_criteria>

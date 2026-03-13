@@ -1,0 +1,13 @@
+{
+  "name": "💜 Sales",
+  "version": "6.0.0",
+  "description": "Sales workflows for Open Loyalty — deal planning, winning plans, and customer intelligence.",
+  "author": {
+    "name": "Open Loyalty",
+    "url": "https://github.com/OpenLoyalty"
+  },
+  "homepage": "https://github.com/OpenLoyalty/openloyalty-claude-plugins",
+  "repository": "https://github.com/OpenLoyalty/openloyalty-claude-plugins",
+  "license": "UNLICENSED",
+  "keywords": ["sales", "deals", "loyalty", "open-loyalty", "internal"]
+}

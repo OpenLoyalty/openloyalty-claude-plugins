@@ -6,17 +6,44 @@
   },
   "metadata": {
     "description": "Claude Code plugins for Open Loyalty — engineering, sales, marketing, and QA workflows",
-    "version": "5.0.0"
+    "version": "6.0.0"
   },
   "plugins": [
     {
-      "name": "ol",
-      "description": "Open Loyalty workflows — engineering, sales, marketing, and QA slash commands and skills.",
-      "version": "5.0.0",
+      "name": "💜 Engineering",
+      "description": "Engineering workflows for Open Loyalty — code review, Jira integration, and context engineering tools.",
+      "version": "6.0.0",
       "author": { "name": "Open Loyalty", "url": "https://github.com/OpenLoyalty" },
       "homepage": "https://github.com/OpenLoyalty/openloyalty-claude-plugins",
-      "tags": ["code-review", "workflow", "loyalty", "internal", "sales", "qa", "marketing"],
-      "source": "./plugins/ol"
+      "tags": ["code-review", "workflow", "loyalty", "internal", "engineering"],
+      "source": "./plugins/engineering"
+    },
+    {
+      "name": "💜 Sales",
+      "description": "Sales workflows for Open Loyalty — deal planning, winning plans, and customer intelligence.",
+      "version": "6.0.0",
+      "author": { "name": "Open Loyalty", "url": "https://github.com/OpenLoyalty" },
+      "homepage": "https://github.com/OpenLoyalty/openloyalty-claude-plugins",
+      "tags": ["sales", "deals", "loyalty", "internal"],
+      "source": "./plugins/sales"
+    },
+    {
+      "name": "💜 Marketing",
+      "description": "Marketing workflows for Open Loyalty — content, campaigns, and brand management.",
+      "version": "6.0.0",
+      "author": { "name": "Open Loyalty", "url": "https://github.com/OpenLoyalty" },
+      "homepage": "https://github.com/OpenLoyalty/openloyalty-claude-plugins",
+      "tags": ["marketing", "content", "loyalty", "internal"],
+      "source": "./plugins/marketing"
+    },
+    {
+      "name": "💜 QA",
+      "description": "QA workflows for Open Loyalty — test scenario generation, quality assurance, and Jira integration.",
+      "version": "6.0.0",
+      "author": { "name": "Open Loyalty", "url": "https://github.com/OpenLoyalty" },
+      "homepage": "https://github.com/OpenLoyalty/openloyalty-claude-plugins",
+      "tags": ["qa", "testing", "test-scenarios", "internal"],
+      "source": "./plugins/qa"
     }
   ]
 }

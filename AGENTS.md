@@ -1,6 +1,6 @@
 # AGENTS.md — Skill Generation Conventions
 
-This file defines the conventions, patterns, and rules for creating new slash commands and skills in the `ol` plugin. Follow these exactly when generating new components.
+This file defines the conventions, patterns, and rules for creating new slash commands in the Open Loyalty plugins. Follow these exactly when generating new components.
 
 ---
 
@@ -9,36 +9,45 @@ This file defines the conventions, patterns, and rules for creating new slash co
 ```
 openloyalty-claude-plugins/
 ├── .claude-plugin/
-│   └── marketplace.json           # Marketplace definition
+│   └── marketplace.json           # Marketplace definition (all 4 plugins)
 ├── plugins/
-│   └── ol/                        # The plugin (all commands use /ol: namespace)
+│   ├── engineering/               # 💜 Engineering plugin
+│   │   ├── .claude-plugin/
+│   │   │   └── plugin.json
+│   │   └── commands/
+│   │       ├── help.md
+│   │       ├── setup.md
+│   │       ├── review-pr.md
+│   │       ├── jira-ticket-breakdown.md
+│   │       ├── context-doctor.md
+│   │       └── context-knowledge-updater.md
+│   ├── sales/                     # 💜 Sales plugin
+│   │   ├── .claude-plugin/
+│   │   │   └── plugin.json
+│   │   └── commands/
+│   │       └── winning-plan.md
+│   ├── marketing/                 # 💜 Marketing plugin
+│   │   ├── .claude-plugin/
+│   │   │   └── plugin.json
+│   │   └── commands/
+│   └── qa/                        # 💜 QA plugin
 │       ├── .claude-plugin/
-│       │   └── plugin.json        # Plugin metadata (bump version on changes)
-│       ├── commands/              # Slash commands (user-facing)
-│       │   ├── help.md
-│       │   ├── review-pr.md
-│       │   ├── jira-ticket-breakdown.md
-│       │   ├── setup.md
-│       │   ├── migrate.md
-│       │   └── test-scenarios.md
-│       └── skills/                # Skills (internal, invoked by commands)
-│           ├── context-doctor/
-│           ├── context-knowledge-updater/
-│           └── winning-plan/
+│       │   └── plugin.json
+│       └── commands/
+│           └── test-scenarios.md
 ├── AGENTS.md                      # This file
 └── README.md
 ```
 
 ---
 
-## Commands vs Skills
+## Commands
 
 | Concept | Location | Purpose | Invoked by |
 |---------|----------|---------|------------|
-| **Command** | `commands/{name}.md` | User-facing slash command (`/ol:{name}`) | User typing the command |
-| **Skill** | `skills/{name}/SKILL.md` | Internal reusable workflow | Commands or other skills |
+| **Command** | `plugins/{department}/commands/{name}.md` | User-facing slash command (`/ol:{name}`) | User typing the command |
 
-**Rule:** Commands orchestrate. Skills do focused work. If a workflow is reusable across multiple commands, extract it into a skill.
+**Department mapping:** engineering, sales, marketing, qa. Place new commands in the appropriate department plugin. All commands use the `ol:` prefix regardless of department.
 
 ---
 
@@ -47,7 +56,7 @@ openloyalty-claude-plugins/
 ### File Location
 
 ```
-plugins/ol/commands/{command-name}.md
+plugins/{department}/commands/{command-name}.md
 ```
 
 Use kebab-case for multi-word names (e.g., `jira-ticket-breakdown.md`).
@@ -125,56 +134,19 @@ Also update `README.md` if the command is significant.
 
 ---
 
-## Creating a New Skill
+## Supporting Files
 
-### File Structure
+Commands may have supporting files (templates, references, scripts) stored alongside them in the commands directory. Use a `{command-name}-{type}/` prefix for subdirectories:
 
 ```
-plugins/ol/skills/{skill-name}/
-├── SKILL.md              # Main skill definition (required)
-├── schema.yaml           # Validation schema (if skill has structured output)
-├── assets/               # Templates, patterns (optional)
-│   └── {template}.md
-└── references/           # Reference documentation (optional)
-    └── {reference}.md
+plugins/{department}/commands/
+├── context-doctor.md
+├── context-doctor-references/    # Reference docs for context-doctor
+├── context-doctor-scripts/       # Scripts for context-doctor
+├── winning-plan.md
+├── winning-plan-assets/          # Templates for winning-plan
+└── winning-plan-references/      # Reference docs for winning-plan
 ```
-
-### SKILL.md Frontmatter
-
-```yaml
----
-name: {skill-name}
-description: What this skill does
-allowed-tools:
-  - Read
-  - Write
-  - Bash
-  - Grep
-  - Glob
-  - Task
-preconditions:
-  - Condition that must be true before invoking
----
-```
-
-### SKILL.md Body Patterns
-
-Skills use structured XML-like tags for enforcement:
-
-- `<critical_sequence>` — Steps that must execute in strict order
-- `<step number="N" required="true|false" depends_on="N">` — Individual steps
-- `<validation_gate blocking="true">` — Must pass before proceeding
-- `<decision_gate wait_for_user="true">` — Present options, wait for user choice
-- `<integration_protocol>` — Define what invokes this skill and what it invokes
-- `<success_criteria>` — Define when the skill is complete
-
-### Skill Conventions
-
-1. **Numbered steps** — Use `<step>` tags with explicit dependencies
-2. **Blocking gates** — Use `<validation_gate blocking="true">` for schema validation
-3. **Decision menus** — Present numbered options after major actions, always include "Other"
-4. **Templates in assets/** — Keep templates separate from logic
-5. **Schema validation** — If the skill produces structured output, define a `schema.yaml`
 
 ---
 
@@ -251,26 +223,14 @@ Prompt: |
 
 ## Checklist: New Command
 
-- [ ] File at `commands/{name}.md` with correct frontmatter
+- [ ] File at `plugins/{department}/commands/{name}.md` with correct frontmatter
 - [ ] Phase-based structure with parallel agents in Phase 1
 - [ ] Arguments table if the command accepts flags
 - [ ] Graceful Jira/Slack degradation (if used)
 - [ ] User confirmation before external actions
-- [ ] Added to `help.md` commands table
+- [ ] Added to `help.md` commands table (in the correct department section)
 - [ ] Related Commands section at the bottom
 - [ ] README.md updated (for significant commands)
-
-## Checklist: New Skill
-
-- [ ] Directory at `skills/{name}/` with `SKILL.md`
-- [ ] Correct frontmatter with `allowed-tools` and `preconditions`
-- [ ] Numbered steps with dependencies
-- [ ] Validation gates for structured output
-- [ ] Decision menu after major actions
-- [ ] Error handling section
-- [ ] At least one example scenario
-- [ ] Templates in `assets/` if applicable
-- [ ] Referenced from the invoking command
 
 ---
 
@@ -282,12 +242,15 @@ Prompt: |
 
 When Marcin says "release", execute these steps:
 
-1. **Read current version** from `plugins/ol/.claude-plugin/plugin.json`
+1. **Read current version** from any `plugins/*/.claude-plugin/plugin.json` (all share same version)
 2. **Determine bump level** — Marcin specifies patch/minor/major, or Claude suggests based on changes since last tag
-3. **Update all 3 version fields** to the new version:
-   - `plugins/ol/.claude-plugin/plugin.json` → `"version": "X.Y.Z"`
+3. **Update all version fields** to the new version:
+   - `plugins/engineering/.claude-plugin/plugin.json` → `"version": "X.Y.Z"`
+   - `plugins/sales/.claude-plugin/plugin.json` → `"version": "X.Y.Z"`
+   - `plugins/marketing/.claude-plugin/plugin.json` → `"version": "X.Y.Z"`
+   - `plugins/qa/.claude-plugin/plugin.json` → `"version": "X.Y.Z"`
    - `.claude-plugin/marketplace.json` → `metadata.version` field
-   - `.claude-plugin/marketplace.json` → `plugins[0].version` field
+   - `.claude-plugin/marketplace.json` → each `plugins[].version` field
 4. **Generate changelog** from `git log --oneline $(git describe --tags --abbrev=0)..HEAD`
 5. **Commit** with message `Release vX.Y.Z`
 6. **Tag** with `vX.Y.Z`
@@ -298,9 +261,12 @@ When Marcin says "release", execute these steps:
 
 ### Version files
 
-Both files must always have matching versions (enforced by pre-commit hook when both are staged):
+All plugin.json files and marketplace.json must always have matching versions (enforced by pre-commit hook when both are staged):
 
-- `plugins/ol/.claude-plugin/plugin.json` — plugin metadata
-- `.claude-plugin/marketplace.json` — marketplace definition (has **two** `version` fields: `metadata.version` and `plugins[0].version`)
+- `plugins/engineering/.claude-plugin/plugin.json` — 💜 Engineering metadata
+- `plugins/sales/.claude-plugin/plugin.json` — 💜 Sales metadata
+- `plugins/marketing/.claude-plugin/plugin.json` — 💜 Marketing metadata
+- `plugins/qa/.claude-plugin/plugin.json` — 💜 QA metadata
+- `.claude-plugin/marketplace.json` — marketplace definition (has `metadata.version` and per-plugin `version` fields)
 
 Use semver: patch for fixes, minor for new commands/skills, major for breaking changes.
