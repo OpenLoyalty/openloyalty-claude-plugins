@@ -1,6 +1,6 @@
 ---
 name: openloyalty:jira-ticket-breakdown
-description: Break down features, epics, or PRDs into a structured Jira hierarchy (Epic > Stories > Subtasks, with Tasks for chores) with FE/BE team split, effort estimates, and automatic ticket creation.
+description: Break down features, epics, or PRDs into structured Jira tickets with FE/BE team split, effort estimates, and automatic creation.
 argument-hint: "[<jira-key|text|file>] [--project <KEY>]"
 ---
 

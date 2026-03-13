@@ -1,6 +1,6 @@
 ---
 name: context-knowledge-updater
-description: Researches latest context engineering advancements from reputable sources and proposes evidence-based updates to the context-doctor skill. Fetches from Anthropic docs, arXiv papers, and community sources, then generates surgical diffs with source citations for user approval. Use when user says "update context-doctor", "refresh context knowledge", "research context engineering", or wants to keep context management best practices current.
+description: Research latest context engineering best practices and propose updates to the context-doctor skill. Use when refreshing context knowledge or keeping CLAUDE.md practices current.
 ---
 
 <objective>

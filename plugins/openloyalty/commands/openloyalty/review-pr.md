@@ -1,6 +1,6 @@
 ---
 name: openloyalty:review-pr
-description: Code review with OL conventions, Jira ticket verification, test quality analysis, N+1 detection, and 1-10 scoring. Spawns CE agents directly (no Rails agents), runs OL checks via direct execution (no nested spawning).
+description: Review pull requests against Open Loyalty conventions with Jira verification, test quality analysis, N+1 detection, and 1-10 scoring.
 argument-hint: "[--base <branch>] [--all | --last <N>] [--strict] [--ticket <ID>] [--skip-jira] [--quick]"
 ---
 

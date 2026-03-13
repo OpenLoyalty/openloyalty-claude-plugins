@@ -1,6 +1,6 @@
 ---
 name: context-doctor
-description: Analyses and fixes CLAUDE.md files using context engineering best practices. Recursively discovers and treats all CLAUDE.md files in the project (root + subdomain). Use when user says "fix my CLAUDE.md", "review context files", "context doctor", "clean up CLAUDE.md", "optimise context", "check my context", or when improving CLAUDE.md/AGENTS.md files. Also triggers on requests about context rot, context engineering, or improving agent performance in a project.
+description: Analyze and fix CLAUDE.md files using context engineering best practices. Use when reviewing context files, diagnosing context rot, or improving agent performance in a project.
 ---
 
 # Context Doctor

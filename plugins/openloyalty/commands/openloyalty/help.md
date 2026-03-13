@@ -25,6 +25,7 @@ This plugin provides engineering workflows for the Open Loyalty development team
 |-------|---------|
 | `context-doctor` | Diagnose and fix CLAUDE.md files using context engineering best practices |
 | `context-knowledge-updater` | Research latest context engineering advancements and update context-doctor knowledge |
+| `winning-plan <company>` | Create and iterate Winning Plans for key ICP/HPC deals — auto-pulls context from HubSpot & Fathom |
 
 ## Requirements
 
