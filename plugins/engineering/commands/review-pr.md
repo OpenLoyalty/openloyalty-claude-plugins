@@ -1,5 +1,5 @@
 ---
-name: openloyalty:review-pr
+name: engineering:review-pr
 description: Review pull requests against Open Loyalty conventions with Jira verification, test quality analysis, N+1 detection, and 1-10 scoring.
 argument-hint: "[--base <branch>] [--all | --last <N>] [--strict] [--ticket <ID>] [--skip-jira] [--quick]"
 ---

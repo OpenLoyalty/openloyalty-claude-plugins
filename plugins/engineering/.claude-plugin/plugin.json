@@ -1,6 +1,6 @@
 {
-  "name": "openloyalty",
-  "version": "3.10.1",
+  "name": "engineering",
+  "version": "4.0.0",
   "description": "Engineering workflows for Open Loyalty — code review, Jira integration, and context engineering skills.",
   "author": {
     "name": "Open Loyalty",
@@ -9,11 +9,5 @@
   "homepage": "https://github.com/OpenLoyalty/openloyalty-claude-plugins",
   "repository": "https://github.com/OpenLoyalty/openloyalty-claude-plugins",
   "license": "UNLICENSED",
-  "keywords": [
-    "code-review",
-    "workflow",
-    "loyalty",
-    "open-loyalty",
-    "internal"
-  ]
+  "keywords": ["code-review", "workflow", "loyalty", "open-loyalty", "internal"]
 }

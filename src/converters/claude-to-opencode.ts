@@ -187,12 +187,12 @@ function convertCommands(
     let body = rewriteClaudePaths(command.body)
 
     // Apply setup-specific rewrites
-    if (command.name === "openloyalty:setup") {
+    if (command.name === "engineering:setup") {
       body = applySetupRewrites(body)
     }
 
     // Apply review-pr-specific rewrites
-    if (command.name === "openloyalty:review-pr") {
+    if (command.name === "engineering:review-pr") {
       body = applyReviewPrRewrites(body)
     }
 

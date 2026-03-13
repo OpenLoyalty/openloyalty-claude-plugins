@@ -1,0 +1,13 @@
+{
+  "name": "qa",
+  "version": "4.0.0",
+  "description": "QA workflows for Open Loyalty — test scenario generation, quality assurance, and Jira integration.",
+  "author": {
+    "name": "Open Loyalty",
+    "url": "https://github.com/OpenLoyalty"
+  },
+  "homepage": "https://github.com/OpenLoyalty/openloyalty-claude-plugins",
+  "repository": "https://github.com/OpenLoyalty/openloyalty-claude-plugins",
+  "license": "UNLICENSED",
+  "keywords": ["qa", "testing", "test-scenarios", "loyalty", "open-loyalty", "internal"]
+}

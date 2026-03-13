@@ -1,5 +1,5 @@
 ---
-name: openloyalty:help
+name: engineering:help
 description: Show available Open Loyalty engineering commands and plugin documentation
 argument-hint: ""
 ---
@@ -12,12 +12,11 @@ This plugin provides engineering workflows for the Open Loyalty development team
 
 | Command | Purpose |
 |---------|---------|
-| `/openloyalty:setup` | Full onboarding: installs compound-engineering plugin dependency |
-| `/openloyalty:review-pr` | Code review with OL conventions, Jira verification, 1-10 scoring |
-| `/openloyalty:jira-ticket-breakdown` | Break down features/epics into Jira hierarchy (Epic > Tasks > Subtasks) with FE/BE split |
-| `/openloyalty:qa:test-scenarios` | Generate QA test scenarios from Jira ticket with codebase context, auto-post to Jira |
-| `/openloyalty:migrate` | Remove legacy Open Loyalty MCP server configuration from user scope |
-| `/openloyalty:help` | Show available commands and plugin documentation |
+| `/engineering:setup` | Full onboarding: installs compound-engineering plugin dependency |
+| `/engineering:review-pr` | Code review with OL conventions, Jira verification, 1-10 scoring |
+| `/engineering:jira-ticket-breakdown` | Break down features/epics into Jira hierarchy (Epic > Tasks > Subtasks) with FE/BE split |
+| `/engineering:migrate` | Remove legacy Open Loyalty MCP server configuration from user scope |
+| `/engineering:help` | Show available commands and plugin documentation |
 
 ## Skills
 
@@ -25,7 +24,6 @@ This plugin provides engineering workflows for the Open Loyalty development team
 |-------|---------|
 | `context-doctor` | Diagnose and fix CLAUDE.md files using context engineering best practices |
 | `context-knowledge-updater` | Research latest context engineering advancements and update context-doctor knowledge |
-| `winning-plan <company>` | Create and iterate Winning Plans for key ICP/HPC deals — auto-pulls context from HubSpot & Fathom |
 
 ## Requirements
 
@@ -33,7 +31,7 @@ This plugin depends on:
 
 - **[compound-engineering](https://github.com/EveryInc/compound-engineering-plugin)** — review workflows, agent types, engineering best practices
 
-Run `/openloyalty:setup` to install all dependencies automatically.
+Run `/engineering:setup` to install all dependencies automatically.
 
 ## Integration with AGENTS.md
 
@@ -42,4 +40,3 @@ This plugin works alongside your repository's `AGENTS.md` file:
 - **This plugin** provides workflows for documentation and review (how to work)
 
 The code review workflow reads AGENTS.md from your repo to check against OL conventions.
-

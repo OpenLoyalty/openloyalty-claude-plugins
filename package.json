@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "bun run src/index.ts",
-    "install:opencode": "bun run src/index.ts install openloyalty --to opencode",
+    "install:opencode": "bun run src/index.ts install engineering --to opencode",
     "test": "bun test"
   },
   "dependencies": {

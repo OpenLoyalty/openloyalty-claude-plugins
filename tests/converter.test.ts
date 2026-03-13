@@ -4,7 +4,7 @@ import { loadClaudePlugin } from "../src/parsers/claude"
 import { convertClaudeToOpenCode } from "../src/converters/claude-to-opencode"
 
 const FIXTURE_DIR = path.join(import.meta.dir, "fixtures", "sample-plugin")
-const PLUGIN_DIR = path.join(import.meta.dir, "..", "plugins", "openloyalty")
+const PLUGIN_DIR = path.join(import.meta.dir, "..", "plugins", "engineering")
 
 describe("converter: sample plugin", () => {
   test("converts commands to opencode command entries", async () => {
@@ -67,26 +67,25 @@ describe("converter: sample plugin", () => {
   })
 })
 
-describe("converter: openloyalty plugin", () => {
-  test("converts all 6 commands", async () => {
+describe("converter: engineering plugin", () => {
+  test("converts all 5 commands", async () => {
     const plugin = await loadClaudePlugin(PLUGIN_DIR)
     const bundle = convertClaudeToOpenCode(plugin, { permissions: "broad" })
 
     const commandNames = Object.keys(bundle.config.command!)
-    expect(commandNames).toHaveLength(6)
-    expect(commandNames).toContain("openloyalty:help")
-    expect(commandNames).toContain("openloyalty:setup")
-    expect(commandNames).toContain("openloyalty:review-pr")
-    expect(commandNames).toContain("openloyalty:jira-ticket-breakdown")
-    expect(commandNames).toContain("openloyalty:qa:test-scenarios")
-    expect(commandNames).toContain("openloyalty:migrate")
+    expect(commandNames).toHaveLength(5)
+    expect(commandNames).toContain("engineering:help")
+    expect(commandNames).toContain("engineering:setup")
+    expect(commandNames).toContain("engineering:review-pr")
+    expect(commandNames).toContain("engineering:jira-ticket-breakdown")
+    expect(commandNames).toContain("engineering:migrate")
   })
 
   test("setup command uses bunx for compound-engineering install", async () => {
     const plugin = await loadClaudePlugin(PLUGIN_DIR)
     const bundle = convertClaudeToOpenCode(plugin, { permissions: "broad" })
 
-    const setup = bundle.config.command!["openloyalty:setup"]
+    const setup = bundle.config.command!["engineering:setup"]
     expect(setup.template).toContain(
       "bunx @every-env/compound-plugin install compound-engineering --to opencode",
     )
@@ -96,7 +95,7 @@ describe("converter: openloyalty plugin", () => {
     const plugin = await loadClaudePlugin(PLUGIN_DIR)
     const bundle = convertClaudeToOpenCode(plugin, { permissions: "broad" })
 
-    const setup = bundle.config.command!["openloyalty:setup"]
+    const setup = bundle.config.command!["engineering:setup"]
     expect(setup.template).toContain("mcp-atlassian")
     expect(setup.template).toContain("uvx")
     expect(setup.template).toContain("https://openloyalty.atlassian.net")

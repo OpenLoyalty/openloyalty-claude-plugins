@@ -1,57 +1,72 @@
 #!/bin/bash
 set -euo pipefail
 
-# Pre-commit hook: if both version files are staged, their versions must match.
-# Does NOT require a version bump on every plugin commit — releases are done on-demand.
+# Pre-commit hook: if any plugin.json and marketplace.json are both staged,
+# their versions must match. Supports multiple plugins.
 
-PLUGIN_JSON="plugins/openloyalty/.claude-plugin/plugin.json"
 MARKETPLACE_JSON=".claude-plugin/marketplace.json"
 
 # Get staged files
 STAGED_FILES=$(git diff --cached --name-only)
 
-PLUGIN_JSON_STAGED=$(echo "$STAGED_FILES" | grep "^${PLUGIN_JSON}$" || true)
 MARKETPLACE_STAGED=$(echo "$STAGED_FILES" | grep "^${MARKETPLACE_JSON}$" || true)
 
-# If neither version file is staged, nothing to check
-if [ -z "$PLUGIN_JSON_STAGED" ] && [ -z "$MARKETPLACE_STAGED" ]; then
+# Find all staged plugin.json files
+STAGED_PLUGIN_JSONS=$(echo "$STAGED_FILES" | grep 'plugins/.*/\.claude-plugin/plugin\.json$' || true)
+
+# If nothing version-related is staged, nothing to check
+if [ -z "$STAGED_PLUGIN_JSONS" ] && [ -z "$MARKETPLACE_STAGED" ]; then
     exit 0
 fi
 
-# If only one is staged, warn
-if [ -z "$PLUGIN_JSON_STAGED" ] || [ -z "$MARKETPLACE_STAGED" ]; then
-    echo "ERROR: Only one version file is staged — both must be updated together!"
+# If plugin.json(s) staged but not marketplace, warn
+if [ -n "$STAGED_PLUGIN_JSONS" ] && [ -z "$MARKETPLACE_STAGED" ]; then
+    echo "ERROR: Plugin version file(s) staged without marketplace.json!"
     echo ""
-    if [ -z "$PLUGIN_JSON_STAGED" ]; then
-        echo "  Missing: ${PLUGIN_JSON}"
-        echo "  Staged:  ${MARKETPLACE_JSON}"
-    else
-        echo "  Staged:  ${PLUGIN_JSON}"
-        echo "  Missing: ${MARKETPLACE_JSON}"
-    fi
+    echo "  Staged plugin.json files:"
+    echo "$STAGED_PLUGIN_JSONS" | sed 's/^/    /'
+    echo "  Missing: ${MARKETPLACE_JSON}"
     echo ""
     echo "Stage both version files or unstage the one you changed."
     exit 1
 fi
 
-# Both staged — check versions are in sync
-PLUGIN_VER=$(git show :"${PLUGIN_JSON}" | python3 -c "import sys,json; print(json.load(sys.stdin)['version'])")
-
-MARKETPLACE_VER=$(git show :"${MARKETPLACE_JSON}" | python3 -c "
-import sys, json
-data = json.load(sys.stdin)
-plugins = [p for p in data['plugins'] if p['name'] == 'openloyalty']
-print(plugins[0]['version'] if plugins else 'NOT_FOUND')
-")
-
-if [ "$PLUGIN_VER" != "$MARKETPLACE_VER" ]; then
-    echo "ERROR: Version mismatch!"
+# If marketplace staged but no plugin.json, warn
+if [ -z "$STAGED_PLUGIN_JSONS" ] && [ -n "$MARKETPLACE_STAGED" ]; then
+    echo "ERROR: marketplace.json staged without any plugin.json!"
     echo ""
-    echo "  plugin.json:      ${PLUGIN_VER}"
-    echo "  marketplace.json: ${MARKETPLACE_VER}"
+    echo "  Staged:  ${MARKETPLACE_JSON}"
+    echo "  Missing: plugins/*/.claude-plugin/plugin.json"
     echo ""
-    echo "Both must have the same version."
+    echo "Stage both version files or unstage the one you changed."
     exit 1
 fi
 
-echo "Version check passed: ${PLUGIN_VER}"
+# Both staged — check each plugin version matches its marketplace entry
+ERRORS=0
+while IFS= read -r PLUGIN_JSON; do
+    PLUGIN_NAME=$(git show :"${PLUGIN_JSON}" | python3 -c "import sys,json; print(json.load(sys.stdin)['name'])")
+    PLUGIN_VER=$(git show :"${PLUGIN_JSON}" | python3 -c "import sys,json; print(json.load(sys.stdin)['version'])")
+
+    MARKETPLACE_VER=$(git show :"${MARKETPLACE_JSON}" | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+plugins = [p for p in data['plugins'] if p['name'] == '${PLUGIN_NAME}']
+print(plugins[0]['version'] if plugins else 'NOT_FOUND')
+")
+
+    if [ "$PLUGIN_VER" != "$MARKETPLACE_VER" ]; then
+        echo "ERROR: Version mismatch for '${PLUGIN_NAME}'!"
+        echo "  plugin.json:      ${PLUGIN_VER}"
+        echo "  marketplace.json: ${MARKETPLACE_VER}"
+        ERRORS=$((ERRORS + 1))
+    else
+        echo "Version check passed for '${PLUGIN_NAME}': ${PLUGIN_VER}"
+    fi
+done <<< "$STAGED_PLUGIN_JSONS"
+
+if [ "$ERRORS" -gt 0 ]; then
+    echo ""
+    echo "Fix version mismatches before committing."
+    exit 1
+fi

@@ -32,7 +32,7 @@ Generate and iterate Winning Plans for key sales opportunities — structured ac
 |----------|-------------|---------|
 | `<company>` | Company name to look up (required) | `ticketmaster` |
 
-**Usage:** `/openloyalty:winning-plan ticketmaster`
+**Usage:** `/sales:winning-plan ticketmaster`
 
 ## Assumptions
 
@@ -48,11 +48,11 @@ Generate and iterate Winning Plans for key sales opportunities — structured ac
 
 Extract the company name from the user's argument. This is the primary input — everything else is auto-discovered.
 
-- **company_name** — from the argument (e.g., `ticketmaster` from `/openloyalty:winning-plan ticketmaster`)
+- **company_name** — from the argument (e.g., `ticketmaster` from `/sales:winning-plan ticketmaster`)
 
 **Validation:** If no company name provided, ask:
 ```
-Please provide a company name. Usage: /openloyalty:winning-plan <company-name>
+Please provide a company name. Usage: /sales:winning-plan <company-name>
 ```
 
 ### Phase 1: Auto-Discover Deal Context
@@ -272,7 +272,7 @@ When updating an existing winning plan:
 
 ## Example Scenario
 
-**User:** `/openloyalty:winning-plan INTERSPORT Elverys`
+**User:** `/sales:winning-plan INTERSPORT Elverys`
 
 **Phase 1 output:** Auto-discovers from HubSpot: sports retail chain, 2 deals in pipeline, 4 contacts. Fathom: 3 meetings found with key insights about their current program evaluation. Gaps: need economic buyer, tech team assessment, brand assets.
 

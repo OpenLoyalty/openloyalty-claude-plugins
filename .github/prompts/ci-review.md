@@ -25,7 +25,7 @@ Then fetch the full diff: `git diff {commit_range} -U10`
 Find and read the OL review protocol. IMPORTANT: Use Bash (`cat`) to read plugin cache files — the Read tool cannot access paths outside the repo.
 
 ```bash
-OL_REVIEW=$(ls ~/.claude/plugins/cache/openloyalty-claude-plugins/openloyalty/*/commands/openloyalty/review-pr.md 2>/dev/null | head -1)
+OL_REVIEW=$(ls ~/.claude/plugins/cache/openloyalty-claude-plugins/engineering/*/commands/review-pr.md 2>/dev/null | head -1)
 echo "=== OL REVIEW PATH: $OL_REVIEW ===" && cat "$OL_REVIEW"
 ```
 

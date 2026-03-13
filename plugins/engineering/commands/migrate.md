@@ -1,5 +1,5 @@
 ---
-name: openloyalty:migrate
+name: engineering:migrate
 description: Remove legacy Open Loyalty MCP server configuration from user scope
 argument-hint: ""
 ---
