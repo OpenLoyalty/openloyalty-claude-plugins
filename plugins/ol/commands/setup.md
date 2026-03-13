@@ -1,5 +1,5 @@
 ---
-name: engineering:setup
+name: ol:setup
 description: Install dependencies for Open Loyalty plugin
 argument-hint: ""
 ---
@@ -18,7 +18,7 @@ Guide the user through installing required plugin dependencies.
 
 ### 1. Install required plugin: compound-engineering
 
-The Open Loyalty plugin requires the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin for review workflows and specialized agent types used by `/engineering:review-pr`.
+The Open Loyalty plugin requires the [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) plugin for review workflows and specialized agent types used by `/ol:review-pr`.
 
 **IMPORTANT:** Do NOT check for this plugin by looking at available tools/skills in the session — tools loaded at session start persist even after a plugin is removed. Always use the CLI command to verify actual installation state.
 
@@ -54,7 +54,7 @@ Could not auto-install compound-engineering. Install it manually:
   /plugin marketplace add https://github.com/EveryInc/compound-engineering-plugin
   /plugin install compound-engineering
 
-Then restart Claude Code and run /engineering:setup again.
+Then restart Claude Code and run /ol:setup again.
 ```
 
 **STOP here if compound-engineering could not be installed.** Do not proceed.

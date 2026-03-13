@@ -1,5 +1,5 @@
 ---
-name: engineering:jira-ticket-breakdown
+name: ol:jira-ticket-breakdown
 description: Break down features, epics, or PRDs into structured Jira tickets with FE/BE team split, effort estimates, and automatic creation.
 argument-hint: "[<jira-key|text|file>] [--project <KEY>]"
 ---
@@ -277,5 +277,5 @@ Epic: https://openloyalty.atlassian.net/browse/OLOY-500
 
 ## Related Commands
 
-- `/engineering:review-pr` — Review code changes
-- `/engineering:help` — Plugin documentation
+- `/ol:review-pr` — Review code changes
+- `/ol:help` — Plugin documentation

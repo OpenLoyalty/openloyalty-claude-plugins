@@ -11,8 +11,8 @@ STAGED_FILES=$(git diff --cached --name-only)
 
 MARKETPLACE_STAGED=$(echo "$STAGED_FILES" | grep "^${MARKETPLACE_JSON}$" || true)
 
-# Find all staged plugin.json files
-STAGED_PLUGIN_JSONS=$(echo "$STAGED_FILES" | grep 'plugins/.*/\.claude-plugin/plugin\.json$' || true)
+# Find all staged plugin.json files (exclude deleted files)
+STAGED_PLUGIN_JSONS=$(git diff --cached --name-only --diff-filter=d | grep 'plugins/.*/\.claude-plugin/plugin\.json$' || true)
 
 # If nothing version-related is staged, nothing to check
 if [ -z "$STAGED_PLUGIN_JSONS" ] && [ -z "$MARKETPLACE_STAGED" ]; then

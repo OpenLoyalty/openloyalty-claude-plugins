@@ -1,7 +1,7 @@
 {
-  "name": "marketing",
-  "version": "4.1.0",
-  "description": "Marketing workflows for Open Loyalty — content, campaigns, and brand management.",
+  "name": "ol",
+  "version": "5.0.0",
+  "description": "Open Loyalty workflows — engineering, sales, marketing, and QA slash commands and skills.",
   "author": {
     "name": "Open Loyalty",
     "url": "https://github.com/OpenLoyalty"
@@ -9,5 +9,5 @@
   "homepage": "https://github.com/OpenLoyalty/openloyalty-claude-plugins",
   "repository": "https://github.com/OpenLoyalty/openloyalty-claude-plugins",
   "license": "UNLICENSED",
-  "keywords": ["marketing", "content", "loyalty", "open-loyalty", "internal"]
+  "keywords": ["code-review", "workflow", "loyalty", "open-loyalty", "internal", "sales", "qa", "marketing"]
 }
